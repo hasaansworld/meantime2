@@ -1,6 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
@@ -8,6 +8,7 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:textColor">@android:color/black</item>
         <item name="buttonStyle">@style/ButtonColor</item>
+        <item name="android:windowLightStatusBar">true</item>
         <item name="actionOverflowButtonStyle">@style/DotsDarkTheme</item>
         <item name="android:windowBackground">@android:color/white</item>
     </style>
@@ -18,26 +19,7 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:textColor">@android:color/black</item>
         <item name="buttonStyle">@style/ButtonColor</item>
-    </style>
-
-    <style name="ButtonColor" parent="@android:style/Widget.Button">
-        <item name="android:textColor">@color/button_text_color</item>
-    </style>
-
-    <style name="AppTheme.MaterialButton" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
-    </style>
-
-    <style name="DotsDarkTheme" parent="@style/Widget.AppCompat.ActionButton.Overflow" >
-        <item name="android:tint">@android:color/black</item>
-    </style>
-
-    <style name="TabLayoutTextStyle">
-        <item name="android:textSize">17sp</item>
-        <item name="android:textStyle">bold</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
 </resources>

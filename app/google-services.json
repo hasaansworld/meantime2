@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "113674588680",
+    "firebase_url": "https://dotalbums.firebaseio.com",
+    "project_id": "dotalbums",
+    "storage_bucket": "dotalbums.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:113674588680:android:485d6f2bce603115adf7bd",
+        "android_client_info": {
+          "package_name": "dot.albums"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "113674588680-4vj092ndsmopcrk0c9b04kmefafsb06a.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "dot.albums",
+            "certificate_hash": "705ce1036190edcfa3ba0a20537a9d59c341b42e"
+          }
+        },
+        {
+          "client_id": "113674588680-6sr31tgo8p5eessifrttdb2lm7gce1td.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCmKao1PMJVwDXANIqwERL2JASsORHnDm0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "113674588680-6sr31tgo8p5eessifrttdb2lm7gce1td.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
