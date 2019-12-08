@@ -11,6 +11,7 @@
         <item name="android:windowLightStatusBar">true</item>
         <item name="actionOverflowButtonStyle">@style/DotsDarkTheme</item>
         <item name="android:windowBackground">@android:color/white</item>
+        <item name="android:fontFamily">@font/opensans</item>
     </style>
 
     <style name="AppTheme.SignIn" parent="Theme.AppCompat.Light" >
@@ -20,6 +21,7 @@
         <item name="android:textColor">@android:color/black</item>
         <item name="buttonStyle">@style/ButtonColor</item>
         <item name="android:windowLightStatusBar">true</item>
+        <item name="android:fontFamily">@font/opensans</item>
     </style>
 
 </resources>

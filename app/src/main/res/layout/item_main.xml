@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingTop="10dp"
+    android:paddingBottom="8dp"
+    android:paddingLeft="5dp"
+    android:paddingRight="5dp">
+
+    <com.nguyenhoanglam.imagepicker.widget.SquareFrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp">
+
+        <com.github.siyamed.shapeimageview.RoundedImageView
+            android:id="@+id/thumbnail"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:src="@drawable/imagepicker_image_placeholder"
+            app:siBorderColor="#dddddd"
+            app:siBorderWidth="1dp"
+            app:siRadius="6dp" />
+
+        <com.github.siyamed.shapeimageview.CircularImageView
+            android:id="@+id/profilePicture"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_margin="5dp"
+            android:src="@drawable/profile_picture"
+            app:siBorderWidth="1dp"
+            app:siBorderColor="#dddddd"
+            android:layout_gravity="bottom"/>
+
+        <TextView
+            android:id="@+id/count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/count_background"
+            android:textStyle="bold"
+            android:textSize="12sp"
+            android:textColor="@android:color/white"
+            android:text="13"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:layout_margin="5dp"
+            android:layout_gravity="right"/>
+
+    </com.nguyenhoanglam.imagepicker.widget.SquareFrameLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:orientation="horizontal"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp">
+
+        <TextView
+            android:id="@+id/username"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@android:color/black"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:text="\@hasaan_ahmed"/>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1"
+            android:visibility="gone"/>
+
+        <TextView
+            android:id="@+id/text_photo_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginLeft="4dp"
+            android:textColor="#aaaaaa"
+            android:textSize="12sp"
+            android:visibility="gone"/>
+
+    </LinearLayout>
+
+</LinearLayout>
