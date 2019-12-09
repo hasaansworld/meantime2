@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.DisplayMetrics;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
@@ -280,6 +281,5 @@ public class ProfileEditActivity extends AppCompatActivity {
             finish();
         return true;
     }
-
 
 }
