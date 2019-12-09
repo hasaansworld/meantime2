@@ -35,6 +35,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         sharedPreferences = getSharedPreferences("data", MODE_PRIVATE);
+        int followCount = sharedPreferences.getInt("followCount", 0);
+        if(followCount == 0){
+            startActivity(new Intent(this, StartFollowingActivity.class));
+            finish();
+        }
 
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
