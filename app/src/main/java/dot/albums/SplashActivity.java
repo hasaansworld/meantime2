@@ -91,10 +91,10 @@ public class SplashActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()){
                     AccountInfo accountInfo = dataSnapshot.getValue(AccountInfo.class);
-                    String uname = accountInfo.getUsername();
-                    final String username = Username.decode(uname);
+                    final String userId = accountInfo.getUserId();
+                    final String username = accountInfo.getUsername();
                     if(accountInfo.getProfilePic() != null) {
-                        StorageReference ref = FirebaseStorage.getInstance().getReference().child("users").child(uname).child("profile picture").child(accountInfo.getProfilePic());
+                        StorageReference ref = FirebaseStorage.getInstance().getReference().child("users").child(userId).child("profile picture").child(accountInfo.getProfilePic());
                         File dirFile = new File(Environment.getExternalStorageDirectory() + "/dotAlbums/Profile Pictures");
                         if (!dirFile.exists()){
                             dirFile.mkdirs();
@@ -106,20 +106,20 @@ public class SplashActivity extends AppCompatActivity {
                         ref.getFile(file).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
                             @Override
                             public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                                saveInfo(username, path);
+                                saveInfo(userId, username, path);
                             }
                         })
                         .addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
-                                saveInfo(username, "");
+                                saveInfo(userId, username, "");
                                 Toast.makeText(SplashActivity.this, "profile pic failed", Toast.LENGTH_SHORT).show();
                             }
                         });
                     }
                     else{
                         Toast.makeText(SplashActivity.this, "no profile pic", Toast.LENGTH_SHORT).show();
-                        saveInfo(username, "");
+                        saveInfo(userId, username, "");
                     }
                 }
                 else{
@@ -136,8 +136,9 @@ public class SplashActivity extends AppCompatActivity {
         });
     }
 
-    public void saveInfo(String username, String path){
+    public void saveInfo(String userId, String username, String path){
         SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("userId", userId);
         editor.putString("username", username);
         editor.putString("profilePicPath", path);
         editor.putBoolean("profileDone", true);

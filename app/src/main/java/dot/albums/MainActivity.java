@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.Menu;
@@ -21,6 +22,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.nguyenhoanglam.imagepicker.ui.imagepicker.ImagePicker;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -33,6 +35,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //pickPhoto();
 
         sharedPreferences = getSharedPreferences("data", MODE_PRIVATE);
         int followCount = sharedPreferences.getInt("followCount", 0);
@@ -101,6 +105,29 @@ public class MainActivity extends AppCompatActivity {
 
     public static float dpToPixel(float dp, Context context){
         return dp * ((float) context.getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+    }
+
+    private void pickPhoto() {
+        ImagePicker.Builder builder = ImagePicker.with(this);                         //  Initialize ImagePicker with activity or fragment context
+        if(Build.VERSION.SDK_INT >= 23) builder.setStatusBarColor("#FFFFFF"); //  StatusBar color
+        builder.setToolbarColor("#FFFFFF")
+                .setToolbarTextColor("#000000")     //  Toolbar text color (Title and Done button)
+                .setToolbarIconColor("#000000")     //  Toolbar icon color (Back and Camera button)
+                .setProgressBarColor("#5C6BC0")     //  ProgressBar color
+                .setBackgroundColor("#FFFFFF")      //  Background color
+                .setCameraOnly(false)               //  Camera mode
+                .setMultipleMode(false)              //  Select multiple images or single image
+                .setFolderMode(true)                //  Folder mode
+                .setShowCamera(true)                //  Show camera button
+                .setFolderTitle("Pick a Photo")           //  Folder title (works with FolderMode = true)
+                .setImageTitle("Photos")            //  Image title (works with FolderMode = false)
+                .setDoneTitle("Done")               //  Done button title
+                .setLimitMessage("You have reached selection limit")    // Selection limit message
+                .setMaxSize(1)                     //  Max images can be selected
+                .setAlwaysShowDoneButton(true)      //  Set always show done button in multiple mode
+                .setRequestCode(100)                //  Set request code, default Config.RC_PICK_IMAGES
+                .setKeepScreenOn(true)              //  Keep screen on when selecting images
+                .start();
     }
 
 }

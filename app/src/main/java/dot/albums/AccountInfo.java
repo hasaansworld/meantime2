@@ -1,14 +1,23 @@
 package dot.albums;
 
 class AccountInfo{
-    private String username, profilePic;
+    private String userId, username, profilePic;
 
     public AccountInfo() {
     }
 
-    public AccountInfo(String username, String profilePic) {
+    public AccountInfo(String userId, String username, String profilePic) {
+        this.userId = userId;
         this.username = username;
         this.profilePic = profilePic;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getUsername() {

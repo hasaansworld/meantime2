@@ -15,6 +15,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
 import com.nguyenhoanglam.imagepicker.helper.PermissionHelper;
@@ -25,6 +26,7 @@ public class StartFollowingActivity extends AppCompatActivity {
     SuggestionsAdapter adapter;
     ProgressBar progressBar;
     boolean isPermissionGranted = false;
+    LinearLayout continueLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +38,7 @@ public class StartFollowingActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         progressBar = findViewById(R.id.progessBar);
-
+        continueLayout = findViewById(R.id.continueLayout);
     }
 
     public void checkPermission(){
@@ -98,7 +100,7 @@ public class StartFollowingActivity extends AppCompatActivity {
     public void setupRecyclerView(){
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new SuggestionsAdapter(this, true, progressBar);
+        adapter = new SuggestionsAdapter(this, true, progressBar, continueLayout);
         recyclerView.setAdapter(adapter);
     }
 

@@ -22,7 +22,7 @@
             android:src="@drawable/imagepicker_image_placeholder"
             app:siBorderColor="#dddddd"
             app:siBorderWidth="1dp"
-            app:siRadius="12dp" />
+            app:siRadius="6dp" />
 
     </com.nguyenhoanglam.imagepicker.widget.SquareFrameLayout>
 
@@ -41,7 +41,8 @@
             android:ellipsize="end"
             android:maxLines="2"
             android:textColor="@android:color/black"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            android:textStyle="bold"/>
 
         <View
             android:layout_width="0dp"

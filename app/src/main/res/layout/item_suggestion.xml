@@ -44,7 +44,7 @@
         android:id="@+id/follow"
         android:layout_width="100dp"
         android:layout_height="wrap_content"
-        android:background="@drawable/button_accent_rounded"
+        android:background="@drawable/follow_button"
         android:clickable="true"
         android:ellipsize="end"
         android:gravity="center"

@@ -28,7 +28,9 @@
         android:maxLines="1"
         android:text="Folder"
         android:textColor="@color/imagepicker_white"
-        android:textSize="18sp"/>
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:fontFamily="@font/opensans"/>
 
 
     <androidx.appcompat.widget.AppCompatImageView

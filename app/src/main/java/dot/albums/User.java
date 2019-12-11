@@ -1,12 +1,16 @@
 package dot.albums;
 
 public class User implements Comparable<User>{
+    private String userId;
     private String phone;
     private String name;
     private String username;
     private String profilePic;
+    private boolean isFollowingMe = false;
+    private boolean amIFollowing = false;
 
-    public User(String phone, String name, String username, String profilePic) {
+    public User(String userId, String phone, String name, String username, String profilePic) {
+        this.userId = userId;
         this.phone = phone;
         this.name = name;
         this.username = username;
@@ -19,6 +23,14 @@ public class User implements Comparable<User>{
     }
 
     public User() {
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getPhone() {
@@ -57,4 +69,21 @@ public class User implements Comparable<User>{
     public int compareTo(User o) {
         return this.getName().compareTo(o.getName());
     }
+
+    public boolean isFollowingMe() {
+        return isFollowingMe;
+    }
+
+    public void setFollowingMe(boolean followingMe) {
+        isFollowingMe = followingMe;
+    }
+
+    public boolean amIFollowing() {
+        return amIFollowing;
+    }
+
+    public void setAmIFollowing(boolean amIFollowing) {
+        this.amIFollowing = amIFollowing;
+    }
+
 }
