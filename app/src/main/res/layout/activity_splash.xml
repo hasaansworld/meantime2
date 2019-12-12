@@ -4,23 +4,40 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SplashActivity"
-    android:background="@android:color/white">
+    android:background="@android:color/white"
+    tools:context=".SplashActivity">
 
-    <ImageView
-        android:layout_width="120dp"
-        android:layout_height="120dp"
-        android:src="@mipmap/ic_launcher_round"
-        android:layout_gravity="center"/>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:src="@mipmap/ic_launcher_round" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#444444"
+            android:text="@string/app_name"/>
+
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/layoutSetup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:layout_gravity="bottom|center_horizontal"
         android:layout_margin="30dp"
         android:gravity="center_vertical"
+        android:orientation="horizontal"
         android:visibility="gone">
 
         <ProgressBar
@@ -28,15 +45,15 @@
             android:layout_width="36dp"
             android:layout_height="36dp"
             android:layout_gravity="center_horizontal"
-            android:indeterminate="true"/>
+            android:indeterminate="true" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
-            android:textSize="18sp"
+            android:text="Setting up account..."
             android:textColor="#666666"
-            android:text="Setting up account..."/>
+            android:textSize="18sp" />
 
     </LinearLayout>
 
