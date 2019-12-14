@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
@@ -29,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
     SharedPreferences sharedPreferences;
     Toolbar toolbar;
     RecyclerView recyclerView;
-    MainAdapter adapter;
+    AdapterReminders adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,11 +40,11 @@ public class MainActivity extends AppCompatActivity {
         //pickPhoto();
 
         sharedPreferences = getSharedPreferences("data", MODE_PRIVATE);
-        int followCount = sharedPreferences.getInt("followCount", 0);
+        /*int followCount = sharedPreferences.getInt("followCount", 0);
         if(followCount == 0){
             startActivity(new Intent(this, StartFollowingActivity.class));
             finish();
-        }
+        }*/
 
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -51,7 +52,10 @@ public class MainActivity extends AppCompatActivity {
         setProfilePicture();
 
         recyclerView = findViewById(R.id.recyclerView);
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new AdapterReminders(this);
+        recyclerView.setAdapter(adapter);
+        /*GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
         gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
@@ -63,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         });
         recyclerView.setLayoutManager(gridLayoutManager);
         adapter = new MainAdapter(this);
-        recyclerView.setAdapter(adapter);
+        recyclerView.setAdapter(adapter);*/
 
     }
 
