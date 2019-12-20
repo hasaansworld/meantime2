@@ -57,6 +57,10 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void handleSignIn(){
+        if(isProfileSetup){
+            startActivity(new Intent(SplashActivity.this, MainActivity.class));
+            finish();
+        }
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -65,12 +69,6 @@ public class SplashActivity extends AppCompatActivity {
                     // already signed in
                     if(!isProfileSetup) {
                         profileSetupWithPermission();
-                        Toast.makeText(SplashActivity.this, "profile not done", Toast.LENGTH_SHORT).show();
-                    }
-                    else {
-                        startActivity(new Intent(SplashActivity.this, MainActivity.class));
-                        finish();
-                        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                     }
                 } else {
                     // not signed in

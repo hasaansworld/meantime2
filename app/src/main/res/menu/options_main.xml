@@ -9,15 +9,60 @@
         app:showAsAction="always" />
 
     <item
-        android:id="@+id/local"
-        android:title="My Phone"
-        android:icon="@drawable/outline_image_black_24"
+        android:id="@+id/requests"
+        android:title="Requests"
+        android:icon="@drawable/outline_archive_black_24"
         app:showAsAction="always" />
 
     <item
-        android:id="@+id/people"
-        android:title="People"
-        android:icon="@drawable/ic_person_outline_black_24dp"
-        app:showAsAction="always" />
+        android:id="@+id/jump"
+        android:title="Go to date..." />
+
+    <item
+        android:id="@+id/showOnly"
+        android:title="Show only"
+        android:enabled="true">
+
+        <menu>
+
+            <item
+                android:id="@+id/personal"
+                android:title="Personal" />
+
+            <item
+                android:id="@+id/social"
+                android:title="Social" />
+
+            <item
+                android:id="@+id/lowImportance"
+                android:title="Low Importance" />
+
+            <item
+                android:id="@+id/mediumImportance"
+                android:title="Medium Importance" />
+
+            <item
+                android:id="@+id/highImportance"
+                android:title="High Importance" />
+
+        </menu>
+
+    </item>
+
+    <item
+        android:id="@+id/manageAccess"
+        android:title="Manage Access" />
+
+    <item
+        android:id="@+id/history"
+        android:title="History" />
+
+    <item
+        android:id="@+id/deleted"
+        android:title="Deleted" />
+
+    <item
+        android:id="@+id/settings"
+        android:title="Settings" />
 
 </menu>

@@ -21,7 +21,7 @@
                 android:layout_height="wrap_content"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:text="Start Following"/>
+                android:text="Manage Access"/>
 
         </androidx.appcompat.widget.Toolbar>
 
@@ -72,7 +72,7 @@
                 android:letterSpacing="0"
                 tools:targetApi="LOLLIPOP"
                 android:textAllCaps="false"
-                android:text="Continue"
+                android:text="Save"
                 android:textStyle="bold"
                 android:theme="@style/AppTheme.MaterialButton"
                 android:clickable="true"/>

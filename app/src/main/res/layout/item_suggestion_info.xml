@@ -15,7 +15,7 @@
         android:textSize="18sp"
         android:textColor="#666666"
         android:textStyle="bold"
-        android:text="Connect"/>
+        android:text="Save Time"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -25,6 +25,6 @@
         android:layout_marginTop="10dp"
         android:textSize="14sp"
         android:textColor="#999999"
-        android:text="Follow someone to see what they are sharing. You need to follow at least one person to get started."/>
+        android:text="Allow your contacts to directly add reminders to Meantime. You can change this any time."/>
 
 </LinearLayout>

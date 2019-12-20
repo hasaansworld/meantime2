@@ -3,6 +3,7 @@ package dot.albums;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -24,6 +25,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.nguyenhoanglam.imagepicker.ui.imagepicker.ImagePicker;
+import com.shuhart.stickyheader.StickyHeaderItemDecorator;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -40,9 +42,9 @@ public class MainActivity extends AppCompatActivity {
         //pickPhoto();
 
         sharedPreferences = getSharedPreferences("data", MODE_PRIVATE);
-        /*int followCount = sharedPreferences.getInt("followCount", 0);
-        if(followCount == 0){
-            startActivity(new Intent(this, StartFollowingActivity.class));
+        /*boolean accessDone = sharedPreferences.getBoolean("accessDone", false);
+        if(!accessDone){
+            startActivity(new Intent(this, ManageAccessActivity.class));
             finish();
         }*/
 
@@ -55,6 +57,8 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new AdapterReminders(this);
         recyclerView.setAdapter(adapter);
+        StickyHeaderItemDecorator decorator = new StickyHeaderItemDecorator(adapter);
+        decorator.attachToRecyclerView(recyclerView);
         /*GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
         gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
@@ -99,12 +103,19 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.options_main, menu);
+        /*if(menu instanceof MenuBuilder){
+            MenuBuilder m = (MenuBuilder) menu;
+            //noinspection RestrictedApi
+            m.setOptionalIconsVisible(true);
+        }*/
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        return super.onOptionsItemSelected(item);
+        if(item.getItemId() == R.id.manageAccess)
+            startActivity(new Intent(this, ManageAccessActivity.class));
+        return true;
     }
 
     public static float dpToPixel(float dp, Context context){

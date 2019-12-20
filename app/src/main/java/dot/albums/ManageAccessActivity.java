@@ -9,33 +9,37 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
+import android.view.MenuItem;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
 import com.nguyenhoanglam.imagepicker.helper.PermissionHelper;
 
-public class StartFollowingActivity extends AppCompatActivity {
+public class ManageAccessActivity extends AppCompatActivity {
     Toolbar toolbar;
     RecyclerView recyclerView;
     SuggestionsAdapter adapter;
     ProgressBar progressBar;
+    SharedPreferences sharedPreferences;
     boolean isPermissionGranted = false;
     LinearLayout continueLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_start_following);
+        setContentView(R.layout.activity_manage_access);
+        sharedPreferences = getSharedPreferences("data", MODE_PRIVATE);
+        boolean accessDone = sharedPreferences.getBoolean("accessDone", false);
 
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(accessDone);
 
         progressBar = findViewById(R.id.progessBar);
         continueLayout = findViewById(R.id.continueLayout);
@@ -70,7 +74,7 @@ public class StartFollowingActivity extends AppCompatActivity {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
-                    PermissionHelper.openAppSettings(StartFollowingActivity.this);
+                    PermissionHelper.openAppSettings(ManageAccessActivity.this);
                 }
             });
         }
@@ -79,7 +83,7 @@ public class StartFollowingActivity extends AppCompatActivity {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
-                    ActivityCompat.requestPermissions(StartFollowingActivity.this,
+                    ActivityCompat.requestPermissions(ManageAccessActivity.this,
                             new String[]{Manifest.permission.READ_CONTACTS},
                             100);
                 }
@@ -121,6 +125,13 @@ public class StartFollowingActivity extends AppCompatActivity {
                 }
             }
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == android.R.id.home)
+            finish();
+        return true;
     }
 
     @Override

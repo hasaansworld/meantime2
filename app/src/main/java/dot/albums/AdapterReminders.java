@@ -1,5 +1,6 @@
 package dot.albums;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.view.LayoutInflater;
@@ -7,14 +8,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
+import com.shuhart.stickyheader.StickyAdapter;
 
 import java.util.HashMap;
 
-public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHolder>
+public class AdapterReminders extends StickyAdapter<RecyclerView.ViewHolder, RecyclerView.ViewHolder>
 {
     Context context;
     HashMap<String, String> dates = new HashMap<>();
@@ -35,6 +38,7 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
             super(v);
             this.v = v;
             date = v.findViewById(R.id.date);
+            date.setTextColor(Color.WHITE);
         }
     }
 
@@ -105,5 +109,43 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
             return 0;
         else
             return 1;
+    }
+
+    @Override
+    public int getHeaderPositionForItem(int itemPosition) {
+        if(itemPosition < 4)
+            return 0;
+        else if(itemPosition < 11)
+            return 1;
+        else
+            return 2;
+    }
+
+    public String getHeaderFromPosition(int position){
+        if(position == 0)
+            return "Today";
+        else if(position == 1)
+            return "Tomorrow";
+        else
+            return "7 Dec 2019";
+    }
+
+    @Override
+    public RecyclerView.ViewHolder onCreateHeaderViewHolder(ViewGroup parent) {
+        return createViewHolder(parent, 0);
+    }
+
+    @SuppressLint("SetTextI18n")
+    @Override
+    public void onBindHeaderViewHolder(RecyclerView.ViewHolder holder, int position) {
+        ViewHolderHeader holderHeader = (ViewHolderHeader)holder;
+        holderHeader.date.setText(getHeaderFromPosition(position));
+        holderHeader.date.setVisibility(View.VISIBLE);
+        if(position == 0){
+            holderHeader.v.setBackgroundColor(colorAccent);
+        }
+        else{
+            holderHeader.v.setBackgroundColor(Color.parseColor("#999999"));
+        }
     }
 }

@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:name=".DotApplication">
-        <activity android:name=".StartFollowingActivity"></activity>
+        <activity android:name=".ManageAccessActivity"></activity>
         <activity android:name=".SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
