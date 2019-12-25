@@ -83,6 +83,13 @@ public class MainActivity extends AppCompatActivity {
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 int firstPosition = layoutManager.findFirstVisibleItemPosition();
+                View v = layoutManager.findViewByPosition(firstPosition);
+                int height = v.getHeight();
+                int difference = height + v.getTop();
+                float perc = ((float)difference/height)*100;
+                int percentage = Math.round(perc);
+                if(percentage < 40)
+                    firstPosition++;
                 int headerPosition = adapter.getHeaderPositionForItem(firstPosition);
                 if(headerPosition == 2) {
                     headerLayout.setBackgroundColor(adapter.colorAccent);

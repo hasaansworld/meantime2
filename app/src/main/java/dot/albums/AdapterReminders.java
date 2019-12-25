@@ -2,6 +2,7 @@ package dot.albums;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.view.LayoutInflater;
@@ -17,12 +18,15 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 {
     Context context;
     HashMap<String, String> dates = new HashMap<>();
+    List<String> titles = new ArrayList<>();
     int colorAccent;
     int todayPosition = 6;
 
@@ -33,6 +37,11 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
         dates.put("6", "Today");
         dates.put("10", "Tomorrow");
         dates.put("15", "7 Dec 2019");
+        titles.add("Sandra's Birthday Party");
+        titles.add("Dinner at Hardee's");
+        titles.add("Flutter Interact DSC CEME");
+        titles.add("Meeting");
+        titles.add("Raiding Area 51 and Recovering Alien Life");
         colorAccent = context.getResources().getColor(R.color.colorAccent);
     }
 
@@ -54,7 +63,7 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     }
 
-    public class ViewHolderReminder extends RecyclerView.ViewHolder{
+    public class ViewHolderReminder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView title, people, description;
         ImageView image;
         public ViewHolderReminder(View v){
@@ -63,6 +72,14 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
             people = v.findViewById(R.id.people);
             description = v.findViewById(R.id.description);
             image = v.findViewById(R.id.image);
+            v.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            Intent i = new Intent(context, ReminderActivity.class);
+            i.putExtra("position", getAdapterPosition()%5);
+            context.startActivity(i);
         }
     }
 
@@ -100,6 +117,7 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
             }
             else
                 holderReminder.image.setVisibility(View.GONE);
+            holderReminder.title.setText(titles.get(position%5));
             if(holderReminder.people.getVisibility()==View.VISIBLE){
                 holderReminder.description.setMaxLines(1);
             }
