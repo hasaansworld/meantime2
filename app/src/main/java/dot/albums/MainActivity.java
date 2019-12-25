@@ -12,12 +12,18 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -25,14 +31,18 @@ import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.nguyenhoanglam.imagepicker.ui.imagepicker.ImagePicker;
-import com.shuhart.stickyheader.StickyHeaderItemDecorator;
 
 public class MainActivity extends AppCompatActivity {
 
     SharedPreferences sharedPreferences;
     Toolbar toolbar;
     RecyclerView recyclerView;
+    LinearLayoutManager layoutManager;
     AdapterReminders adapter;
+    TextView title, day;
+    LinearLayout headerLayout;
+    FrameLayout jumpLayout;
+    ImageView jumpIcon;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,12 +63,49 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         setProfilePicture();
 
+        title = findViewById(R.id.title);
+        day = findViewById(R.id.day);
+        headerLayout = findViewById(R.id.layout);
+        jumpLayout = findViewById(R.id.jumpLayout);
+        jumpIcon = findViewById(R.id.jumpIcon);
         recyclerView = findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
         adapter = new AdapterReminders(this);
         recyclerView.setAdapter(adapter);
-        StickyHeaderItemDecorator decorator = new StickyHeaderItemDecorator(adapter);
-        decorator.attachToRecyclerView(recyclerView);
+        //StickyHeaderItemDecorator decorator = new StickyHeaderItemDecorator(adapter);
+        //decorator.attachToRecyclerView(recyclerView);
+        recyclerView.scrollToPosition(6);
+        day.setText(adapter.getDayFromPositon(6));
+        title.setText(adapter.getHeaderFromPosition(6));
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                int firstPosition = layoutManager.findFirstVisibleItemPosition();
+                int headerPosition = adapter.getHeaderPositionForItem(firstPosition);
+                if(headerPosition == 2) {
+                    headerLayout.setBackgroundColor(adapter.colorAccent);
+                    jumpLayout.setVisibility(View.GONE);
+                }
+                else {
+                    headerLayout.setBackgroundColor(Color.parseColor("#999999"));
+                    jumpLayout.setVisibility(View.VISIBLE);
+                    if(headerPosition > 2)
+                        jumpIcon.setImageResource(R.drawable.ic_expand_less_black_18dp);
+                    else
+                        jumpIcon.setImageResource(R.drawable.ic_expand_more_black_18dp);
+                }
+                day.setText(adapter.getDayFromPositon(firstPosition));
+                title.setText(adapter.getHeaderFromPosition(firstPosition));
+            }
+        });
+        jumpLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                layoutManager.scrollToPositionWithOffset(6, 0);
+            }
+        });
         /*GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
         gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
@@ -113,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == R.id.manageAccess)
+        if(item.getItemId() == R.id.people)
             startActivity(new Intent(this, ManageAccessActivity.class));
         return true;
     }

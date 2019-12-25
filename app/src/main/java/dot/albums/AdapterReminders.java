@@ -3,43 +3,55 @@ package dot.albums;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
-import com.shuhart.stickyheader.StickyAdapter;
 
 import java.util.HashMap;
 
-public class AdapterReminders extends StickyAdapter<RecyclerView.ViewHolder, RecyclerView.ViewHolder>
+public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 {
     Context context;
     HashMap<String, String> dates = new HashMap<>();
     int colorAccent;
+    int todayPosition = 6;
 
     public AdapterReminders(Context context){
         this.context = context;
-        dates.put("0", "Today");
-        dates.put("4", "Tomorrow");
-        dates.put("11", "7 Dec 2019");
+        dates.put("0", "6 Jun 2019");
+        dates.put("3", "Yesterday");
+        dates.put("6", "Today");
+        dates.put("10", "Tomorrow");
+        dates.put("15", "7 Dec 2019");
         colorAccent = context.getResources().getColor(R.color.colorAccent);
     }
 
-    public class ViewHolderHeader extends RecyclerView.ViewHolder{
-        TextView date;
+    public class ViewHolderHeader extends RecyclerView.ViewHolder implements View.OnClickListener {
+        TextView title, day;
         View v;
         public ViewHolderHeader(View v){
             super(v);
             this.v = v;
-            date = v.findViewById(R.id.date);
-            date.setTextColor(Color.WHITE);
+            title = v.findViewById(R.id.title);
+            title.setTextColor(Color.WHITE);
+            day = v.findViewById(R.id.day);
         }
+
+        @Override
+        public void onClick(View v) {
+
+        }
+
     }
 
     public class ViewHolderReminder extends RecyclerView.ViewHolder{
@@ -71,14 +83,13 @@ public class AdapterReminders extends StickyAdapter<RecyclerView.ViewHolder, Rec
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if(holder instanceof ViewHolderHeader){
             ViewHolderHeader holderHeader = (ViewHolderHeader)holder;
-            holderHeader.date.setText(dates.get(Integer.toString(position)));
-            if(position == 0){
+            holderHeader.title.setText(dates.get(Integer.toString(position)));
+            holderHeader.day.setText(getDayFromPositon(position));
+            if(position == todayPosition){
                 holderHeader.v.setBackgroundColor(colorAccent);
-                holderHeader.date.setTextColor(Color.WHITE);
             }
             else{
                 holderHeader.v.setBackgroundColor(Color.parseColor("#999999"));
-                holderHeader.date.setTextColor(Color.WHITE);
             }
         }
         else{
@@ -100,52 +111,77 @@ public class AdapterReminders extends StickyAdapter<RecyclerView.ViewHolder, Rec
 
     @Override
     public int getItemCount() {
-        return 17;
+        return 23;
     }
 
     @Override
     public int getItemViewType(int position) {
-        if(position == 0 || position == 4 || position == 11)
+        if(position == 0 || position == 3 || position == 6 || position == 10 || position == 15)
             return 0;
         else
             return 1;
     }
 
-    @Override
     public int getHeaderPositionForItem(int itemPosition) {
-        if(itemPosition < 4)
+        if(itemPosition < 3)
             return 0;
-        else if(itemPosition < 11)
+        else if(itemPosition < 6)
             return 1;
-        else
+        else if(itemPosition < 10)
             return 2;
+        else if(itemPosition < 15)
+            return 3;
+        else
+            return 4;
     }
 
-    public String getHeaderFromPosition(int position){
+    public int getTodayPosition(){
+        return todayPosition;
+    }
+
+    public String getHeaderFromPosition(int p){
+        int position = getHeaderPositionForItem(p);
         if(position == 0)
-            return "Today";
+            return "6 Jun 2019";
         else if(position == 1)
+            return "Yesterday";
+        else if(position == 2)
+            return "Today";
+        else if(position == 3)
             return "Tomorrow";
         else
             return "7 Dec 2019";
     }
 
-    @Override
+    public String getDayFromPositon(int p){
+        int position = getHeaderPositionForItem(p);
+        if(position == 0)
+            return "Monday";
+        else if(position == 1)
+            return "Tuesday, 24 Dec";
+        else if(position == 2)
+            return "Wednesday, 25 Dec";
+        else if(position == 3)
+            return "Thursday, 26 Dec";
+        else
+            return "Friday";
+    }
+
+    /*@Override
     public RecyclerView.ViewHolder onCreateHeaderViewHolder(ViewGroup parent) {
         return createViewHolder(parent, 0);
     }
 
-    @SuppressLint("SetTextI18n")
     @Override
     public void onBindHeaderViewHolder(RecyclerView.ViewHolder holder, int position) {
         ViewHolderHeader holderHeader = (ViewHolderHeader)holder;
-        holderHeader.date.setText(getHeaderFromPosition(position));
-        holderHeader.date.setVisibility(View.VISIBLE);
-        if(position == 0){
+        holderHeader.title.setText(getHeaderFromPosition(position));
+        holderHeader.title.setVisibility(View.VISIBLE);
+        if(position == 2){
             holderHeader.v.setBackgroundColor(colorAccent);
         }
         else{
             holderHeader.v.setBackgroundColor(Color.parseColor("#999999"));
         }
-    }
+    }*/
 }

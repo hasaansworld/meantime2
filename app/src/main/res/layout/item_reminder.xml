@@ -22,8 +22,8 @@
             android:orientation="horizontal">
 
             <View
-                android:layout_width="15dp"
-                android:layout_height="15dp"
+                android:layout_width="10dp"
+                android:layout_height="10dp"
                 android:background="@drawable/circle_red" />
 
             <TextView

@@ -19,9 +19,9 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="@string/app_name"
                 android:textSize="18sp"
-                android:textStyle="bold"
-                android:text="@string/app_name"/>
+                android:textStyle="bold" />
 
         </androidx.appcompat.widget.Toolbar>
 
@@ -31,9 +31,38 @@
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
+        android:clipToPadding="false"
         android:paddingBottom="100dp"
-        android:clipToPadding="false"/>
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
+
+        <include
+            layout="@layout/item_reminder_header" />
+
+        <FrameLayout
+            android:id="@+id/jumpLayout"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_gravity="center">
+
+            <ImageView
+                android:id="@+id/jumpIcon"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_gravity="center"
+                android:tint="@color/colorAccent"
+                android:background="@drawable/circle_white"
+                android:elevation="4dp"
+                android:src="@drawable/ic_expand_more_black_18dp"/>
+
+        </FrameLayout>
+
+    </FrameLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAdd"
@@ -41,8 +70,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
         android:layout_margin="16dp"
+        android:clickable="true"
         android:src="@drawable/ic_add_white_24dp"
-        app:rippleColor="#dddddd"
-        android:clickable="true"/>
+        app:rippleColor="#dddddd" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
