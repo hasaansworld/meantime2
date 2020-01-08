@@ -28,15 +28,13 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
     HashMap<String, String> dates = new HashMap<>();
     List<String> titles = new ArrayList<>();
     int colorAccent;
-    int todayPosition = 6;
+    int todayPosition = 0;
 
     public AdapterReminders(Context context){
         this.context = context;
-        dates.put("0", "6 Jun 2019");
-        dates.put("3", "Yesterday");
-        dates.put("6", "Today");
-        dates.put("10", "Tomorrow");
-        dates.put("15", "7 Dec 2019");
+        dates.put("0", "Today");
+        dates.put("4", "Tomorrow");
+        dates.put("9", "15 Feb 2020");
         titles.add("Sandra's Birthday Party");
         titles.add("Dinner at Hardee's");
         titles.add("Flutter Interact DSC CEME");
@@ -46,14 +44,14 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     public class ViewHolderHeader extends RecyclerView.ViewHolder implements View.OnClickListener {
-        TextView title, day;
+        TextView title, date;
         View v;
         public ViewHolderHeader(View v){
             super(v);
             this.v = v;
             title = v.findViewById(R.id.title);
             title.setTextColor(Color.WHITE);
-            day = v.findViewById(R.id.day);
+            date = v.findViewById(R.id.date);
         }
 
         @Override
@@ -100,13 +98,20 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if(holder instanceof ViewHolderHeader){
             ViewHolderHeader holderHeader = (ViewHolderHeader)holder;
-            holderHeader.title.setText(dates.get(Integer.toString(position)));
-            holderHeader.day.setText(getDayFromPositon(position));
-            if(position == todayPosition){
-                holderHeader.v.setBackgroundColor(colorAccent);
+            String title = getTitleFromPositon(position);
+            holderHeader.title.setText(title);
+            holderHeader.date.setText(getDateFromPositon(position));
+            if(title.equals("")){
+                holderHeader.title.setVisibility(View.GONE);
             }
             else{
-                holderHeader.v.setBackgroundColor(Color.parseColor("#999999"));
+                holderHeader.title.setVisibility(View.VISIBLE);
+                if(position == todayPosition){
+                    holderHeader.title.setBackgroundResource(R.drawable.round_accent);
+                }
+                else{
+                    holderHeader.title.setBackgroundResource(R.drawable.round_grey);
+                }
             }
         }
         else{
@@ -129,28 +134,24 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     @Override
     public int getItemCount() {
-        return 23;
+        return 14;
     }
 
     @Override
     public int getItemViewType(int position) {
-        if(position == 0 || position == 3 || position == 6 || position == 10 || position == 15)
+        if(position == 0 || position == 4 || position == 9)
             return 0;
         else
             return 1;
     }
 
     public int getHeaderPositionForItem(int itemPosition) {
-        if(itemPosition < 3)
+        if(itemPosition < 4)
             return 0;
-        else if(itemPosition < 6)
+        else if(itemPosition < 9)
             return 1;
-        else if(itemPosition < 10)
-            return 2;
-        else if(itemPosition < 15)
-            return 3;
         else
-            return 4;
+            return 2;
     }
 
     public int getTodayPosition(){
@@ -160,29 +161,31 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
     public String getHeaderFromPosition(int p){
         int position = getHeaderPositionForItem(p);
         if(position == 0)
-            return "6 Jun 2019";
-        else if(position == 1)
-            return "Yesterday";
-        else if(position == 2)
             return "Today";
-        else if(position == 3)
+        else if(position == 1)
             return "Tomorrow";
         else
-            return "7 Dec 2019";
+            return "3 Weeks";
     }
 
-    public String getDayFromPositon(int p){
+    public String getDateFromPositon(int p){
         int position = getHeaderPositionForItem(p);
         if(position == 0)
-            return "Monday";
+            return "7 Jan 2020";
         else if(position == 1)
-            return "Tuesday, 24 Dec";
-        else if(position == 2)
-            return "Wednesday, 25 Dec";
-        else if(position == 3)
-            return "Thursday, 26 Dec";
+            return "8 Jan 2020";
         else
-            return "Friday";
+            return "15 Feb 2020";
+    }
+
+    public String getTitleFromPositon(int p){
+        int position = getHeaderPositionForItem(p);
+        if(position == 0)
+            return "Today";
+        else if(position == 1)
+            return "Tomorrow";
+        else
+            return "Next Week";
     }
 
     /*@Override

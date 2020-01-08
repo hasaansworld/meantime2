@@ -57,13 +57,14 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void handleSignIn(){
-        if(isProfileSetup){
-            startActivity(new Intent(SplashActivity.this, MainActivity.class));
-            finish();
-        }
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
+                if(isProfileSetup){
+                    startActivity(new Intent(SplashActivity.this, MainActivity.class));
+                    finish();
+                    overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                }
                 FirebaseAuth auth = FirebaseAuth.getInstance();
                 if (auth.getCurrentUser() != null) {
                     // already signed in

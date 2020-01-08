@@ -17,6 +17,7 @@
             app:contentInsetStartWithNavigation="10dp">
 
             <TextView
+                android:id="@+id/toolbarTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/app_name"
@@ -48,7 +49,8 @@
             android:id="@+id/jumpLayout"
             android:layout_width="36dp"
             android:layout_height="36dp"
-            android:layout_gravity="center">
+            android:layout_gravity="center"
+            android:visibility="gone">
 
             <ImageView
                 android:id="@+id/jumpIcon"
@@ -58,7 +60,7 @@
                 android:tint="@color/colorAccent"
                 android:background="@drawable/circle_white"
                 android:elevation="4dp"
-                android:src="@drawable/ic_expand_more_black_18dp"/>
+                android:src="@drawable/ic_expand_less_black_18dp"/>
 
         </FrameLayout>
 

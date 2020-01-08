@@ -39,8 +39,8 @@ public class MainActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     LinearLayoutManager layoutManager;
     AdapterReminders adapter;
-    TextView title, day;
-    LinearLayout headerLayout;
+    TextView toolbarTitle, title, day;
+    FrameLayout headerLayout;
     FrameLayout jumpLayout;
     ImageView jumpIcon;
 
@@ -62,9 +62,10 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         setProfilePicture();
+        toolbarTitle = findViewById(R.id.toolbarTitle);
 
         title = findViewById(R.id.title);
-        day = findViewById(R.id.day);
+        //day = findViewById(R.id.day);
         headerLayout = findViewById(R.id.layout);
         jumpLayout = findViewById(R.id.jumpLayout);
         jumpIcon = findViewById(R.id.jumpIcon);
@@ -73,12 +74,12 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(layoutManager);
         adapter = new AdapterReminders(this);
         recyclerView.setAdapter(adapter);
+        headerLayout.setVisibility(View.GONE);
         //StickyHeaderItemDecorator decorator = new StickyHeaderItemDecorator(adapter);
         //decorator.attachToRecyclerView(recyclerView);
-        recyclerView.scrollToPosition(6);
-        day.setText(adapter.getDayFromPositon(6));
-        title.setText(adapter.getHeaderFromPosition(6));
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        //day.setText(adapter.getDayFromPositon(0));
+        //title.setText(adapter.getHeaderFromPosition(0));
+        /*recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
@@ -91,26 +92,22 @@ public class MainActivity extends AppCompatActivity {
                 if(percentage < 40)
                     firstPosition++;
                 int headerPosition = adapter.getHeaderPositionForItem(firstPosition);
-                if(headerPosition == 2) {
+                if(headerPosition == 0) {
                     headerLayout.setBackgroundColor(adapter.colorAccent);
                     jumpLayout.setVisibility(View.GONE);
                 }
                 else {
                     headerLayout.setBackgroundColor(Color.parseColor("#999999"));
                     jumpLayout.setVisibility(View.VISIBLE);
-                    if(headerPosition > 2)
-                        jumpIcon.setImageResource(R.drawable.ic_expand_less_black_18dp);
-                    else
-                        jumpIcon.setImageResource(R.drawable.ic_expand_more_black_18dp);
                 }
                 day.setText(adapter.getDayFromPositon(firstPosition));
-                title.setText(adapter.getHeaderFromPosition(firstPosition));
+                //toolbarTitle.setText(adapter.getHeaderFromPosition(firstPosition));
             }
-        });
+        });*/
         jumpLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                layoutManager.scrollToPositionWithOffset(6, 0);
+                layoutManager.scrollToPositionWithOffset(0, 0);
             }
         });
         /*GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
