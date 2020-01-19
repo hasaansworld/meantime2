@@ -30,6 +30,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.nguyenhoanglam.imagepicker.ui.imagepicker.ImagePicker;
 
 public class MainActivity extends AppCompatActivity {
@@ -43,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
     FrameLayout headerLayout;
     FrameLayout jumpLayout;
     ImageView jumpIcon;
+    FloatingActionButton fabAdd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,6 +126,14 @@ public class MainActivity extends AppCompatActivity {
         adapter = new MainAdapter(this);
         recyclerView.setAdapter(adapter);*/
 
+        fabAdd = findViewById(R.id.fabAdd);
+        fabAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, CreateActivity.class));
+            }
+        });
+
     }
 
     public void setProfilePicture(){
@@ -164,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == R.id.people)
+        if(item.getItemId() == R.id.access)
             startActivity(new Intent(this, ManageAccessActivity.class));
         return true;
     }

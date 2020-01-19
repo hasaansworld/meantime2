@@ -53,4 +53,10 @@
         <item name="android:fontFamily">@font/opensans</item>
     </style>
 
+    <style name="TextAppearance.Hint" parent="@android:style/TextAppearance">
+        <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
 </resources>

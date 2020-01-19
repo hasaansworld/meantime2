@@ -21,7 +21,7 @@
                 android:layout_height="wrap_content"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:text="People"/>
+                android:text="Manage Access"/>
 
         </androidx.appcompat.widget.Toolbar>
 

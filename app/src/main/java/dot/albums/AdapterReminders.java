@@ -50,7 +50,6 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
             super(v);
             this.v = v;
             title = v.findViewById(R.id.title);
-            title.setTextColor(Color.WHITE);
             date = v.findViewById(R.id.date);
         }
 
@@ -107,10 +106,12 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
             else{
                 holderHeader.title.setVisibility(View.VISIBLE);
                 if(position == todayPosition){
-                    holderHeader.title.setBackgroundResource(R.drawable.round_accent);
+                    holderHeader.v.setBackgroundColor(colorAccent);
+                    //holderHeader.title.setTextColor(colorAccent);
                 }
                 else{
-                    holderHeader.title.setBackgroundResource(R.drawable.round_grey);
+                    holderHeader.v.setBackgroundColor(Color.parseColor("#999999"));
+                    //holderHeader.title.setTextColor(Color.parseColor("#999999"));
                 }
             }
         }

@@ -62,8 +62,12 @@
     </item>
 
     <item
-        android:id="@+id/people"
-        android:title="People" />
+        android:id="@+id/history"
+        android:title="History" />
+
+    <item
+        android:id="@+id/access"
+        android:title="Manage Access" />
 
     <item
         android:id="@+id/deleted"
