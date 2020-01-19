@@ -2,6 +2,7 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".CreateActivity">
@@ -42,25 +43,44 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/title"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:hint="Reminder Title"
-                android:textColorHint="@color/colorAccent">
+                android:layout_height="wrap_content">
 
-                <com.google.android.material.textfield.TextInputEditText
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textCapWords"
-                    android:maxLines="1"
-                    android:textColor="@android:color/black"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
+                    android:layout_marginTop="10dp"
+                    android:hint="Reminder Title"
+                    android:textColorHint="@color/colorAccent">
 
-            </com.google.android.material.textfield.TextInputLayout>
+                    <com.vanniktech.emoji.EmojiEditText
+                        android:id="@+id/title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:drawableRight="@drawable/ic_add_white_24dp"
+                        android:inputType="textCapWords"
+                        android:maxLines="1"
+                        android:textColor="@android:color/black"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <ImageView
+                    android:id="@+id/emojiTitle"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_gravity="bottom|right"
+                    android:layout_marginRight="3dp"
+                    android:layout_marginBottom="5dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:padding="2dp"
+                    android:src="@drawable/outline_sentiment_satisfied_black_24" />
+
+            </FrameLayout>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -112,20 +132,20 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
                 android:layout_marginTop="10dp"
+                android:background="@drawable/button_date"
+                android:clickable="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
                 android:paddingLeft="15dp"
                 android:paddingTop="8dp"
                 android:paddingRight="15dp"
-                android:paddingBottom="8dp"
-                android:background="@drawable/button_date"
-                android:clickable="true">
+                android:paddingBottom="8dp">
 
                 <ImageView
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:src="@drawable/ic_notifications_black_24dp"/>
+                    android:src="@drawable/ic_notifications_black_24dp" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -133,7 +153,7 @@
                     android:layout_marginLeft="15dp"
                     android:text="10 minutes before"
                     android:textColor="@android:color/black"
-                    android:textSize="16sp"/>
+                    android:textSize="16sp" />
 
             </LinearLayout>
 
@@ -157,113 +177,131 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:background="@drawable/button_date"
+                    android:clickable="true"
+                    android:gravity="center_vertical"
                     android:orientation="horizontal"
                     android:paddingLeft="15dp"
-                    android:paddingRight="15dp"
                     android:paddingTop="8dp"
-                    android:paddingBottom="8dp"
-                    android:gravity="center_vertical"
-                    android:background="@drawable/button_date"
-                    android:clickable="true">
+                    android:paddingRight="15dp"
+                    android:paddingBottom="8dp">
 
                     <ImageView
                         android:layout_width="12dp"
                         android:layout_height="12dp"
                         android:src="@drawable/circle_white"
-                        android:tint="#FFEE58"/>
+                        android:tint="#FFEE58" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="10dp"
-                        android:textSize="14sp"
+                        android:text="Low"
                         android:textColor="@android:color/black"
-                        android:text="Low"/>
+                        android:textSize="14sp" />
 
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:layout_marginLeft="15dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/button_importance_selected"
+                    android:gravity="center"
                     android:orientation="horizontal"
                     android:paddingLeft="8dp"
-                    android:paddingRight="8dp"
                     android:paddingTop="8dp"
-                    android:paddingBottom="8dp"
-                    android:gravity="center"
-                    android:background="@drawable/button_importance_selected">
+                    android:paddingRight="8dp"
+                    android:paddingBottom="8dp">
 
                     <ImageView
                         android:layout_width="12dp"
                         android:layout_height="12dp"
                         android:src="@drawable/circle_white"
-                        android:tint="#FF9700"/>
+                        android:tint="#FF9700" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="10dp"
-                        android:textSize="14sp"
-                        android:textColor="@android:color/black"
-                        android:text="Medium"
+                        android:ellipsize="end"
                         android:maxLines="1"
-                        android:ellipsize="end"/>
+                        android:text="Medium"
+                        android:textColor="@android:color/black"
+                        android:textSize="14sp" />
 
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:layout_marginLeft="15dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/button_date"
+                    android:clickable="true"
+                    android:gravity="center_vertical"
                     android:orientation="horizontal"
                     android:paddingLeft="15dp"
-                    android:paddingRight="15dp"
                     android:paddingTop="8dp"
-                    android:paddingBottom="8dp"
-                    android:gravity="center_vertical"
-                    android:background="@drawable/button_date"
-                    android:clickable="true">
+                    android:paddingRight="15dp"
+                    android:paddingBottom="8dp">
 
                     <ImageView
                         android:layout_width="12dp"
                         android:layout_height="12dp"
-                        android:src="@drawable/circle_red"/>
+                        android:src="@drawable/circle_red" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="10dp"
-                        android:textSize="14sp"
+                        android:text="High"
                         android:textColor="@android:color/black"
-                        android:text="High"/>
+                        android:textSize="14sp" />
 
                 </LinearLayout>
 
             </LinearLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/description"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                android:hint="Description"
-                android:textColorHint="@color/colorAccent"
-                app:boxStrokeColor="@color/text_input_layout_stroke">
+                android:layout_height="wrap_content">
 
-                <com.google.android.material.textfield.TextInputEditText
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textCapWords"
-                    android:maxLines="1"
-                    android:textColor="@android:color/black"
-                    android:textSize="16sp"
-                    android:text="No description."/>
+                    android:layout_marginTop="15dp"
+                    android:hint="Description"
+                    android:textColorHint="@color/colorAccent"
+                    app:boxStrokeColor="@color/text_input_layout_stroke">
 
-            </com.google.android.material.textfield.TextInputLayout>
+                    <com.vanniktech.emoji.EmojiEditText
+                        android:id="@+id/description"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:drawableRight="@drawable/ic_add_white_24dp"
+                        android:paddingRight="40dp"
+                        android:text="No description."
+                        android:textColor="@android:color/black"
+                        android:textSize="16sp" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <ImageView
+                    android:id="@+id/emojiDescription"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_gravity="bottom|right"
+                    android:layout_marginRight="3dp"
+                    android:layout_marginBottom="5dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:padding="2dp"
+                    android:src="@drawable/outline_sentiment_satisfied_black_24" />
+
+            </FrameLayout>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -279,28 +317,28 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
+                android:background="@drawable/button_date"
+                android:clickable="true"
+                android:gravity="center"
                 android:orientation="horizontal"
                 android:paddingLeft="15dp"
-                android:paddingRight="15dp"
                 android:paddingTop="8dp"
-                android:paddingBottom="8dp"
-                android:gravity="center"
-                android:background="@drawable/button_date"
-                android:clickable="true">
+                android:paddingRight="15dp"
+                android:paddingBottom="8dp">
 
                 <ImageView
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:src="@drawable/ic_people_outline_black_24dp"
-                    android:tint="@color/colorAccent"/>
+                    android:tint="@color/colorAccent" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="15dp"
-                    android:textSize="16sp"
+                    android:text="Add People"
                     android:textColor="@color/colorAccent"
-                    android:text="Add People"/>
+                    android:textSize="16sp" />
 
             </LinearLayout>
 
