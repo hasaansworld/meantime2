@@ -72,10 +72,6 @@ public class MainActivity extends AppCompatActivity {
         jumpLayout = findViewById(R.id.jumpLayout);
         jumpIcon = findViewById(R.id.jumpIcon);
         recyclerView = findViewById(R.id.recyclerView);
-        layoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(layoutManager);
-        adapter = new AdapterReminders(this);
-        recyclerView.setAdapter(adapter);
         headerLayout.setVisibility(View.GONE);
         //StickyHeaderItemDecorator decorator = new StickyHeaderItemDecorator(adapter);
         //decorator.attachToRecyclerView(recyclerView);
@@ -177,6 +173,15 @@ public class MainActivity extends AppCompatActivity {
         if(item.getItemId() == R.id.access)
             startActivity(new Intent(this, ManageAccessActivity.class));
         return true;
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+        adapter = new AdapterReminders(this);
+        recyclerView.setAdapter(adapter);
     }
 
     public static float dpToPixel(float dp, Context context){

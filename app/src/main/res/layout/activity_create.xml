@@ -64,7 +64,8 @@
                         android:maxLines="1"
                         android:textColor="@android:color/black"
                         android:textSize="18sp"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        android:imeOptions="actionDone"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -99,6 +100,7 @@
                 android:orientation="horizontal">
 
                 <TextView
+                    android:id="@+id/text_date"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -113,6 +115,7 @@
                     android:textSize="16sp" />
 
                 <TextView
+                    android:id="@+id/text_time"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="15dp"
@@ -123,13 +126,14 @@
                     android:paddingTop="8dp"
                     android:paddingRight="15dp"
                     android:paddingBottom="8dp"
-                    android:text="04:37 AM"
+                    android:text="12:00 AM"
                     android:textColor="@android:color/black"
                     android:textSize="16sp" />
 
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/layout_alarm_time"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
@@ -148,10 +152,11 @@
                     android:src="@drawable/ic_notifications_black_24dp" />
 
                 <TextView
+                    android:id="@+id/text_alarm_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="15dp"
-                    android:text="10 minutes before"
+                    android:text="Exact time"
                     android:textColor="@android:color/black"
                     android:textSize="16sp" />
 
@@ -174,6 +179,7 @@
                 android:orientation="horizontal">
 
                 <LinearLayout
+                    android:id="@+id/layout_low_importance"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -203,6 +209,7 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/layout_medium_importance"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="15dp"
@@ -234,6 +241,7 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/layout_high_importance"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="15dp"
@@ -266,7 +274,8 @@
 
             <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:visibility="gone">
 
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -329,7 +338,7 @@
                 <ImageView
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:src="@drawable/ic_people_outline_black_24dp"
+                    android:src="@drawable/ic_people_black_24dp"
                     android:tint="@color/colorAccent" />
 
                 <TextView

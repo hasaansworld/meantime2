@@ -22,6 +22,7 @@
             android:orientation="horizontal">
 
             <View
+                android:id="@+id/circle"
                 android:layout_width="10dp"
                 android:layout_height="10dp"
                 android:background="@drawable/circle_red" />

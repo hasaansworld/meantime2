@@ -9,10 +9,13 @@ import androidx.core.widget.NestedScrollView;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -23,22 +26,31 @@ import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+
+import io.realm.Realm;
 
 public class ReminderActivity extends AppCompatActivity {
 
     Toolbar toolbar;
     AppBarLayout appBarLayout;
-    TextView title;
+    TextView title, time, day, date, alarmTime;
+    View circle;
     List<String> titles = new ArrayList<>();
     int elevation;
     ScrollView scrollView;
+    String id;
+    Realm realm;
+    HashMap<String, String> alarmTimesShort = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reminder);
         elevation = dpToPixel(4, this);
+        realm = RealmUtils.getRealm();
+        fillAlarmTimes();
 
         toolbar = findViewById(R.id.toolbar);
         appBarLayout = findViewById(R.id.appBarLayout);
@@ -48,9 +60,14 @@ public class ReminderActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         title = findViewById(R.id.title);
+        time = findViewById(R.id.time);
+        day = findViewById(R.id.day);
+        date = findViewById(R.id.date);
+        circle = findViewById(R.id.circle);
+        alarmTime = findViewById(R.id.text_alarm_time);
         scrollView = findViewById(R.id.scrollView);
 
-        setTitle();
+        setData();
 
         if(Build.VERSION.SDK_INT >= 21) {
             scrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
@@ -69,15 +86,34 @@ public class ReminderActivity extends AppCompatActivity {
 
     }
 
+    private void fillAlarmTimes() {
+        alarmTimesShort.put("Exact time", "Exact");
+        alarmTimesShort.put("5 minutes before", "5 min");
+        alarmTimesShort.put("10 minutes before", "10 min");
+        alarmTimesShort.put("15 minutes before", "15 min");
+        alarmTimesShort.put("30 minutes before", "30 min");
+        alarmTimesShort.put("1 hour before", "1 hour");
+    }
 
-    void setTitle() {
-        titles.add("Sandra's Birthday Party");
-        titles.add("Dinner at Hardee's");
-        titles.add("Flutter Interact DSC CEME");
-        titles.add("Meeting");
-        titles.add("Raiding Area 51 and Recovering Alien Life");
-        int position = getIntent().getIntExtra("position", 0);
-        title.setText(titles.get(position));
+
+    void setData() {
+        String[] colors = {"#FFEE58", "#FF9700", "#F44336"};
+        String id = getIntent().getStringExtra("id");
+        DataReminder reminder = realm.where(DataReminder.class).equalTo("reminderId", id).findFirst();
+        title.setText(reminder.getTitle());
+        day.setText(reminder.getDay());
+        date.setText(reminder.getDate());
+        time.setText(reminder.getTime());
+        alarmTime.setText(alarmTimesShort.get(reminder.getAlarmtime()));
+        Drawable d = getResources().getDrawable(R.drawable.circle_white);
+        d.setColorFilter(Color.parseColor(colors[reminder.getImportance()]), PorterDuff.Mode.SRC_ATOP);
+        circle.setBackground(d);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.options_reminder, menu);
+        return true;
     }
 
     @Override
