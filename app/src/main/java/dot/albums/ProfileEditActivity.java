@@ -272,12 +272,13 @@ public class ProfileEditActivity extends AppCompatActivity {
         if (requestCode == Config.RC_PICK_IMAGES && resultCode == RESULT_OK && data != null) {
             ArrayList<Image> images = data.getParcelableArrayListExtra(Config.EXTRA_IMAGES);
             Uri uri = Uri.fromFile(new File(images.get(0).getPath()));
-            File dirFile = new File(Environment.getExternalStorageDirectory()+"/dotAlbums/Profile Pictures");
+            String appName = getApplicationInfo().loadLabel(getPackageManager()).toString();
+            File dirFile = new File(Environment.getExternalStorageDirectory()+"/"+appName+"/Profile Pictures");
             if (!dirFile.exists()){
                 dirFile.mkdirs();
             }
 
-            path = Environment.getExternalStorageDirectory() + "/dotAlbums/Profile Pictures/profile picture "+System.currentTimeMillis()+".png";
+            path = Environment.getExternalStorageDirectory() + "/"+appName+"/Profile Pictures/profile picture "+System.currentTimeMillis()+".png";
             Uri uriDestination = Uri.fromFile(new File(path));
             UCrop.Options options = new UCrop.Options();
             options.setHideBottomControls(true);

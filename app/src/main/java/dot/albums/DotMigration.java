@@ -29,6 +29,9 @@ public class DotMigration implements RealmMigration {
                     .addField("image", String.class)
                     .addField("alarmtime", String.class)
                     .addField("importance", int.class);
+        if(oldVersion < 8)
+            schema.get("DataReminder").addField("deleted", boolean.class);
+
     }
 
 

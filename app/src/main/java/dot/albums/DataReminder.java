@@ -1,12 +1,18 @@
 package dot.albums;
 
+import android.content.Intent;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-public class DataReminder extends RealmObject {
+public class DataReminder extends RealmObject implements Comparable<DataReminder>{
     String reminderId;
     String title, day, date, time, description, image, alarmtime;
     int importance;
+    boolean deleted = false;
 
     public DataReminder(){}
 
@@ -90,5 +96,47 @@ public class DataReminder extends RealmObject {
 
     public void setImportance(int importance) {
         this.importance = importance;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    @Override
+    public int compareTo(DataReminder o) {
+        if(!getDate().equals(o.getDate())) {
+            String[] dates1 = getDate().split(" ");
+            String[] dates2 = o.getDate().split(" ");
+            dates1[1] = getMonthNumber(dates1[1]);
+            dates2[1] = getMonthNumber(dates2[1]);
+            if(!dates1[2].equals(dates2[2]))
+                return Integer.compare(Integer.parseInt(dates1[2]), Integer.parseInt(dates2[2]));
+            else if(!dates1[1].equals(dates2[1]))
+                return Integer.compare(Integer.parseInt(dates1[1]), Integer.parseInt(dates2[1]));
+            else
+                return Integer.compare(Integer.parseInt(dates1[0]), Integer.parseInt(dates2[0]));
+        }
+        else{
+            return getTime().compareTo(o.getTime());
+        }
+    }
+
+    public String getMonthNumber(String name){
+        return name.replace("Jan", "1")
+                .replace("Feb", "2")
+                .replace("Mar", "3")
+                .replace("Apr", "4")
+                .replace("May", "5")
+                .replace("Jun", "6")
+                .replace("Jul", "7")
+                .replace("Aug", "8")
+                .replace("Sep", "9")
+                .replace("Oct", "10")
+                .replace("Nov", "11")
+                .replace("Dec", "12");
     }
 }

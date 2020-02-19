@@ -3,6 +3,7 @@ package dot.albums;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
@@ -23,6 +24,8 @@ import com.bumptech.glide.Glide;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -38,15 +41,16 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
     int colorAccent;
     int todayPosition = 0;
     Realm realm;
-    RealmResults<DataReminder> allReminders;
+    RealmResults<DataReminder> reminders;
+    List<DataReminder> allReminders = new ArrayList<>();
     ArrayList<Object> allItems = new ArrayList<>();
     ArrayList<Integer> datePositions = new ArrayList<>();
     String[] colors = {"#FFEE58", "#FF9700", "#F44336"};
-    Drawable d;
+    Resources resources;
 
     public AdapterReminders(Context context){
         this.context = context;
-        d = context.getResources().getDrawable(R.drawable.circle_white);
+        resources = context.getResources();
         /*dates.put("0", "Today");
         dates.put("4", "Tomorrow");
         dates.put("9", "15 Feb 2020");
@@ -56,7 +60,9 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
         titles.add("Meeting");
         titles.add("Raiding Area 51 and Recovering Alien Life");*/
         realm = RealmUtils.getRealm();
-        allReminders = realm.where(DataReminder.class).findAll();
+        reminders = realm.where(DataReminder.class).equalTo("deleted", false).findAll();
+        allReminders.addAll(reminders);
+        Collections.sort(allReminders);
         String previousDate = "";
         int position = 0;
         for(DataReminder reminder: allReminders){
@@ -132,16 +138,14 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
             holderHeader.title.setText(title);
             holderHeader.day.setText(reminderDate.getDay());
             holderHeader.date.setText(reminderDate.getDate());
+            holderHeader.v.setBackgroundColor(Color.parseColor("#999999"));
             if(title.equals("")){
                 holderHeader.title.setVisibility(View.GONE);
             }
             else{
                 holderHeader.title.setVisibility(View.VISIBLE);
-                if(position == todayPosition){
+                if(title.equals("Today")){
                     holderHeader.v.setBackgroundColor(colorAccent);
-                }
-                else{
-                    holderHeader.v.setBackgroundColor(Color.parseColor("#999999"));
                 }
             }
         }
@@ -157,7 +161,7 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
                 holderReminder.image.setVisibility(View.GONE);*/
             holderReminder.title.setText(reminder.getTitle());
             holderReminder.time.setText(reminder.getTime());
-            Drawable drawable = d;
+            Drawable drawable = resources.getDrawable(R.drawable.circle_white);
             drawable.setColorFilter(Color.parseColor(colors[reminder.getImportance()]), PorterDuff.Mode.SRC_ATOP);
             holderReminder.circle.setBackground(drawable);
             holderReminder.description.setText("No description.");
