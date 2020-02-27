@@ -36,6 +36,10 @@ import com.nguyenhoanglam.imagepicker.ui.imagepicker.ImagePickerActivity;
 import java.io.File;
 import java.util.Arrays;
 
+import dot.albums.MainActivity;
+import dot.albums.ProfileEditActivity;
+import dot.albums.R;
+
 public class SplashActivity extends AppCompatActivity {
     private static final int RC_SIGN_IN = 123;
 
@@ -84,41 +88,42 @@ public class SplashActivity extends AppCompatActivity {
         layoutSetup.setVisibility(View.VISIBLE);
         String phoneNumber = FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber();
         FirebaseDatabase db = FirebaseDatabase.getInstance();
-        DatabaseReference usernames = db.getReference().child("account info");
-        usernames.child(phoneNumber).addListenerForSingleValueEvent(new ValueEventListener() {
+        DatabaseReference user = db.getReference().child("users").child(phoneNumber);
+        user.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()){
-                    AccountInfo accountInfo = dataSnapshot.getValue(AccountInfo.class);
-                    final String userId = accountInfo.getUserId();
-                    final String username = accountInfo.getUsername();
-                    if(accountInfo.getProfilePic() != null) {
-                        StorageReference ref = FirebaseStorage.getInstance().getReference().child("users").child(userId).child("profile picture").child(accountInfo.getProfilePic());
-                        File dirFile = new File(Environment.getExternalStorageDirectory() + "/dotAlbums/Profile Pictures");
+                    User user = dataSnapshot.getValue(User.class);
+                    final String username = user.getName();
+                    final String about = user.getAbout();
+                    if(user.getProfilePic() != null) {
+                        String appName = getApplicationInfo().loadLabel(getPackageManager()).toString();
+                        StorageReference ref = FirebaseStorage.getInstance().getReference().child("users").child(phoneNumber).child("profile picture").child(user.getProfilePic());
+                        File dirFile = new File(Environment.getExternalStorageDirectory() + "/"+appName+"/Profile Pictures");
                         if (!dirFile.exists()){
                             dirFile.mkdirs();
                         }
-                        File file = new File(Environment.getExternalStorageDirectory() + "/dotAlbums/Profile Pictures/"+accountInfo.getProfilePic());
+                        File file = new File(Environment.getExternalStorageDirectory() + "/"+appName+"/Profile Pictures/"+user.getProfilePic());
                         final String path = file.getAbsolutePath();
                         Toast.makeText(SplashActivity.this, path, Toast.LENGTH_SHORT).show();
 
                         ref.getFile(file).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
                             @Override
                             public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                                saveInfo(userId, username, path);
+                                saveInfo(username, path, about);
                             }
                         })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                saveInfo(userId, username, "");
-                                Toast.makeText(SplashActivity.this, "profile pic failed", Toast.LENGTH_SHORT).show();
-                            }
-                        });
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        saveInfo(username, "", about);
+                                        Toast.makeText(SplashActivity.this, "profile pic failed", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
                     }
                     else{
                         Toast.makeText(SplashActivity.this, "no profile pic", Toast.LENGTH_SHORT).show();
-                        saveInfo(userId, username, "");
+                        saveInfo(username, "", about);
                     }
                 }
                 else{
@@ -135,11 +140,11 @@ public class SplashActivity extends AppCompatActivity {
         });
     }
 
-    public void saveInfo(String userId, String username, String path){
+    public void saveInfo(String username, String path, String about){
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("userId", userId);
-        editor.putString("username", username);
+        editor.putString("name", username);
         editor.putString("profilePicPath", path);
+        editor.putString("about", about);
         editor.putBoolean("profileDone", true);
         editor.apply();
         startActivity(new Intent(SplashActivity.this, MainActivity.class));

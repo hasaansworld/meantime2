@@ -14,9 +14,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.DisplayMetrics;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
@@ -30,17 +27,10 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserProfileChangeRequest;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.nguyenhoanglam.imagepicker.helper.PermissionHelper;
 import com.nguyenhoanglam.imagepicker.model.Config;
 import com.nguyenhoanglam.imagepicker.model.Image;
 import com.nguyenhoanglam.imagepicker.ui.imagepicker.ImagePicker;
@@ -49,7 +39,6 @@ import com.yalantis.ucrop.UCropActivity;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class ProfileEditActivity extends AppCompatActivity {
     Toolbar toolbar;
@@ -57,7 +46,7 @@ public class ProfileEditActivity extends AppCompatActivity {
     boolean isProfileSetup;
 
     ImageView profilePicture, pickPhoto, emoji;
-    EditText username, about;
+    EditText name, about;
     TextView textError, toolbarTitle;
     MaterialButton saveButton;
     String path = "";
@@ -91,34 +80,21 @@ public class ProfileEditActivity extends AppCompatActivity {
         else{
             toolbarTitle.setText("Set Up Your Account");
             saveButton.setText("Let's Go");
-            uname = sharedPreferences.getString("username", "");
+            uname = sharedPreferences.getString("name", "");
             String userId = sharedPreferences.getString("userId", "");
             if(!uname.equals("") && !userId.equals("")){
-                db.getReference("usernames").child(uname).removeValue();
+                db.getReference("names").child(uname).removeValue();
                 db.getReference("accountInfo").child(FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber()).removeValue();
                 db.getReference("users").child(userId).removeValue();
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putString("userId", "");
-                editor.putString("username", "");
+                editor.putString("name", "");
                 editor.putString("profilePicPath", "");
                 editor.apply();
             }
         }
 
-        username = findViewById(R.id.username);
-        username.setSelection(1);
-        username.addTextChangedListener(new TextWatcher() {
-            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
-            @Override public void onTextChanged(CharSequence s, int start, int before, int count) { }
-            @Override
-            public void afterTextChanged(Editable s) {
-                if(!s.toString().startsWith("@")){
-                    String un = "@"+s.toString();
-                    username.setText(un);
-                    username.setSelection(un.length());
-                }
-            }
-        });
+        name = findViewById(R.id.name);
 
         profilePicture = findViewById(R.id.profilePicture);
         pickPhoto = findViewById(R.id.pickPhoto);
@@ -140,95 +116,47 @@ public class ProfileEditActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 textError.setVisibility(View.GONE);
-                String un = username.getText().toString();
+                String un = name.getText().toString();
                 final String user = un.substring(1);
-                if(un.equals("@")){
+                if(un.equals("")){
                     textError.setVisibility(View.VISIBLE);
-                    textError.setText("Please enter a username.");
+                    textError.setText("Please enter a name.");
                 }
-                else if(!user.matches("^(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])")){
-                    textError.setVisibility(View.VISIBLE);
-                    textError.setText("Username can only contain letters, numbers, periods and underscores.");
-                }
-                else{
+                else {
                     progressBar.setVisibility(View.VISIBLE);
                     saveButton.setVisibility(View.GONE);
-                    //uname = Username.encode(user);
-                    uname = username.getText().toString();
-                    db.getReference().child("usernames").child(Username.encode(uname)).addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            if(dataSnapshot.exists()){
-                                textError.setVisibility(View.VISIBLE);
-                                textError.setText("Username already taken.");
-                                progressBar.setVisibility(View.GONE);
-                                saveButton.setVisibility(View.VISIBLE);
-                            }
-                            else{
-                                newUserId = db.getReference().child("users").push().getKey();
-                                db.getReference().child("users").child(newUserId).child("phone").setValue(FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber())
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    uname = name.getText().toString();
+                    String phone = FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber();
+                    db.getReference().child("users").child(phone).child("name").setValue(uname);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString("name", uname);
+                    editor.apply();
+                    if (!path.equals("") && !path.equals(sharedPreferences.getString("profilePicPath", ""))) {
+                        Uri file = Uri.fromFile(new File(path));
+                        FirebaseStorage storage = FirebaseStorage.getInstance();
+                        final String lastPath = file.getLastPathSegment();
+                        StorageReference profilePictureRef = storage.getReference().child("users").child(phone).child("profile picture").child(file.getLastPathSegment());
+                        profilePictureRef.putFile(file)
+                                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                                     @Override
-                                    public void onSuccess(Void aVoid) {
-                                        db.getReference().child("users").child(newUserId).child("username").setValue(uname);
-                                        db.getReference().child("usrnames").child(Username.encode(uname)).setValue(newUserId);
-                                        DatabaseReference accountRef = db.getReference().child("account info").child(FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber());
-                                        accountRef.child("userId").setValue(newUserId);
-                                        accountRef.child("username").setValue(uname);
-                                        SharedPreferences.Editor editor = sharedPreferences.edit();
-                                        editor.putString("userId", newUserId);
-                                        editor.putString("username", Username.decode(uname));
-                                        editor.apply();
-                                        if (!path.equals("") && !path.equals(sharedPreferences.getString("profilePicPath", ""))) {
-                                            Uri file = Uri.fromFile(new File(path));
-                                            FirebaseStorage storage = FirebaseStorage.getInstance();
-                                            final String lastPath = file.getLastPathSegment();
-                                            StorageReference profilePictureRef = storage.getReference().child("users").child(newUserId).child("profile picture").child(file.getLastPathSegment());
-                                            profilePictureRef.putFile(file)
-                                                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                                                        @Override
-                                                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                                            /*FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                                                            UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                                                                    .setDisplayName(name.getText().toString()).build();
-                                                            user.updateProfile(profileUpdates);*/
-                                                            db.getReference().child("account info").child(FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber()).child("profilePic").setValue(lastPath);
-                                                            db.getReference().child("users").child(newUserId).child("profilePic").setValue(lastPath);
-                                                            createProfile();
-                                                        }
-                                                    })
-                                                    .addOnFailureListener(new OnFailureListener() {
-                                                        @Override
-                                                        public void onFailure(@NonNull Exception e) {
-                                                            textError.setVisibility(View.VISIBLE);
-                                                            textError.setText("Failed to upload your profile picture.");
-                                                            saveButton.setVisibility(View.VISIBLE);
-                                                            progressBar.setVisibility(View.GONE);
-                                                        }
-                                                    });
-                                        } else {
-                                            createProfile();
-                                        }
+                                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                        db.getReference().child("users").child(phone).child("profilePic").setValue(lastPath);
+                                        createProfile();
                                     }
                                 })
                                 .addOnFailureListener(new OnFailureListener() {
                                     @Override
                                     public void onFailure(@NonNull Exception e) {
                                         textError.setVisibility(View.VISIBLE);
-                                        textError.setText("Failed to save your profile data.");
-                                        progressBar.setVisibility(View.GONE);
+                                        textError.setText("Failed to upload your profile picture.");
                                         saveButton.setVisibility(View.VISIBLE);
+                                        progressBar.setVisibility(View.GONE);
                                     }
                                 });
-                            }
-                        }
+                    }
 
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                        }
-                    });
                 }
+
             }
         });
 
@@ -292,7 +220,7 @@ public class ProfileEditActivity extends AppCompatActivity {
                     .start(this);
 
         }
-       if (requestCode == UCrop.REQUEST_CROP && resultCode == RESULT_OK) {
+        if (requestCode == UCrop.REQUEST_CROP && resultCode == RESULT_OK) {
             Glide.with(this).asBitmap().load(path).placeholder(R.drawable.profile_picture).into(profilePicture);
         }
     }

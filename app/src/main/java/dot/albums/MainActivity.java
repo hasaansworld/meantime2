@@ -170,7 +170,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == R.id.access)
+        if(item.getItemId() == android.R.id.home)
+            startActivity(new Intent(this, ProfileActivity.class));
+        else if(item.getItemId() == R.id.access)
             startActivity(new Intent(this, ManageAccessActivity.class));
         return true;
     }

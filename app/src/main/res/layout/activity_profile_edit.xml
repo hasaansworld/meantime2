@@ -79,18 +79,15 @@
                 android:layout_marginLeft="40dp"
                 android:layout_marginTop="40dp"
                 android:layout_marginRight="40dp"
-                android:hint="Username"
-                app:helperText="You can change your username once in every 30 days."
-                app:helperTextEnabled="true">
+                android:hint="Name">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/username"
+                    android:id="@+id/name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textNoSuggestions"
-                    android:maxLength="80"
+                    android:maxLength="60"
                     android:singleLine="true"
-                    android:text="\@"
                     android:textColor="@android:color/black"
                     android:textColorHint="#999999"
                     android:textSize="18sp"
@@ -117,7 +114,6 @@
                     android:textStyle="bold" />
 
                 <EditText
-                    android:id="@+id/name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="15dp"

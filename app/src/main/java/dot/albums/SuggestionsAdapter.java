@@ -117,27 +117,6 @@ public class SuggestionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         @Override
         public void onClick(View v) {
             if (v.getId() == R.id.follow) {
-                int adapterPosition = getAdapterPosition();
-                int contactPosition = adapterPosition - infoCount - 1;
-                User user = allContactUsers.get(contactPosition);
-                if (user.amIFollowing()) {
-                    user.setAmIFollowing(false);
-                    followCount--;
-                    if (continueLayout != null && followCount == 0)
-                        continueLayout.setVisibility(View.GONE);
-                    follow.setText("Follow");
-                    follow.setTextColor(context.getResources().getColorStateList(R.color.follow_button_color));
-                    follow.setBackgroundResource(R.drawable.follow_button);
-                } else {
-                    user.setAmIFollowing(true);
-                    followCount++;
-                    if (continueLayout != null && followCount == 1)
-                        continueLayout.setVisibility(View.VISIBLE);
-                    follow.setText("Unfollow");
-                    follow.setTextColor(Color.WHITE);
-                    follow.setBackgroundResource(R.drawable.following_button);
-                }
-                allContactUsers.set(contactPosition, user);
 
             }
         }
@@ -191,21 +170,12 @@ public class SuggestionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             if (user.getProfilePic() == null)
                 holderSuggestion.profilePicture.setImageResource(R.drawable.profile_picture);
             else {
-                String path = Environment.getExternalStorageDirectory() + "/dotAlbums/" + user.getUserId() + "/Profile Pictures Thumbnails/" + user.getProfilePic();
+                String path = Environment.getExternalStorageDirectory() + "/dotAlbums/" + user.getPhone() + "/Profile Pictures Thumbnails/" + user.getProfilePic();
                 File file = new File(path);
                 if (file.exists())
                     Glide.with(context).asBitmap().load(path).placeholder(R.drawable.imagepicker_image_placeholder).into(holderSuggestion.profilePicture);
                 else
                     holderSuggestion.profilePicture.setImageResource(R.drawable.circular_place_holder);
-            }
-            if (user.amIFollowing()) {
-                holderSuggestion.follow.setText("Unfollow");
-                holderSuggestion.follow.setTextColor(Color.WHITE);
-                holderSuggestion.follow.setBackgroundResource(R.drawable.following_button);
-            } else {
-                holderSuggestion.follow.setText("Follow");
-                holderSuggestion.follow.setTextColor(context.getResources().getColorStateList(R.color.follow_button_color));
-                holderSuggestion.follow.setBackgroundResource(R.drawable.follow_button);
             }
         }
     }
@@ -261,8 +231,7 @@ public class SuggestionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         if (dataSnapshot.exists()) {
                             contactsFound.add(dataSnapshot.getValue(AccountInfo.class));
-                            User user = new User(number, name);
-                            allContactUsers.add(user);
+
                         }
                         numbersChecked++;
                         if (numbersChecked == allNumbers.size()) {
@@ -287,8 +256,6 @@ public class SuggestionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 AccountInfo info = contactsFound.get(i);
                 User user = allContactUsers.get(i);
                 if (info.getUsername() != null) {
-                    user.setUserId(info.getUserId());
-                    user.setUsername(info.getUsername());
                     user.setProfilePic(info.getProfilePic());
                     allContactUsers.set(i, user);
                 }
@@ -301,12 +268,12 @@ public class SuggestionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 User user = allContactUsers.get(i);
                 final int in = i;
                 if (user.getProfilePic() != null) {
-                    StorageReference storageReference = FirebaseStorage.getInstance().getReference("users").child(user.getUserId()).child("profile picture").child(user.getProfilePic());
-                    String dirPath = Environment.getExternalStorageDirectory() + "/dotAlbums/" + user.getUserId() + "/Profile Pictures";
+                    StorageReference storageReference = FirebaseStorage.getInstance().getReference("users").child(user.getPhone()).child("profile picture").child(user.getProfilePic());
+                    String dirPath = Environment.getExternalStorageDirectory() + "/dotAlbums/" + user.getPhone() + "/Profile Pictures";
                     File dirFile = new File(dirPath);
                     if (!dirFile.exists())
                         dirFile.mkdirs();
-                    final String dirPath2 = Environment.getExternalStorageDirectory() + "/dotAlbums/" + user.getUserId() + "/Profile Pictures Thumbnails";
+                    final String dirPath2 = Environment.getExternalStorageDirectory() + "/dotAlbums/" + user.getPhone() + "/Profile Pictures Thumbnails";
                     File dirFile2 = new File(dirPath2);
                     if (!dirFile2.exists())
                         dirFile2.mkdirs();

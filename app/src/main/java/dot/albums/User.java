@@ -1,36 +1,25 @@
 package dot.albums;
 
 public class User implements Comparable<User>{
-    private String userId;
     private String phone;
     private String name;
-    private String username;
     private String profilePic;
-    private boolean isFollowingMe = false;
-    private boolean amIFollowing = false;
+    private String about;
 
-    public User(String userId, String phone, String name, String username, String profilePic) {
-        this.userId = userId;
+    public User(String phone, String name, String profilePic, String about) {
         this.phone = phone;
         this.name = name;
-        this.username = username;
         this.profilePic = profilePic;
+        this.about = about;
     }
 
-    public User(String phone, String name) {
+    public User(String phone, String name, String about) {
         this.phone = phone;
         this.name = name;
+        this.about = about;
     }
 
     public User() {
-    }
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
     }
 
     public String getPhone() {
@@ -49,14 +38,6 @@ public class User implements Comparable<User>{
         this.name = name;
     }
 
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
     public String getProfilePic() {
         return profilePic;
     }
@@ -65,25 +46,17 @@ public class User implements Comparable<User>{
         this.profilePic = profilePic;
     }
 
+    public String getAbout() {
+        return about;
+    }
+
+    public void setAbout(String about) {
+        this.about = about;
+    }
+
     @Override
     public int compareTo(User o) {
         return this.getName().compareTo(o.getName());
-    }
-
-    public boolean isFollowingMe() {
-        return isFollowingMe;
-    }
-
-    public void setFollowingMe(boolean followingMe) {
-        isFollowingMe = followingMe;
-    }
-
-    public boolean amIFollowing() {
-        return amIFollowing;
-    }
-
-    public void setAmIFollowing(boolean amIFollowing) {
-        this.amIFollowing = amIFollowing;
     }
 
 }
