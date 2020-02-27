@@ -25,6 +25,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -55,11 +57,13 @@ public class ReminderActivity extends AppCompatActivity {
     Toolbar toolbar;
     AppBarLayout appBarLayout;
     TextView title, time, day, date, alarmTime;
+    ImageView image;
     View circle;
     List<String> titles = new ArrayList<>();
     int elevation;
     ScrollView scrollView;
     LinearLayout addImage, addDescription;
+    FrameLayout imageLayout;
     String id;
     Realm realm;
     HashMap<String, String> alarmTimesShort = new HashMap<>();
@@ -87,6 +91,8 @@ public class ReminderActivity extends AppCompatActivity {
         alarmTime = findViewById(R.id.text_alarm_time);
         scrollView = findViewById(R.id.scrollView);
         addImage = findViewById(R.id.layout_add_image);
+        image = findViewById(R.id.image);
+        imageLayout = findViewById(R.id.layout_image);
         addDescription = findViewById(R.id.layout_add_description);
 
         setData();
@@ -217,6 +223,9 @@ public class ReminderActivity extends AppCompatActivity {
                 DataReminder reminder = realm.where(DataReminder.class).equalTo("reminderId", id).findFirst();
                 reminder.setImage(path);
                 realm.commitTransaction();
+                addImage.setVisibility(View.GONE);
+                imageLayout.setVisibility(View.VISIBLE);
+                Glide.with(this).asBitmap().load(path).into(image);
             }
             catch (IOException e){
                 Toast.makeText(this, "Could not copy image :(", Toast.LENGTH_SHORT).show();
