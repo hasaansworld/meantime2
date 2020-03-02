@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.ViewCompat;
 import androidx.core.widget.NestedScrollView;
@@ -11,6 +12,7 @@ import androidx.core.widget.NestedScrollView;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -19,12 +21,14 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.text.InputType;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.view.inputmethod.EditorInfo;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -35,9 +39,14 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.button.MaterialButton;
+import com.google.firebase.auth.FirebaseAuth;
 import com.nguyenhoanglam.imagepicker.model.Config;
 import com.nguyenhoanglam.imagepicker.model.Image;
 import com.nguyenhoanglam.imagepicker.ui.imagepicker.ImagePicker;
+import com.vanniktech.emoji.EmojiEditText;
+import com.vanniktech.emoji.EmojiPopup;
 import com.yalantis.ucrop.UCrop;
 import com.yalantis.ucrop.UCropActivity;
 
@@ -56,15 +65,15 @@ public class ReminderActivity extends AppCompatActivity {
 
     Toolbar toolbar;
     AppBarLayout appBarLayout;
-    TextView title, time, day, date, alarmTime;
-    ImageView image;
+    TextView title, time, day, date, alarmTime, description;
+    ImageView image, removeImage, changeImage;
     View circle;
     List<String> titles = new ArrayList<>();
     int elevation;
     ScrollView scrollView;
     LinearLayout addImage, addDescription;
     FrameLayout imageLayout;
-    String id;
+    String id, descriptionS = "";
     Realm realm;
     HashMap<String, String> alarmTimesShort = new HashMap<>();
 
@@ -92,8 +101,11 @@ public class ReminderActivity extends AppCompatActivity {
         scrollView = findViewById(R.id.scrollView);
         addImage = findViewById(R.id.layout_add_image);
         image = findViewById(R.id.image);
+        removeImage = findViewById(R.id.remove_image);
+        changeImage = findViewById(R.id.change_image);
         imageLayout = findViewById(R.id.layout_image);
         addDescription = findViewById(R.id.layout_add_description);
+        description = findViewById(R.id.description);
 
         setData();
 
@@ -116,9 +128,63 @@ public class ReminderActivity extends AppCompatActivity {
             pickPhoto();
         });
 
-        addDescription.setOnClickListener(v -> {
+        changeImage.setOnClickListener(v -> {
+            pickPhoto();
+        });
+
+        removeImage.setOnClickListener(v -> {
 
         });
+
+        addDescription.setOnClickListener(v -> editDescription());
+        description.setOnClickListener(v -> editDescription());
+
+        imageLayout.setOnClickListener(v -> {
+            PopupMenu popup = new PopupMenu(ReminderActivity.this, v);
+            popup.setOnMenuItemClickListener(item -> {
+                if(item.getItemId() == R.id.change)
+                    pickPhoto();
+                else{
+                    realm.beginTransaction();
+                    DataReminder reminder = realm.where(DataReminder.class).equalTo("reminderId", id).findFirst();
+                    reminder.setImage("");
+                    realm.commitTransaction();
+                    addImage.setVisibility(View.VISIBLE);
+                    imageLayout.setVisibility(View.GONE);
+                }
+                return true;
+            });
+            popup.inflate(R.menu.options_image);
+            popup.show();
+        });
+
+        description.setOnClickListener(v -> {
+            PopupMenu popup = new PopupMenu(ReminderActivity.this, v);
+            popup.setOnMenuItemClickListener(item -> {
+                if(item.getItemId() == R.id.edit){
+                    editDescription();
+                }
+                else{
+                    realm.beginTransaction();
+                    DataReminder reminder = realm.where(DataReminder.class).equalTo("reminderId", id).findFirst();
+                    reminder.setDescription("");
+                    realm.commitTransaction();
+                    addDescription.setVisibility(View.VISIBLE);
+                    description.setVisibility(View.GONE);
+                }
+                return true;
+            });
+            popup.inflate(R.menu.options_description);
+            popup.show();
+        });
+
+    }
+
+
+    private void editDescription(){
+        Intent i = new Intent(ReminderActivity.this, AddDescriptionActivity.class);
+        i.putExtra("id", id);
+        startActivityForResult(i, 125);
     }
 
     private void fillAlarmTimes() {
@@ -143,6 +209,17 @@ public class ReminderActivity extends AppCompatActivity {
         Drawable d = getResources().getDrawable(R.drawable.circle_white);
         d.setColorFilter(Color.parseColor(colors[reminder.getImportance()]), PorterDuff.Mode.SRC_ATOP);
         circle.setBackground(d);
+        String path = reminder.getImage();
+        if(path != null && !path.equals("")){
+            addImage.setVisibility(View.GONE);
+            imageLayout.setVisibility(View.VISIBLE);
+            Glide.with(this).asBitmap().load(path).into(image);
+        }
+        if(reminder.getDescription() != null && !reminder.getDescription().equals("")){
+            addDescription.setVisibility(View.GONE);
+            description.setVisibility(View.VISIBLE);
+            description.setText(reminder.getDescription());
+        }
     }
 
     @Override
@@ -229,6 +306,19 @@ public class ReminderActivity extends AppCompatActivity {
             }
             catch (IOException e){
                 Toast.makeText(this, "Could not copy image :(", Toast.LENGTH_SHORT).show();
+            }
+        }
+        else if(requestCode == 125 && resultCode == RESULT_OK){
+            DataReminder reminder = realm.where(DataReminder.class).equalTo("reminderId", id).findFirst();
+            descriptionS = reminder.getDescription();
+            if(descriptionS != null && !descriptionS.equals("")){
+                addDescription.setVisibility(View.GONE);
+                description.setVisibility(View.VISIBLE);
+                description.setText(descriptionS);
+            }
+            else{
+                addDescription.setVisibility(View.VISIBLE);
+                description.setVisibility(View.GONE);
             }
         }
     }
