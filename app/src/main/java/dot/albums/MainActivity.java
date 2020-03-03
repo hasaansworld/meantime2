@@ -34,6 +34,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabItem;
 import com.google.android.material.tabs.TabLayout;
@@ -47,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
     FloatingActionButton fabAdd;
     ViewPager viewPager;
     TabLayout tabLayout;
+    MaterialButton groupAdd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,16 +78,22 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        groupAdd = findViewById(R.id.group_add);
+
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) { }
 
             @Override
             public void onPageSelected(int position) {
-                if(position == 2)
-                    fabAdd.hide();
-                else
+                if(position == 0)
                     fabAdd.show();
+                else
+                    fabAdd.hide();
+                if(position == 1)
+                    groupAdd.setVisibility(View.VISIBLE);
+                else
+                    groupAdd.setVisibility(View.GONE);
             }
 
             @Override

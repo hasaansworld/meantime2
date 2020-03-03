@@ -48,7 +48,7 @@
             android:maxLines="1"
             android:text="Sandra's Birthday Party"
             android:textColor="@android:color/black"
-            android:textSize="16sp"
+            android:textSize="17sp"
             android:textStyle="bold" />
 
         <LinearLayout

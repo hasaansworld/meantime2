@@ -71,4 +71,28 @@
         android:src="@drawable/ic_add_white_24dp"
         app:rippleColor="#dddddd" />
 
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/group_add"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="16dp"
+        android:text="New Group"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:textColor="@android:color/white"
+        app:icon="@drawable/ic_add_white_24dp"
+        style="@style/AppTheme.MaterialButton"
+        android:textAllCaps="false"
+        android:letterSpacing="0"
+        tools:targetApi="LOLLIPOP"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        app:cornerRadius="40dp"
+        android:elevation="4dp"
+        android:clickable="true"
+        android:visibility="gone"/>
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
