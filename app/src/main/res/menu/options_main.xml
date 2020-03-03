@@ -9,12 +9,18 @@
         app:showAsAction="always" />
 
     <item
+        android:id="@+id/filter"
+        android:title="Filter"
+        android:icon="@drawable/ic_filter_list_black_24dp"
+        app:showAsAction="always" />
+
+    <!--<item
         android:id="@+id/requests"
         android:title="Requests"
         android:icon="@drawable/outline_archive_black_24"
         app:showAsAction="always" />
 
-    <!--<item
+    <item
         android:id="@+id/activity"
         android:title="Activity"
         android:icon="@drawable/ic_notifications_black_24dp"

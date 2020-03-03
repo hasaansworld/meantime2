@@ -14,7 +14,8 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:contentInsetStartWithNavigation="10dp">
+            app:contentInsetStartWithNavigation="10dp"
+            app:layout_scrollFlags="enterAlways|scroll|snap">
 
             <TextView
                 android:id="@+id/toolbarTitle"
@@ -26,45 +27,39 @@
 
         </androidx.appcompat.widget.Toolbar>
 
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tablayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:tabIndicatorHeight="3dp"
+            android:layout_marginTop="-8dp"
+            app:tabSelectedTextColor="@color/colorAccent"
+            app:tabTextAppearance="@style/TextAppearance.Tab">
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Reminders"/>
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Groups"/>
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="People"/>
+
+        </com.google.android.material.tabs.TabLayout>
+
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clipToPadding="false"
-        android:paddingBottom="100dp"
-        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior" />
-
-    <FrameLayout
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/viewpager"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
-
-        <include
-            layout="@layout/item_reminder_header" />
-
-        <FrameLayout
-            android:id="@+id/jumpLayout"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_gravity="center"
-            android:visibility="gone">
-
-            <ImageView
-                android:id="@+id/jumpIcon"
-                android:layout_width="18dp"
-                android:layout_height="18dp"
-                android:layout_gravity="center"
-                android:tint="@color/colorAccent"
-                android:background="@drawable/circle_white"
-                android:elevation="4dp"
-                android:src="@drawable/ic_expand_less_black_18dp"/>
-
-        </FrameLayout>
-
-    </FrameLayout>
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAdd"

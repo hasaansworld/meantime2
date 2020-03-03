@@ -161,10 +161,15 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
                 holderReminder.image.setVisibility(View.GONE);*/
             holderReminder.title.setText(reminder.getTitle());
             holderReminder.time.setText(reminder.getTime());
+            holderReminder.image.setVisibility(View.GONE);
             Drawable drawable = resources.getDrawable(R.drawable.circle_white);
             drawable.setColorFilter(Color.parseColor(colors[reminder.getImportance()]), PorterDuff.Mode.SRC_ATOP);
             holderReminder.circle.setBackground(drawable);
-            holderReminder.description.setText(reminder.getDescription());
+            String descriptionS = reminder.getDescription();
+            if(descriptionS == null || descriptionS.equals(""))
+                holderReminder.description.setText("No description.");
+            else
+                holderReminder.description.setText(descriptionS);
             if(holderReminder.people.getVisibility()==View.VISIBLE){
                 holderReminder.description.setMaxLines(1);
             }

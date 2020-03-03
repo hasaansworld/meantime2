@@ -5,9 +5,13 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
 
 import android.content.Context;
 import android.content.Intent;
@@ -31,34 +35,25 @@ import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.tabs.TabItem;
+import com.google.android.material.tabs.TabLayout;
 import com.nguyenhoanglam.imagepicker.ui.imagepicker.ImagePicker;
 
 public class MainActivity extends AppCompatActivity {
 
     SharedPreferences sharedPreferences;
     Toolbar toolbar;
-    RecyclerView recyclerView;
-    LinearLayoutManager layoutManager;
-    AdapterReminders adapter;
-    TextView toolbarTitle, title, day;
-    FrameLayout headerLayout;
-    FrameLayout jumpLayout;
-    ImageView jumpIcon;
+    TextView toolbarTitle;
     FloatingActionButton fabAdd;
+    ViewPager viewPager;
+    TabLayout tabLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //pickPhoto();
-
         sharedPreferences = getSharedPreferences("data", MODE_PRIVATE);
-        /*boolean accessDone = sharedPreferences.getBoolean("accessDone", false);
-        if(!accessDone){
-            startActivity(new Intent(this, ManageAccessActivity.class));
-            finish();
-        }*/
 
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -66,68 +61,35 @@ public class MainActivity extends AppCompatActivity {
         setProfilePicture();
         toolbarTitle = findViewById(R.id.toolbarTitle);
 
-        title = findViewById(R.id.title);
-        //day = findViewById(R.id.day);
-        headerLayout = findViewById(R.id.layout);
-        jumpLayout = findViewById(R.id.jumpLayout);
-        jumpIcon = findViewById(R.id.jumpIcon);
-        recyclerView = findViewById(R.id.recyclerView);
-        headerLayout.setVisibility(View.GONE);
-        //StickyHeaderItemDecorator decorator = new StickyHeaderItemDecorator(adapter);
-        //decorator.attachToRecyclerView(recyclerView);
-        //day.setText(adapter.getDayFromPositon(0));
-        //title.setText(adapter.getHeaderFromPosition(0));
-        /*recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                int firstPosition = layoutManager.findFirstVisibleItemPosition();
-                View v = layoutManager.findViewByPosition(firstPosition);
-                int height = v.getHeight();
-                int difference = height + v.getTop();
-                float perc = ((float)difference/height)*100;
-                int percentage = Math.round(perc);
-                if(percentage < 40)
-                    firstPosition++;
-                int headerPosition = adapter.getHeaderPositionForItem(firstPosition);
-                if(headerPosition == 0) {
-                    headerLayout.setBackgroundColor(adapter.colorAccent);
-                    jumpLayout.setVisibility(View.GONE);
-                }
-                else {
-                    headerLayout.setBackgroundColor(Color.parseColor("#999999"));
-                    jumpLayout.setVisibility(View.VISIBLE);
-                }
-                day.setText(adapter.getDayFromPositon(firstPosition));
-                //toolbarTitle.setText(adapter.getHeaderFromPosition(firstPosition));
-            }
-        });*/
-        jumpLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                layoutManager.scrollToPositionWithOffset(0, 0);
-            }
-        });
-        /*GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
-        gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-            @Override
-            public int getSpanSize(int position) {
-                if(position == 0)
-                    return 2;
-                else
-                    return 1;
-            }
-        });
-        recyclerView.setLayoutManager(gridLayoutManager);
-        adapter = new MainAdapter(this);
-        recyclerView.setAdapter(adapter);*/
+        viewPager = findViewById(R.id.viewpager);
+        viewPager.setAdapter(new MainPagerAdapter(getSupportFragmentManager()));
+        tabLayout = findViewById(R.id.tablayout);
+        tabLayout.setupWithViewPager(viewPager);
 
         fabAdd = findViewById(R.id.fabAdd);
         fabAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, CreateActivity.class));
+                if(viewPager.getCurrentItem() == 0)
+                    startActivity(new Intent(MainActivity.this, CreateActivity.class));
+
             }
+        });
+
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) { }
+
+            @Override
+            public void onPageSelected(int position) {
+                if(position == 2)
+                    fabAdd.hide();
+                else
+                    fabAdd.show();
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) { }
         });
 
     }
@@ -180,10 +142,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        layoutManager = new LinearLayoutManager(this);
+        /*layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         adapter = new AdapterReminders(this);
-        recyclerView.setAdapter(adapter);
+        recyclerView.setAdapter(adapter);*/
     }
 
     public static float dpToPixel(float dp, Context context){
@@ -211,6 +173,36 @@ public class MainActivity extends AppCompatActivity {
                 .setRequestCode(100)                //  Set request code, default Config.RC_PICK_IMAGES
                 .setKeepScreenOn(true)              //  Keep screen on when selecting images
                 .start();
+    }
+
+    private class MainPagerAdapter extends FragmentPagerAdapter{
+        String[] titles = {"Reminders", "Groups", "People"};
+
+        public MainPagerAdapter(@NonNull FragmentManager fm) {
+            super(fm);
+        }
+
+        @NonNull
+        @Override
+        public Fragment getItem(int position) {
+            if(position == 0)
+                return new RemindersFragment();
+            else if(position == 1)
+                return new GroupsFragment();
+            else
+                return new PeopleFragment();
+        }
+
+        @Nullable
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return titles[position];
+        }
+
+        @Override
+        public int getCount() {
+            return 3;
+        }
     }
 
 }
