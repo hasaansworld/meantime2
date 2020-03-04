@@ -12,18 +12,18 @@ import android.widget.LinearLayout;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class AdapterGroups extends RecyclerView.Adapter<AdapterGroups.ViewHolder> {
+public class AdapterGroups extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     Context context;
 
     public AdapterGroups(Context context){
         this.context = context;
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class ViewHolderGroup extends RecyclerView.ViewHolder implements View.OnClickListener {
         ImageView autoApprove;
         LinearLayout layout;
 
-        public ViewHolder(View v){
+        public ViewHolderGroup(View v){
             super(v);
             autoApprove = v.findViewById(R.id.auto_approve);
             layout = v.findViewById(R.id.layout);
@@ -36,23 +36,43 @@ public class AdapterGroups extends RecyclerView.Adapter<AdapterGroups.ViewHolder
         }
     }
 
+    public class ViewHolderNew extends RecyclerView.ViewHolder{
+
+        public ViewHolderNew(View v){
+            super(v);
+        }
+    }
+
     @NonNull
     @Override
-    public AdapterGroups.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(context).inflate(R.layout.item_group, parent, false);
-        return new ViewHolder(v);
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        if(viewType == 0) {
+            View v = LayoutInflater.from(context).inflate(R.layout.item_group_add, parent, false);
+            return new ViewHolderNew(v);
+        }
+        else {
+            View v = LayoutInflater.from(context).inflate(R.layout.item_group, parent, false);
+            return new ViewHolderGroup(v);
+        }
     }
 
     @Override
-    public void onBindViewHolder(@NonNull AdapterGroups.ViewHolder holder, int position) {
-        if(position % 3 == 0) {
-            holder.autoApprove.setBackgroundResource(R.drawable.auto_approve_background_selected);
-            holder.autoApprove.setImageResource(R.drawable.auto_approve_icon_selected);
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        if(holder instanceof ViewHolderGroup) {
+            ViewHolderGroup holderGroup = (ViewHolderGroup) holder;
+            if (position % 3 == 0) {
+                holderGroup.autoApprove.setBackgroundResource(R.drawable.auto_approve_background_selected);
+                holderGroup.autoApprove.setImageResource(R.drawable.auto_approve_icon_selected);
+            } else {
+                holderGroup.autoApprove.setBackgroundResource(R.drawable.auto_approve_background_normal);
+                holderGroup.autoApprove.setImageResource(R.drawable.auto_approve_icon_normal);
+            }
         }
-        else{
-            holder.autoApprove.setBackgroundResource(R.drawable.auto_approve_background_normal);
-            holder.autoApprove.setImageResource(R.drawable.auto_approve_icon_normal);
-        }
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return position;
     }
 
     @Override
