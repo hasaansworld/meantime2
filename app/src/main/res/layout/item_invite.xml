@@ -10,7 +10,6 @@
     android:paddingBottom="10dp">
 
     <LinearLayout
-        android:id="@+id/all_contacts"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
@@ -26,14 +25,14 @@
         <ImageView
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:src="@drawable/ic_contacts_black_24dp"
+            android:src="@drawable/ic_share_black_24dp"
             android:tint="@color/colorAccent" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="15dp"
-            android:text="All Contacts"
+            android:text="Invite Friends"
             android:textColor="@color/colorAccent"
             android:textSize="16sp"
             android:textStyle="bold"/>

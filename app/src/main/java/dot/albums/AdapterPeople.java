@@ -1,10 +1,12 @@
 package dot.albums;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,10 +27,17 @@ public class AdapterPeople extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         }
     }
 
-    public class ViewHolderContacts extends RecyclerView.ViewHolder{
-
+    public class ViewHolderContacts extends RecyclerView.ViewHolder implements View.OnClickListener {
+        LinearLayout allContacts;
         public ViewHolderContacts(View v){
             super(v);
+            allContacts = v.findViewById(R.id.all_contacts);
+            allContacts.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            context.startActivity(new Intent(context, ContactsActivity.class));
         }
     }
 

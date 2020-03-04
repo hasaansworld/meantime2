@@ -16,12 +16,29 @@
             android:layout_height="wrap_content"
             app:contentInsetStartWithNavigation="10dp">
 
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:text="Contacts"/>
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Contacts"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <ProgressBar
+                    android:id="@+id/progessBar"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:indeterminate="true"/>
+
+            </LinearLayout>
 
         </androidx.appcompat.widget.Toolbar>
 
@@ -31,61 +48,54 @@
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
+        android:clipToPadding="false"
         android:paddingTop="15dp"
         android:paddingBottom="120dp"
-        android:clipToPadding="false"/>
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior" />
 
     <LinearLayout
         android:id="@+id/continueLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:layout_gravity="bottom"
+        android:orientation="vertical"
         android:visibility="gone">
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="4dp"
-            android:background="@drawable/shadow_top" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
             android:background="@android:color/white"
+            android:orientation="vertical"
             android:paddingLeft="15dp"
-            android:paddingRight="15dp"
             android:paddingTop="5dp"
+            android:paddingRight="15dp"
             android:paddingBottom="8dp">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/buttonContinue"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="16sp"
-                android:paddingLeft="15dp"
-                android:paddingRight="15dp"
-                android:paddingTop="10dp"
-                android:paddingBottom="10dp"
-                android:textColor="@android:color/white"
+                android:clickable="true"
                 android:letterSpacing="0"
-                tools:targetApi="LOLLIPOP"
-                android:textAllCaps="false"
+                android:paddingLeft="15dp"
+                android:paddingTop="10dp"
+                android:paddingRight="15dp"
+                android:paddingBottom="10dp"
                 android:text="Save"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
                 android:textStyle="bold"
                 android:theme="@style/AppTheme.MaterialButton"
-                android:clickable="true"/>
+                tools:targetApi="LOLLIPOP" />
 
         </LinearLayout>
 
-    </LinearLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:background="@drawable/shadow_top" />
 
-    <ProgressBar
-        android:id="@+id/progessBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:indeterminate="true"/>
+    </LinearLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

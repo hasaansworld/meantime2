@@ -23,7 +23,7 @@ import com.nguyenhoanglam.imagepicker.helper.PermissionHelper;
 public class ContactsActivity extends AppCompatActivity {
     Toolbar toolbar;
     RecyclerView recyclerView;
-    SuggestionsAdapter adapter;
+    AdapterContacts adapter;
     ProgressBar progressBar;
     SharedPreferences sharedPreferences;
     boolean isPermissionGranted = false;
@@ -104,8 +104,8 @@ public class ContactsActivity extends AppCompatActivity {
     public void setupRecyclerView(){
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        //adapter = new SuggestionsAdapter(this, true, progressBar, continueLayout);
-        //recyclerView.setAdapter(adapter);
+        adapter = new AdapterContacts(this, progressBar);
+        recyclerView.setAdapter(adapter);
     }
 
     @Override

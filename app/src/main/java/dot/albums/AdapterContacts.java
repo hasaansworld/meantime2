@@ -46,85 +46,46 @@ import jagerfield.mobilecontactslibrary.Contact.Contact;
 import jagerfield.mobilecontactslibrary.ElementContainers.NumberContainer;
 import jagerfield.mobilecontactslibrary.ImportContacts;
 
-public class SuggestionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-
-    private static final int TYPE_INFO = 0;
-    private static final int TYPE_HEADER = 1;
-    private static final int TYPE_SUGGESTION = 2;
-    private static final int TYPE_INVITE = 3;
-
+public class AdapterContacts extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     Context context;
     Realm realm;
     ProgressBar progressBar;
-    boolean showInfo = false;
-    int infoCount = 0, contactCount = 0, suggestionsCount = 0;
 
     ImportContacts importContacts;
     List<Contact> allContacts;
     List<AccountInfo> contactsFound = new ArrayList<>();
     List<User> allContactUsers = new ArrayList<>();
 
-    LinearLayout continueLayout;
 
-    boolean suggestionsDownloaded = false;
-    int followCount = 0;
-    int colorAccent;
-
-    public SuggestionsAdapter(Context context, boolean showInfo, ProgressBar progressBar, LinearLayout continueLayout) {
+    public AdapterContacts(Context context, ProgressBar progressBar) {
         this.context = context;
         this.progressBar = progressBar;
-        this.continueLayout = continueLayout;
-        this.showInfo = showInfo;
-        if (showInfo)
-            infoCount = 1;
 
         realm = RealmUtils.getRealm();
 
         importContacts = new ImportContacts((Activity) context);
         allContacts = importContacts.getContacts();
-        new ContactsTask().execute();
+        //new ContactsTask().execute();
     }
 
-    public class ViewHolderInfo extends RecyclerView.ViewHolder {
-        public ViewHolderInfo(View v) {
+    public class ViewHolderInvite extends RecyclerView.ViewHolder {
+
+        public ViewHolderInvite(View v) {
             super(v);
         }
     }
 
-    public class ViewHolderHeader extends RecyclerView.ViewHolder {
-        TextView header;
-        LinearLayout inviteLayout;
-
-        public ViewHolderHeader(View v) {
+    public class ViewHolderContact extends RecyclerView.ViewHolder implements View.OnClickListener {
+        TextView count;
+        public ViewHolderContact(View v) {
             super(v);
-            header = v.findViewById(R.id.header);
-            inviteLayout = v.findViewById(R.id.inviteLayout);
-        }
-    }
-
-    public class ViewHolderSuggestion extends RecyclerView.ViewHolder implements View.OnClickListener {
-        CircularImageView profilePicture;
-        TextView username, follow;
-
-        public ViewHolderSuggestion(View v) {
-            super(v);
-            profilePicture = v.findViewById(R.id.profilePicture);
-            username = v.findViewById(R.id.username);
-            follow = v.findViewById(R.id.follow);
-            follow.setOnClickListener(this);
+            count = v.findViewById(R.id.count);
+            count.setVisibility(View.GONE);
         }
 
         @Override
         public void onClick(View v) {
-            if (v.getId() == R.id.follow) {
 
-            }
-        }
-    }
-
-    public class ViewHolderInvite extends RecyclerView.ViewHolder {
-        public ViewHolderInvite(View v) {
-            super(v);
         }
     }
 
@@ -132,72 +93,28 @@ public class SuggestionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v;
-        if (viewType == TYPE_INFO) {
-            v = LayoutInflater.from(context).inflate(R.layout.item_suggestion_info, parent, false);
-            return new ViewHolderInfo(v);
-        } else if (viewType == TYPE_HEADER) {
-            v = LayoutInflater.from(context).inflate(R.layout.item_suggestion_header, parent, false);
-            return new ViewHolderHeader(v);
-        } else if (viewType == TYPE_INVITE) {
-            v = LayoutInflater.from(context).inflate(R.layout.item_suggestion_invite, parent, false);
-            return new ViewHolderInvite(v);
+        if (viewType != getItemCount()-1) {
+            v = LayoutInflater.from(context).inflate(R.layout.item_contact, parent, false);
+            return new ViewHolderContact(v);
         } else {
-            v = LayoutInflater.from(context).inflate(R.layout.item_suggestion, parent, false);
-            return new ViewHolderSuggestion(v);
+            v = LayoutInflater.from(context).inflate(R.layout.item_invite, parent, false);
+            return new ViewHolderInvite(v);
         }
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        if (holder instanceof ViewHolderHeader) {
-            ViewHolderHeader holderHeader = (ViewHolderHeader) holder;
-            if (position == infoCount) {
-                if (contactCount == 0)
-                    holderHeader.inviteLayout.setVisibility(View.VISIBLE);
-                else
-                    holderHeader.inviteLayout.setVisibility(View.GONE);
-                holderHeader.header.setText("Your Contacts");
-            } else {
-                holderHeader.inviteLayout.setVisibility(View.GONE);
-                holderHeader.header.setText("Suggestions");
-                holderHeader.header.setVisibility(View.INVISIBLE);
-            }
-        } else if (holder instanceof ViewHolderSuggestion) {
-            ViewHolderSuggestion holderSuggestion = (ViewHolderSuggestion) holder;
-            int contactPosition = position - infoCount - 1;
-            User user = allContactUsers.get(contactPosition);
-            holderSuggestion.username.setText(user.getName());
-            if (user.getProfilePic() == null)
-                holderSuggestion.profilePicture.setImageResource(R.drawable.profile_picture);
-            else {
-                String path = Environment.getExternalStorageDirectory() + "/dotAlbums/" + user.getPhone() + "/Profile Pictures Thumbnails/" + user.getProfilePic();
-                File file = new File(path);
-                if (file.exists())
-                    Glide.with(context).asBitmap().load(path).placeholder(R.drawable.imagepicker_image_placeholder).into(holderSuggestion.profilePicture);
-                else
-                    holderSuggestion.profilePicture.setImageResource(R.drawable.circular_place_holder);
-            }
-        }
+
     }
 
     @Override
     public int getItemViewType(int position) {
-        if (position == 0 && showInfo)
-            return TYPE_INFO;
-        else if (position == infoCount || position == infoCount + contactCount + 2)
-            return TYPE_HEADER;
-        else if (position == infoCount + contactCount + 1)
-            return TYPE_INVITE;
-        else
-            return TYPE_SUGGESTION;
+        return position;
     }
 
     @Override
     public int getItemCount() {
-        if (!suggestionsDownloaded)
-            return 1;
-        else
-            return infoCount + 2 + contactCount + suggestionsCount + 1;
+        return 10;
     }
 
     public class ContactsTask extends AsyncTask<Void, Integer, Void> {
@@ -290,8 +207,7 @@ public class SuggestionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                                         .setCompressFormat(Bitmap.CompressFormat.WEBP)
                                         .setDestinationDirectoryPath(dirPath2)
                                         .compressToFile(file);
-                                int updatePosition = in + infoCount + 1;
-                                publishProgress(1, updatePosition);
+                                //publishProgress(1, updatePosition);
                             } catch (Exception e) {
 
                             }
@@ -311,8 +227,7 @@ public class SuggestionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         protected void onProgressUpdate(Integer... values) {
             if (values[0] == 0) {
                 progressBar.setVisibility(View.GONE);
-                suggestionsDownloaded = true;
-                contactCount = contactsFound.size();
+                //contactCount = contactsFound.size();
                 notifyDataSetChanged();
             }
             if (values[0] == 1) {
