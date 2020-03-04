@@ -20,7 +20,7 @@ import android.widget.ProgressBar;
 
 import com.nguyenhoanglam.imagepicker.helper.PermissionHelper;
 
-public class ManageAccessActivity extends AppCompatActivity {
+public class ContactsActivity extends AppCompatActivity {
     Toolbar toolbar;
     RecyclerView recyclerView;
     SuggestionsAdapter adapter;
@@ -32,14 +32,14 @@ public class ManageAccessActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_manage_access);
+        setContentView(R.layout.activity_contacts);
         sharedPreferences = getSharedPreferences("data", MODE_PRIVATE);
-        boolean accessDone = sharedPreferences.getBoolean("accessDone", false);
 
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(accessDone);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_arrow_back_black_24dp);
 
         progressBar = findViewById(R.id.progessBar);
         continueLayout = findViewById(R.id.continueLayout);
@@ -68,13 +68,13 @@ public class ManageAccessActivity extends AppCompatActivity {
     public void showPermissionDialog(boolean settings){
         AlertDialog.Builder builder = new AlertDialog.Builder(this)
                 .setTitle("Contacts Permission")
-                .setMessage("Please allow us to read your contacts so you can start following them.");
+                .setMessage("Please allow us to read your contacts so you can share reminders with your friends.");
         if(settings){
             builder.setPositiveButton("Settings", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
-                    PermissionHelper.openAppSettings(ManageAccessActivity.this);
+                    PermissionHelper.openAppSettings(ContactsActivity.this);
                 }
             });
         }
@@ -83,7 +83,7 @@ public class ManageAccessActivity extends AppCompatActivity {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
-                    ActivityCompat.requestPermissions(ManageAccessActivity.this,
+                    ActivityCompat.requestPermissions(ContactsActivity.this,
                             new String[]{Manifest.permission.READ_CONTACTS},
                             100);
                 }
@@ -104,8 +104,8 @@ public class ManageAccessActivity extends AppCompatActivity {
     public void setupRecyclerView(){
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new SuggestionsAdapter(this, true, progressBar, continueLayout);
-        recyclerView.setAdapter(adapter);
+        //adapter = new SuggestionsAdapter(this, true, progressBar, continueLayout);
+        //recyclerView.setAdapter(adapter);
     }
 
     @Override

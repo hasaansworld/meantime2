@@ -93,7 +93,6 @@
         app:cornerRadius="40dp"
         android:elevation="4dp"
         android:clickable="true"
-        android:scaleX="0"
-        android:scaleY="0"/>
+        android:visibility="gone"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

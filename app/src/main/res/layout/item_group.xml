@@ -8,6 +8,7 @@
     android:paddingRight="15dp">
 
     <LinearLayout
+        android:id="@+id/layout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"

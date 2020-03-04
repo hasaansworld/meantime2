@@ -95,16 +95,19 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int position) {
-                if(position == 0)
-                    fabAdd.show();
-                else
-                    fabAdd.hide();
-                if(position == 1)
-                    showAddGroup();
-                else
-                    hideAddGroup();
                 menu.clear();
-                getMenuInflater().inflate(menus[position], menu);
+                if(position == 0) {
+                    fabAdd.show();
+                    getMenuInflater().inflate(R.menu.options_main_reminder, menu);
+                }
+                else {
+                    fabAdd.hide();
+                    getMenuInflater().inflate(R.menu.options_main_groups, menu);
+                }
+                /*if(position == 1)
+                    groupAdd.setVisibility(View.VISIBLE);
+                else
+                    groupAdd.setVisibility(View.GONE);*/
             }
 
             @Override
@@ -168,6 +171,8 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == android.R.id.home)
             startActivity(new Intent(this, ProfileActivity.class));
+        else if(item.getItemId() == R.id.contacts)
+            startActivity(new Intent(this, ContactsActivity.class));
         return true;
     }
 

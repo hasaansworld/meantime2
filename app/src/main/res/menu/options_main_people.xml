@@ -10,9 +10,7 @@
 
     <item
         android:id="@+id/contacts"
-        android:title="Contacts"
-        android:icon="@drawable/ic_contacts_black_24dp"
-        app:showAsAction="always" />
+        android:title="Contacts" />
 
     <item
         android:id="@+id/settings"

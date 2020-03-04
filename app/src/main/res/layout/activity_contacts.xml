@@ -21,7 +21,7 @@
                 android:layout_height="wrap_content"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:text="Manage Access"/>
+                android:text="Contacts"/>
 
         </androidx.appcompat.widget.Toolbar>
 
@@ -80,7 +80,6 @@
         </LinearLayout>
 
     </LinearLayout>
-
 
     <ProgressBar
         android:id="@+id/progessBar"

@@ -76,6 +76,10 @@
         android:title="Deleted" />
 
     <item
+        android:id="@+id/contacts"
+        android:title="Contacts" />
+
+    <item
         android:id="@+id/settings"
         android:title="Settings" />
 

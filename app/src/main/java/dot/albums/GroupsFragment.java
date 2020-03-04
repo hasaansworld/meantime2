@@ -33,7 +33,6 @@ public class GroupsFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        Toast.makeText(getContext(), "onStart", Toast.LENGTH_SHORT).show();
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         AdapterGroups adapterGroups = new AdapterGroups(getContext());
         recyclerView.setAdapter(adapterGroups);
