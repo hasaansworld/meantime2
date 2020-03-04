@@ -13,6 +13,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -40,6 +44,9 @@ import com.google.android.material.tabs.TabItem;
 import com.google.android.material.tabs.TabLayout;
 import com.nguyenhoanglam.imagepicker.ui.imagepicker.ImagePicker;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
 
     SharedPreferences sharedPreferences;
@@ -49,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
     ViewPager viewPager;
     TabLayout tabLayout;
     MaterialButton groupAdd;
+    Menu menu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
         groupAdd = findViewById(R.id.group_add);
 
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            int[] menus = {R.menu.options_main_reminder, R.menu.options_main_groups, R.menu.options_main_people};
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) { }
 
@@ -91,9 +100,11 @@ public class MainActivity extends AppCompatActivity {
                 else
                     fabAdd.hide();
                 if(position == 1)
-                    groupAdd.setVisibility(View.VISIBLE);
+                    showAddGroup();
                 else
-                    groupAdd.setVisibility(View.GONE);
+                    hideAddGroup();
+                menu.clear();
+                getMenuInflater().inflate(menus[position], menu);
             }
 
             @Override
@@ -101,6 +112,25 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
+
+    private void showAddGroup(){
+        ObjectAnimator animatorX = ObjectAnimator.ofFloat(groupAdd, "scaleX", 0, 1);
+        ObjectAnimator animatorY = ObjectAnimator.ofFloat(groupAdd, "scaleY", 0, 1);
+        AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet.setDuration(200);
+        animatorSet.playTogether(animatorX, animatorY);
+        animatorSet.start();
+    }
+
+    private void hideAddGroup(){
+        ObjectAnimator animatorX = ObjectAnimator.ofFloat(groupAdd, "scaleX", 1, 0);
+        ObjectAnimator animatorY = ObjectAnimator.ofFloat(groupAdd, "scaleY", 1, 0);
+        AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet.setDuration(200);
+        animatorSet.playTogether(animatorX, animatorY);
+        animatorSet.start();
+    }
+
 
     public void setProfilePicture(){
         if(getSupportActionBar() != null){
@@ -129,12 +159,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.options_main, menu);
-        /*if(menu instanceof MenuBuilder){
-            MenuBuilder m = (MenuBuilder) menu;
-            //noinspection RestrictedApi
-            m.setOptionalIconsVisible(true);
-        }*/
+        this.menu = menu;
+        getMenuInflater().inflate(R.menu.options_main_reminder, menu);
         return true;
     }
 
@@ -142,8 +168,6 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == android.R.id.home)
             startActivity(new Intent(this, ProfileActivity.class));
-        else if(item.getItemId() == R.id.access)
-            startActivity(new Intent(this, ManageAccessActivity.class));
         return true;
     }
 
@@ -185,20 +209,19 @@ public class MainActivity extends AppCompatActivity {
 
     private class MainPagerAdapter extends FragmentPagerAdapter{
         String[] titles = {"Reminders", "Groups", "People"};
+        List<Fragment> fragmentList = new ArrayList<>();
 
         public MainPagerAdapter(@NonNull FragmentManager fm) {
             super(fm);
+            fragmentList.add(new RemindersFragment());
+            fragmentList.add(new GroupsFragment());
+            fragmentList.add(new PeopleFragment());
         }
 
         @NonNull
         @Override
         public Fragment getItem(int position) {
-            if(position == 0)
-                return new RemindersFragment();
-            else if(position == 1)
-                return new GroupsFragment();
-            else
-                return new PeopleFragment();
+            return fragmentList.get(position);
         }
 
         @Nullable

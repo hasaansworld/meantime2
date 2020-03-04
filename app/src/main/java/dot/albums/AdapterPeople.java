@@ -35,12 +35,12 @@ public class AdapterPeople extends RecyclerView.Adapter<AdapterPeople.ViewHolder
     @Override
     public void onBindViewHolder(@NonNull AdapterPeople.ViewHolder holder, int position) {
         if(position % 3 == 0) {
-            holder.autoApprove.setBackgroundResource(R.drawable.auto_approve_on_background);
-            holder.autoApprove.setImageResource(R.drawable.ic_done_all_white_18dp);
+            holder.autoApprove.setBackgroundResource(R.drawable.auto_approve_background_selected);
+            holder.autoApprove.setImageResource(R.drawable.auto_approve_icon_selected);
         }
         else{
-            holder.autoApprove.setBackgroundResource(R.drawable.auto_approve_background);
-            holder.autoApprove.setImageResource(R.drawable.ic_done_all_accent_18dp);
+            holder.autoApprove.setBackgroundResource(R.drawable.auto_approve_background_normal);
+            holder.autoApprove.setImageResource(R.drawable.auto_approve_icon_normal);
         }
     }
 

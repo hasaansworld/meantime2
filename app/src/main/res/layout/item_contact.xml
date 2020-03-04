@@ -49,7 +49,7 @@
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:text="sent you a reminder: EME Olympiad '20"
+                android:text="EME Olympiad '20"
                 android:textColor="#999999"
                 android:textSize="14sp" />
 
@@ -57,21 +57,30 @@
 
     </LinearLayout>
 
-    <FrameLayout
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:minWidth="20dp"
+        android:textSize="12sp"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
+        android:text="389"
+        android:background="@drawable/count_background"
+        android:paddingLeft="6dp"
+        android:paddingRight="6dp"
+        android:paddingTop="2dp"
+        android:paddingBottom="2dp"/>
+
+    <ImageView
+        android:id="@+id/auto_approve"
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:layout_marginLeft="5dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:clickable="true">
-
-        <ImageView
-            android:id="@+id/auto_approve"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:background="@drawable/auto_approve_background"
-            android:padding="6dp"
-            android:src="@drawable/ic_done_all_accent_18dp" />
-
-    </FrameLayout>
+        android:background="@drawable/auto_approve_background_normal"
+        android:clickable="true"
+        android:padding="6dp"
+        android:src="@drawable/auto_approve_icon_normal" />
 
 </LinearLayout>

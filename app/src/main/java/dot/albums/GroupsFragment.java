@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 public class GroupsFragment extends Fragment {
     RecyclerView recyclerView;
@@ -32,6 +33,7 @@ public class GroupsFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+        Toast.makeText(getContext(), "onStart", Toast.LENGTH_SHORT).show();
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         AdapterGroups adapterGroups = new AdapterGroups(getContext());
         recyclerView.setAdapter(adapterGroups);
