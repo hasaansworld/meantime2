@@ -38,6 +38,9 @@ public class DotMigration implements RealmMigration {
                     .addField("profilePic", String.class)
                     .addField("phoneNumber", String.class)
                     .addField("autoApprove", boolean.class);
+        if(oldVersion < 10)
+            schema.get("DataContact")
+                    .addPrimaryKey("phoneNumber");
 
     }
 

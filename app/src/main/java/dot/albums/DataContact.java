@@ -1,9 +1,12 @@
 package dot.albums;
 
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
 public class DataContact extends RealmObject implements Comparable<DataContact>{
-    private String phoneNumber, name, about, profilePic;
+    @PrimaryKey
+    private String phoneNumber;
+    private String name, about, profilePic;
     private boolean autoApprove = false;
 
     public DataContact() {

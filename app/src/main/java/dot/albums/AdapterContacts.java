@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,6 +38,7 @@ import java.util.List;
 
 import id.zelory.compressor.Compressor;
 import io.realm.Realm;
+import io.realm.RealmQuery;
 import jagerfield.mobilecontactslibrary.Contact.Contact;
 import jagerfield.mobilecontactslibrary.ElementContainers.NumberContainer;
 import jagerfield.mobilecontactslibrary.ImportContacts;
@@ -84,11 +86,24 @@ public class AdapterContacts extends RecyclerView.Adapter<RecyclerView.ViewHolde
             count.setVisibility(View.GONE);
             layout = v.findViewById(R.id.layout);
             layout.setOnClickListener(this);
+            autoApprove.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
 
+            if(v.equals(autoApprove)){
+                DataContact contact = contactsFound.get(getAdapterPosition());
+                DataContact searchedContact = realm.where(DataContact.class).equalTo("phoneNumber", contact.getPhoneNumber()).findFirst();
+                if(searchedContact != null) {
+                    realm.beginTransaction();
+                    searchedContact.setAutoApprove(!contact.isAutoApprove());
+                    realm.commitTransaction();
+                    contact.setAutoApprove(!contact.isAutoApprove());
+                    autoApprove.setBackgroundResource(contact.isAutoApprove() ? R.drawable.auto_approve_on_background : R.drawable.auto_approve_background_normal);
+                    autoApprove.setImageResource(contact.isAutoApprove() ? R.drawable.auto_approve_icon_selected : R.drawable.auto_approve_icon_normal);
+                }
+            }
         }
     }
 
@@ -132,6 +147,8 @@ public class AdapterContacts extends RecyclerView.Adapter<RecyclerView.ViewHolde
         DatabaseReference reference;
         List<String> allNumbers = new ArrayList<>();
         List<String> allNames = new ArrayList<>();
+        List<DataContact> existingContacts = new ArrayList<>();
+        List<String> existingNumbers = new ArrayList<>();
         int numbersChecked = 0;
         int count = 0;
 
@@ -191,49 +208,86 @@ public class AdapterContacts extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
 
         private void downloadImages() {
-
+            numbersChecked = 0;
+            Realm threadRealm = Realm.getDefaultInstance();
             for (int i = 0; i < contactsFound.size(); i++) {
                 DataContact contact = contactsFound.get(i);
-                final int in = i;
-                if (contact.getProfilePic() != null && contact.getPhoneNumber() != null) {
-                    StorageReference storageReference = FirebaseStorage.getInstance().getReference("users").child(contact.getPhoneNumber()).child("profile picture").child(contact.getProfilePic());
-                    String dirPath = Environment.getExternalStorageDirectory() + "/"+appName+"/Profile Pictures/" + contact.getPhoneNumber();
-                    File dirFile = new File(dirPath);
-                    if (!dirFile.exists())
-                        dirFile.mkdirs();
-                    final String dirPath2 = Environment.getExternalStorageDirectory() + "/"+appName+"/Profile Pictures Thumbnails/" + contact.getPhoneNumber();
-                    File dirFile2 = new File(dirPath2);
-                    if (!dirFile2.exists())
-                        dirFile2.mkdirs();
-                    final File file = new File(dirPath + "/" + contact.getProfilePic());
-                    final int position = i;
-                    storageReference.getFile(file).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                            contact.setProfilePic(file.getAbsolutePath());
-                            int dp50 = dpToPixel(50, context);
-                            try {
-                                new Compressor(context)
-                                        .setMaxWidth(dp50)
-                                        .setMaxHeight(dp50)
-                                        .setQuality(75)
-                                        .setCompressFormat(Bitmap.CompressFormat.WEBP)
-                                        .setDestinationDirectoryPath(dirPath2)
-                                        .compressToFile(file);
-                                publishProgress(1, position);
-                            } catch (Exception e) {
-
-                            }
-                        }
-                    })
-                            .addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
+                DataContact searchContact = threadRealm.where(DataContact.class).equalTo("phoneNumber", contact.getPhoneNumber()).findFirst();
+                if(searchContact != null) {
+                    contact.setAutoApprove(searchContact.isAutoApprove());
+                    publishProgress(1, i);
+                }
+                if(searchContact == null || !searchContact.getProfilePic().contains(contact.getProfilePic())) {
+                    if (contact.getProfilePic() != null && contact.getPhoneNumber() != null) {
+                        StorageReference storageReference = FirebaseStorage.getInstance().getReference("users").child(contact.getPhoneNumber()).child("profile picture").child(contact.getProfilePic());
+                        String dirPath = Environment.getExternalStorageDirectory() + "/" + appName + "/Profile Pictures/" + contact.getPhoneNumber();
+                        File dirFile = new File(dirPath);
+                        if (!dirFile.exists())
+                            dirFile.mkdirs();
+                        final String dirPath2 = Environment.getExternalStorageDirectory() + "/" + appName + "/Profile Pictures Thumbnails/" + contact.getPhoneNumber();
+                        File dirFile2 = new File(dirPath2);
+                        if (!dirFile2.exists())
+                            dirFile2.mkdirs();
+                        final File file = new File(dirPath + "/" + contact.getProfilePic());
+                        final int position = i;
+                        storageReference.getFile(file).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                                contact.setProfilePic(file.getAbsolutePath());
+                                int dp50 = dpToPixel(50, context);
+                                try {
+                                    new Compressor(context)
+                                            .setMaxWidth(dp50)
+                                            .setMaxHeight(dp50)
+                                            .setQuality(75)
+                                            .setCompressFormat(Bitmap.CompressFormat.WEBP)
+                                            .setDestinationDirectoryPath(dirPath2)
+                                            .compressToFile(file);
+                                    publishProgress(1, position);
+                                } catch (Exception e) {
 
                                 }
-                            });
+                                countAndUpdateRealm();
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                countAndUpdateRealm();
+                            }
+                        });
+                    }
+                }
+                else{
+                    contact.setProfilePic(searchContact.getProfilePic());
+                    publishProgress(1, i);
+                    countAndUpdateRealm();
                 }
             }
+            threadRealm.close();
+        }
+
+        private void countAndUpdateRealm(){
+            numbersChecked++;
+            if(numbersChecked == contactsFound.size())
+                updateRealm();
+        }
+
+        private void updateRealm(){
+            Realm threadRealm = Realm.getDefaultInstance();
+            for(DataContact contact : contactsFound){
+                DataContact searchContact = threadRealm.where(DataContact.class).equalTo("phoneNumber", contact.getPhoneNumber()).findFirst();
+                if(searchContact != null && !contact.getProfilePic().contains("/"))
+                    contact.setProfilePic(searchContact.getProfilePic());
+                else if(searchContact == null && !contact.getProfilePic().contains("/"))
+                    contact.setProfilePic("");
+                if(searchContact != null && allNumbers.contains(contact.getPhoneNumber()))
+                    contact.setName(searchContact.getName());
+                threadRealm.beginTransaction();
+                threadRealm.copyToRealmOrUpdate(contact);
+                threadRealm.commitTransaction();
+            }
+            threadRealm.close();
         }
 
         @Override
