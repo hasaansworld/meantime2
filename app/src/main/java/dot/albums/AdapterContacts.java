@@ -3,10 +3,8 @@ package dot.albums;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Environment;
-import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,7 +19,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.github.siyamed.shapeimageview.CircularImageView;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
@@ -34,10 +31,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 
 import id.zelory.compressor.Compressor;
@@ -53,19 +48,19 @@ public class AdapterContacts extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     ImportContacts importContacts;
     List<Contact> allContacts;
-    List<AccountInfo> contactsFound = new ArrayList<>();
-    List<User> allContactUsers = new ArrayList<>();
-
+    List<DataContact> contactsFound = new ArrayList<>();
+    String appName, thumbnailPath;
 
     public AdapterContacts(Context context, ProgressBar progressBar) {
         this.context = context;
         this.progressBar = progressBar;
+        appName = context.getApplicationInfo().loadLabel(context.getPackageManager()).toString();
 
         realm = RealmUtils.getRealm();
 
         importContacts = new ImportContacts((Activity) context);
         allContacts = importContacts.getContacts();
-        //new ContactsTask().execute();
+        new ContactsTask().execute();
     }
 
     public class ViewHolderInvite extends RecyclerView.ViewHolder {
@@ -76,11 +71,19 @@ public class AdapterContacts extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     public class ViewHolderContact extends RecyclerView.ViewHolder implements View.OnClickListener {
-        TextView count;
+        LinearLayout layout;
+        TextView name, about, count;
+        ImageView profilePicture, autoApprove;
         public ViewHolderContact(View v) {
             super(v);
+            name = v.findViewById(R.id.name);
+            about = v.findViewById(R.id.about);
+            profilePicture = v.findViewById(R.id.profilePicture);
+            autoApprove = v.findViewById(R.id.auto_approve);
             count = v.findViewById(R.id.count);
             count.setVisibility(View.GONE);
+            layout = v.findViewById(R.id.layout);
+            layout.setOnClickListener(this);
         }
 
         @Override
@@ -93,18 +96,26 @@ public class AdapterContacts extends RecyclerView.Adapter<RecyclerView.ViewHolde
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v;
-        if (viewType != getItemCount()-1) {
-            v = LayoutInflater.from(context).inflate(R.layout.item_contact, parent, false);
-            return new ViewHolderContact(v);
-        } else {
+        if (viewType == getItemCount()-1) {
             v = LayoutInflater.from(context).inflate(R.layout.item_invite, parent, false);
             return new ViewHolderInvite(v);
+        } else {
+            v = LayoutInflater.from(context).inflate(R.layout.item_contact, parent, false);
+            return new ViewHolderContact(v);
         }
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-
+            if(holder instanceof ViewHolderContact){
+                ViewHolderContact holderContact = (ViewHolderContact) holder;
+                DataContact contact = contactsFound.get(position);
+                holderContact.name.setText(contact.getName());
+                holderContact.about.setText(contact.getAbout());
+                holderContact.autoApprove.setBackgroundResource(contact.isAutoApprove() ? R.drawable.auto_approve_on_background : R.drawable.auto_approve_background_normal);
+                holderContact.autoApprove.setImageResource(contact.isAutoApprove() ? R.drawable.auto_approve_icon_selected : R.drawable.auto_approve_icon_normal);
+                Glide.with(context).asBitmap().load(contact.getProfilePic()).placeholder(R.drawable.profile_picture).into(((ViewHolderContact) holder).profilePicture);
+            }
     }
 
     @Override
@@ -114,7 +125,7 @@ public class AdapterContacts extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public int getItemCount() {
-        return 10;
+        return contactsFound.size() == 0 ? 0 : contactsFound.size()+1;
     }
 
     public class ContactsTask extends AsyncTask<Void, Integer, Void> {
@@ -122,11 +133,12 @@ public class AdapterContacts extends RecyclerView.Adapter<RecyclerView.ViewHolde
         List<String> allNumbers = new ArrayList<>();
         List<String> allNames = new ArrayList<>();
         int numbersChecked = 0;
+        int count = 0;
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            reference = FirebaseDatabase.getInstance().getReference().child("account info");
+            reference = FirebaseDatabase.getInstance().getReference().child("users");
         }
 
         @Override
@@ -147,8 +159,14 @@ public class AdapterContacts extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         if (dataSnapshot.exists()) {
-                            contactsFound.add(dataSnapshot.getValue(AccountInfo.class));
-
+                            count++;
+                            DataContact contact = dataSnapshot.getValue(DataContact.class);
+                            if(contact != null) {
+                                contact.setAutoApprove(false);
+                                contact.setName(name);
+                                contact.setPhoneNumber(number);
+                                contactsFound.add(contact);
+                            }
                         }
                         numbersChecked++;
                         if (numbersChecked == allNumbers.size()) {
@@ -169,35 +187,30 @@ public class AdapterContacts extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
 
         private void makeUsers() {
-            for (int i = 0; i < contactsFound.size(); i++) {
-                AccountInfo info = contactsFound.get(i);
-                User user = allContactUsers.get(i);
-                if (info.getUsername() != null) {
-                    user.setProfilePic(info.getProfilePic());
-                    allContactUsers.set(i, user);
-                }
-            }
-            Collections.sort(allContactUsers);
+            Collections.sort(contactsFound);
         }
 
         private void downloadImages() {
-            for (int i = 0; i < allContactUsers.size(); i++) {
-                User user = allContactUsers.get(i);
+
+            for (int i = 0; i < contactsFound.size(); i++) {
+                DataContact contact = contactsFound.get(i);
                 final int in = i;
-                if (user.getProfilePic() != null) {
-                    StorageReference storageReference = FirebaseStorage.getInstance().getReference("users").child(user.getPhone()).child("profile picture").child(user.getProfilePic());
-                    String dirPath = Environment.getExternalStorageDirectory() + "/dotAlbums/" + user.getPhone() + "/Profile Pictures";
+                if (contact.getProfilePic() != null && contact.getPhoneNumber() != null) {
+                    StorageReference storageReference = FirebaseStorage.getInstance().getReference("users").child(contact.getPhoneNumber()).child("profile picture").child(contact.getProfilePic());
+                    String dirPath = Environment.getExternalStorageDirectory() + "/"+appName+"/Profile Pictures/" + contact.getPhoneNumber();
                     File dirFile = new File(dirPath);
                     if (!dirFile.exists())
                         dirFile.mkdirs();
-                    final String dirPath2 = Environment.getExternalStorageDirectory() + "/dotAlbums/" + user.getPhone() + "/Profile Pictures Thumbnails";
+                    final String dirPath2 = Environment.getExternalStorageDirectory() + "/"+appName+"/Profile Pictures Thumbnails/" + contact.getPhoneNumber();
                     File dirFile2 = new File(dirPath2);
                     if (!dirFile2.exists())
                         dirFile2.mkdirs();
-                    final File file = new File(dirPath + "/" + user.getProfilePic());
+                    final File file = new File(dirPath + "/" + contact.getProfilePic());
+                    final int position = i;
                     storageReference.getFile(file).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                            contact.setProfilePic(file.getAbsolutePath());
                             int dp50 = dpToPixel(50, context);
                             try {
                                 new Compressor(context)
@@ -207,7 +220,7 @@ public class AdapterContacts extends RecyclerView.Adapter<RecyclerView.ViewHolde
                                         .setCompressFormat(Bitmap.CompressFormat.WEBP)
                                         .setDestinationDirectoryPath(dirPath2)
                                         .compressToFile(file);
-                                //publishProgress(1, updatePosition);
+                                publishProgress(1, position);
                             } catch (Exception e) {
 
                             }
@@ -227,7 +240,6 @@ public class AdapterContacts extends RecyclerView.Adapter<RecyclerView.ViewHolde
         protected void onProgressUpdate(Integer... values) {
             if (values[0] == 0) {
                 progressBar.setVisibility(View.GONE);
-                //contactCount = contactsFound.size();
                 notifyDataSetChanged();
             }
             if (values[0] == 1) {

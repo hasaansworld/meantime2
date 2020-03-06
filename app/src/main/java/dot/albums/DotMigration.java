@@ -31,6 +31,13 @@ public class DotMigration implements RealmMigration {
                     .addField("importance", int.class);
         if(oldVersion < 8)
             schema.get("DataReminder").addField("deleted", boolean.class);
+        if(oldVersion < 9)
+            schema.create("DataContact")
+                    .addField("name", String.class)
+                    .addField("about", String.class)
+                    .addField("profilePic", String.class)
+                    .addField("phoneNumber", String.class)
+                    .addField("autoApprove", boolean.class);
 
     }
 
