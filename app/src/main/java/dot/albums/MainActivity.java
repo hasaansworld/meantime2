@@ -95,19 +95,20 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int position) {
-                menu.clear();
-                if(position == 0) {
-                    fabAdd.show();
-                    getMenuInflater().inflate(R.menu.options_main_reminder, menu);
-                }
-                else {
-                    fabAdd.hide();
-                    getMenuInflater().inflate(R.menu.options_main_groups, menu);
-                }
+                if(menu != null) {
+                    menu.clear();
+                    if (position == 0) {
+                        fabAdd.show();
+                        getMenuInflater().inflate(R.menu.options_main_reminder, menu);
+                    } else {
+                        fabAdd.hide();
+                        getMenuInflater().inflate(R.menu.options_main_groups, menu);
+                    }
                 /*if(position == 1)
                     groupAdd.setVisibility(View.VISIBLE);
                 else
                     groupAdd.setVisibility(View.GONE);*/
+                }
             }
 
             @Override
@@ -162,8 +163,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        int[] options = {R.menu.options_main_reminder, R.menu.options_main_groups, R.menu.options_main_people};
         this.menu = menu;
-        getMenuInflater().inflate(R.menu.options_main_reminder, menu);
+        getMenuInflater().inflate(options[viewPager.getCurrentItem()], menu);
         return true;
     }
 

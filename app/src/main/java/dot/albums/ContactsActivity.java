@@ -9,12 +9,17 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
@@ -106,6 +111,19 @@ public class ContactsActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new AdapterContacts(this, progressBar);
         recyclerView.setAdapter(adapter);
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        if(activeNetworkInfo != null && activeNetworkInfo.isConnected()){
+            ContactsTask task = new ContactsTask(this);
+            task.setOnFinishedListener(() -> {
+                progressBar.setVisibility(View.GONE);
+                adapter = new AdapterContacts(ContactsActivity.this, progressBar);
+                recyclerView.setAdapter(adapter);
+            });
+            task.execute();
+        }
+        else
+            progressBar.setVisibility(View.GONE);
     }
 
     @Override

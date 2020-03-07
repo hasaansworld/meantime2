@@ -3,10 +3,13 @@ package dot.albums;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.Handler;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -51,6 +55,7 @@ public class AdapterContacts extends RecyclerView.Adapter<RecyclerView.ViewHolde
     ImportContacts importContacts;
     List<Contact> allContacts;
     List<DataContact> contactsFound = new ArrayList<>();
+    List<String> existingNumbers = new ArrayList<>();
     String appName, thumbnailPath;
 
     public AdapterContacts(Context context, ProgressBar progressBar) {
@@ -60,9 +65,19 @@ public class AdapterContacts extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         realm = RealmUtils.getRealm();
 
-        importContacts = new ImportContacts((Activity) context);
-        allContacts = importContacts.getContacts();
-        new ContactsTask().execute();
+        //importContacts = new ImportContacts((Activity) context);
+        //allContacts = importContacts.getContacts();
+        contactsFound.addAll(realm.where(DataContact.class).findAll());
+        Collections.sort(contactsFound);
+        /*for (DataContact contact : contactsFound)
+            existingNumbers.add(contact.getPhoneNumber());
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        if(activeNetworkInfo != null && activeNetworkInfo.isConnected())
+            new ContactsTask().execute();
+        else
+            progressBar.setVisibility(View.GONE);*/
+
     }
 
     public class ViewHolderInvite extends RecyclerView.ViewHolder {
@@ -97,9 +112,8 @@ public class AdapterContacts extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 DataContact searchedContact = realm.where(DataContact.class).equalTo("phoneNumber", contact.getPhoneNumber()).findFirst();
                 if(searchedContact != null) {
                     realm.beginTransaction();
-                    searchedContact.setAutoApprove(!contact.isAutoApprove());
-                    realm.commitTransaction();
                     contact.setAutoApprove(!contact.isAutoApprove());
+                    realm.commitTransaction();
                     autoApprove.setBackgroundResource(contact.isAutoApprove() ? R.drawable.auto_approve_on_background : R.drawable.auto_approve_background_normal);
                     autoApprove.setImageResource(contact.isAutoApprove() ? R.drawable.auto_approve_icon_selected : R.drawable.auto_approve_icon_normal);
                 }
@@ -143,18 +157,18 @@ public class AdapterContacts extends RecyclerView.Adapter<RecyclerView.ViewHolde
         return contactsFound.size() == 0 ? 0 : contactsFound.size()+1;
     }
 
-    public class ContactsTask extends AsyncTask<Void, Integer, Void> {
+    /*public class ContactsTask extends AsyncTask<Void, Integer, Void> {
         DatabaseReference reference;
         List<String> allNumbers = new ArrayList<>();
         List<String> allNames = new ArrayList<>();
-        List<DataContact> existingContacts = new ArrayList<>();
-        List<String> existingNumbers = new ArrayList<>();
+        List<DataContact> newList = new ArrayList<>();
         int numbersChecked = 0;
         int count = 0;
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            newList.addAll(contactsFound);
             reference = FirebaseDatabase.getInstance().getReference().child("users");
         }
 
@@ -179,10 +193,33 @@ public class AdapterContacts extends RecyclerView.Adapter<RecyclerView.ViewHolde
                             count++;
                             DataContact contact = dataSnapshot.getValue(DataContact.class);
                             if(contact != null) {
-                                contact.setAutoApprove(false);
                                 contact.setName(name);
                                 contact.setPhoneNumber(number);
-                                contactsFound.add(contact);
+                                if(contact.getProfilePic() == null)
+                                    contact.setProfilePic("");
+                                if(!existingNumbers.contains(number))
+                                    newList.add(contact);
+                                else
+                                    newList.set(existingNumbers.indexOf(number), contact);
+                            }
+                        }
+                        else{
+                            if(existingNumbers.contains(number)){
+                                for(int i = 0; i < newList.size(); i++) {
+                                    DataContact contact1 = newList.get(i);
+                                    if (contact1.getPhoneNumber().equals(number)) {
+                                        existingNumbers.remove(number);
+                                        newList.remove(contact1);
+                                    }
+                                }
+                                Realm threadRealm = Realm.getDefaultInstance();
+                                DataContact contact = threadRealm.where(DataContact.class).equalTo("phoneNumber", number).findFirst();
+                                if(contact != null) {
+                                    threadRealm.beginTransaction();
+                                    contact.deleteFromRealm();
+                                    threadRealm.commitTransaction();
+                                }
+                                threadRealm.close();
                             }
                         }
                         numbersChecked++;
@@ -204,21 +241,20 @@ public class AdapterContacts extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
 
         private void makeUsers() {
-            Collections.sort(contactsFound);
+            contactsFound.clear();
+            contactsFound.addAll(newList);
+            Collections.sort(newList);
         }
 
         private void downloadImages() {
             numbersChecked = 0;
             Realm threadRealm = Realm.getDefaultInstance();
-            for (int i = 0; i < contactsFound.size(); i++) {
-                DataContact contact = contactsFound.get(i);
+            for (int i = 0; i < newList.size(); i++) {
+                DataContact contact = newList.get(i);
                 DataContact searchContact = threadRealm.where(DataContact.class).equalTo("phoneNumber", contact.getPhoneNumber()).findFirst();
-                if(searchContact != null) {
-                    contact.setAutoApprove(searchContact.isAutoApprove());
-                    publishProgress(1, i);
-                }
+                boolean isExisting = existingNumbers.contains(contact.getPhoneNumber());
                 if(searchContact == null || !searchContact.getProfilePic().contains(contact.getProfilePic())) {
-                    if (contact.getProfilePic() != null && contact.getPhoneNumber() != null) {
+                    if (contact.getProfilePic() != null && !contact.getProfilePic().equals("") && contact.getPhoneNumber() != null) {
                         StorageReference storageReference = FirebaseStorage.getInstance().getReference("users").child(contact.getPhoneNumber()).child("profile picture").child(contact.getProfilePic());
                         String dirPath = Environment.getExternalStorageDirectory() + "/" + appName + "/Profile Pictures/" + contact.getPhoneNumber();
                         File dirFile = new File(dirPath);
@@ -257,9 +293,14 @@ public class AdapterContacts extends RecyclerView.Adapter<RecyclerView.ViewHolde
                             }
                         });
                     }
+                    else{
+                        publishProgress(1, i);
+                        countAndUpdateRealm();
+                    }
                 }
                 else{
-                    contact.setProfilePic(searchContact.getProfilePic());
+                    if(!isExisting)
+                        contact.setProfilePic(searchContact.getProfilePic());
                     publishProgress(1, i);
                     countAndUpdateRealm();
                 }
@@ -269,13 +310,14 @@ public class AdapterContacts extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         private void countAndUpdateRealm(){
             numbersChecked++;
-            if(numbersChecked == contactsFound.size())
+            if(numbersChecked == newList.size())
                 updateRealm();
         }
 
         private void updateRealm(){
             Realm threadRealm = Realm.getDefaultInstance();
-            for(DataContact contact : contactsFound){
+            for(DataContact contact : newList){
+                threadRealm.beginTransaction();
                 DataContact searchContact = threadRealm.where(DataContact.class).equalTo("phoneNumber", contact.getPhoneNumber()).findFirst();
                 if(searchContact != null && !contact.getProfilePic().contains("/"))
                     contact.setProfilePic(searchContact.getProfilePic());
@@ -283,7 +325,8 @@ public class AdapterContacts extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     contact.setProfilePic("");
                 if(searchContact != null && allNumbers.contains(contact.getPhoneNumber()))
                     contact.setName(searchContact.getName());
-                threadRealm.beginTransaction();
+                if(searchContact != null)
+                    contact.setAutoApprove(searchContact.isAutoApprove());
                 threadRealm.copyToRealmOrUpdate(contact);
                 threadRealm.commitTransaction();
             }
@@ -294,9 +337,17 @@ public class AdapterContacts extends RecyclerView.Adapter<RecyclerView.ViewHolde
         protected void onProgressUpdate(Integer... values) {
             if (values[0] == 0) {
                 progressBar.setVisibility(View.GONE);
-                notifyDataSetChanged();
+                DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new ContactDiffUtil(contactsFound, newList));
+                diffResult.dispatchUpdatesTo(AdapterContacts.this);
+                contactsFound = newList;
+                new Handler().post(new Runnable() {
+                    @Override
+                    public void run() {
+                        notifyItemChanged(getItemCount()-1);
+                    }
+                });
             }
-            if (values[0] == 1) {
+            else if (values[0] == 1) {
                 notifyItemChanged(values[1]);
             }
         }
@@ -306,6 +357,7 @@ public class AdapterContacts extends RecyclerView.Adapter<RecyclerView.ViewHolde
             super.onPostExecute(aVoid);
         }
     }
+    */
 
     public static int dpToPixel(float dp, Context context) {
         return Math.round(dp * ((float) context.getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT));
