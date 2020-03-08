@@ -5,7 +5,11 @@ import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,7 +27,11 @@ import com.vanniktech.emoji.listeners.OnEmojiPopupDismissListener;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import io.realm.Realm;
 
@@ -40,8 +48,9 @@ public class CreateActivity extends AppCompatActivity {
     int importance=1;
     String[] months = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
     String[] days = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
-    int day, month, year, hour, minute;
+    int day, month, year, hour = 0, minute = 0;
     String dayOfWeek;
+    long timeInMillis = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,14 +80,8 @@ public class CreateActivity extends AppCompatActivity {
         initializeEmoji(emojiTitle, title);
         initializeEmoji(emojiDescription, description);
 
-        Calendar now = Calendar.getInstance();
-        day = now.get(Calendar.DAY_OF_MONTH);
-        dayOfWeek = days[now.get(Calendar.DAY_OF_WEEK)-1];
-        month = now.get(Calendar.MONTH);
-        year = now.get(Calendar.YEAR);
-        hour = 0;
-        minute = 0;
-        String dateS = String.format("%02d", day) + " " + months[month] + " " + year;
+
+        String dateS = getCurrentDate();
         textDate.setText(dateS);
         textDate.setOnClickListener(v -> {
             DatePickerDialog dpd = DatePickerDialog.newInstance(
@@ -161,9 +164,77 @@ public class CreateActivity extends AppCompatActivity {
             i.putExtra("id", dataReminder.getReminderId());
             startActivity(i);
             finish();
-
+            if(shouldSchedule()){
+                scheduleReminder(dataReminder.getReminderId());
+            }
         });
 
+    }
+
+    public String getCurrentDate(){
+        Calendar now = Calendar.getInstance();
+        day = now.get(Calendar.DAY_OF_MONTH);
+        dayOfWeek = days[now.get(Calendar.DAY_OF_WEEK)-1];
+        month = now.get(Calendar.MONTH);
+        year = now.get(Calendar.YEAR);
+        hour = 0;
+        minute = 0;
+        return String.format("%02d", day) + " " + months[month] + " " + year;
+    }
+
+    public boolean shouldSchedule(){
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd MMM yyyy hh:mm a");
+
+        try {
+            Date reminderDate = simpleDateFormat.parse(textDate.getText().toString() + " " + textTime.getText().toString());
+            reminderDate = getDisplayTime(reminderDate);
+            Date now = Calendar.getInstance().getTime();
+            timeInMillis = reminderDate.getTime();
+            long differenceInMillis = reminderDate.getTime() - now.getTime();
+            long differenceInMinutes = TimeUnit.MINUTES.convert(differenceInMillis, TimeUnit.MILLISECONDS);
+
+            return differenceInMinutes <= 40;
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public Date getDisplayTime(Date date){
+        String displayTime = textAlarmTime.getText().toString();
+        if(displayTime.equals("Exact time")){
+            return date;
+        }
+        else if(displayTime.equals("5 minutes before")) {
+            return new Date(date.getTime() - TimeUnit.MINUTES.toMillis(5));
+        }
+        else if(displayTime.equals("10 minutes before")) {
+            return new Date(date.getTime() - TimeUnit.MINUTES.toMillis(10));
+        }
+        else if(displayTime.equals("15 minutes before")) {
+            return new Date(date.getTime() - TimeUnit.MINUTES.toMillis(15));
+        }
+        else if(displayTime.equals("30 minutes before")) {
+            return new Date(date.getTime() - TimeUnit.MINUTES.toMillis(30));
+        }
+        else if(displayTime.equals("1 hour before")) {
+            return new Date(date.getTime() - TimeUnit.HOURS.toMillis(1));
+        }
+        return date;
+    }
+
+    public void scheduleReminder(String id){
+        AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+        Intent intent1 = new Intent(getApplicationContext(), NotificationReceiver.class);
+        intent1.setAction(NotificationReceiver.ACTION_NOTIFICATION);
+        intent1.putExtra("id", id);
+        int requestCode = (int)timeInMillis/10000;
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), requestCode, intent1,
+                0);
+        if (Build.VERSION.SDK_INT >= 19)
+            alarmManager.setExact(AlarmManager.RTC, timeInMillis, pendingIntent);
+        else
+            alarmManager.set(AlarmManager.RTC, timeInMillis, pendingIntent);
     }
 
     @Override

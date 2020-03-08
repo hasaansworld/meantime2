@@ -33,6 +33,37 @@
         <activity
             android:name="com.yalantis.ucrop.UCropActivity"
             android:theme="@style/AppTheme" />
+
+        <service
+            android:name=".BackgroundService"
+            android:enabled="true" >
+        </service>
+        <service android:name=".ForegroundService"
+            android:enabled="true"/>
+
+        <receiver
+            android:name=".BackgroundServiceReceiver"
+            android:enabled="true"
+            android:exported="true"
+            android:label="RestartServiceWhenStopped">
+        </receiver>
+        <receiver
+            android:enabled="true"
+            android:exported="true"
+            android:name=".WakeReceiver"
+            android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name=".NotificationReceiver">
+            <intent-filter>
+                <action android:name="com.meantime.ACTION_NOTIFICATION" />
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>
