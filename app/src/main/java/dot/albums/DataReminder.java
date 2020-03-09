@@ -13,6 +13,11 @@ public class DataReminder extends RealmObject implements Comparable<DataReminder
     String title, day, date, time, description, image, alarmtime;
     int importance;
     boolean deleted = false;
+    int status = STATUS_CREATED;
+
+    public static final int STATUS_CREATED = 0;
+    public static final int STATUS_SCHEDULED = 1;
+    public static final int STATUS_COMPLETED = 2;
 
     public DataReminder(){}
 
@@ -139,4 +144,13 @@ public class DataReminder extends RealmObject implements Comparable<DataReminder
                 .replace("Nov", "11")
                 .replace("Dec", "12");
     }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
 }

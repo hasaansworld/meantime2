@@ -18,7 +18,7 @@ public class DotMigration implements RealmMigration {
     @Override
     public void migrate(DynamicRealm realm, long oldVersion, long newVersion) {
         RealmSchema schema = realm.getSchema();
-        if(oldVersion <= 6)
+        /*if(oldVersion <= 6)
             schema.create("DataReminder")
                     .addField("reminderId", String.class)
                     .addField("title", String.class)
@@ -40,7 +40,11 @@ public class DotMigration implements RealmMigration {
                     .addField("autoApprove", boolean.class);
         if(oldVersion < 10)
             schema.get("DataContact")
-                    .addPrimaryKey("phoneNumber");
+                    .addPrimaryKey("phoneNumber");*/
+        if(oldVersion < 2) {
+            schema.get("DataReminder")
+                    .addField("status", int.class);
+        }
 
     }
 

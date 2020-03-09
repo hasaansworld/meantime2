@@ -51,11 +51,13 @@ public class CreateActivity extends AppCompatActivity {
     int day, month, year, hour = 0, minute = 0;
     String dayOfWeek;
     long timeInMillis = -1;
+    Realm realm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create);
+        realm = RealmUtils.getRealm();
 
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -155,7 +157,7 @@ public class CreateActivity extends AppCompatActivity {
                     textAlarmTime.getText().toString(),
                     importance
             );
-            Realm realm = RealmUtils.getRealm();
+
             realm.beginTransaction();
             realm.copyToRealm(dataReminder);
             realm.commitTransaction();
@@ -235,6 +237,11 @@ public class CreateActivity extends AppCompatActivity {
             alarmManager.setExact(AlarmManager.RTC, timeInMillis, pendingIntent);
         else
             alarmManager.set(AlarmManager.RTC, timeInMillis, pendingIntent);
+        realm.beginTransaction();
+        DataReminder reminder = realm.where(DataReminder.class).equalTo("reminderId", id).findFirst();
+        if(reminder != null)
+            reminder.setStatus(DataReminder.STATUS_SCHEDULED);
+        realm.commitTransaction();
     }
 
     @Override

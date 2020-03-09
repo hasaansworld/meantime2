@@ -13,7 +13,7 @@ public class RealmUtils {
         RealmConfiguration realmConfiguration = new RealmConfiguration.Builder()
                 .name("database")
                 .migration(new DotMigration(context))
-                .schemaVersion(10)
+                .schemaVersion(2)
                 .build();
         Realm.setDefaultConfiguration(realmConfiguration);
         realm = Realm.getDefaultInstance();
