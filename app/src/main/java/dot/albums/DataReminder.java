@@ -126,7 +126,12 @@ public class DataReminder extends RealmObject implements Comparable<DataReminder
                 return Integer.compare(Integer.parseInt(dates1[0]), Integer.parseInt(dates2[0]));
         }
         else{
-            return getTime().compareTo(o.getTime());
+            String am1 = getTime().substring(6);
+            String am2 = o.getTime().substring(6);
+            if(!am1.equals(am2))
+                return am1.compareTo(am2);
+            else
+                return getTime().replace("12:", "00:").compareTo(o.getTime().replace("12:", "00:"));
         }
     }
 

@@ -182,7 +182,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == android.R.id.home)
-            startActivity(new Intent(this, ProfileActivity.class));
+            //startActivity(new Intent(this, ProfileActivity.class));
+            startActivity(new Intent(this, TestActivity.class));
         else if(item.getItemId() == R.id.contacts)
             startActivity(new Intent(this, ContactsActivity.class));
         return true;

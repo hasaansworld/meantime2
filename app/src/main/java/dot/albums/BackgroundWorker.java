@@ -108,14 +108,20 @@ public class BackgroundWorker extends Worker {
         reminders.addAll(
                 realm.where(DataReminder.class)
                         .equalTo("date", today)
-                        .and()
-                        .equalTo("status", DataReminder.STATUS_CREATED)
                         .or()
                         .equalTo("date", tomorrow)
                         .and()
                         .equalTo("status", DataReminder.STATUS_CREATED)
                         .findAll()
         );
+
+        // Don't scheduled deleted reminders
+        for(int i = reminders.size(); i > 0; i--) {
+            DataReminder reminder = reminders.get(i-1);
+            if (reminder.isDeleted())
+                reminders.remove(i-1);
+        }
+
         for(DataReminder reminder: reminders){
             if(shouldSchedule(reminder)){
                 Intent intent1 = new Intent(getApplicationContext(), NotificationReceiver.class);
