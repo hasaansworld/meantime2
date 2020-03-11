@@ -1,5 +1,6 @@
 package app.meantime;
 
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -29,15 +30,21 @@ public class NotificationReceiver extends BroadcastReceiver {
         String id = intent.getStringExtra("id");
         DataReminder reminder = realm.where(DataReminder.class).equalTo("reminderId", id).findFirst();
         sendNotification(reminder);
+        notificationId = (int)System.currentTimeMillis()/10000;
     }
 
 
-    private void createNotificationChannel() {
+    private void createNotificationChannel(int imp) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = "alerts";
-            String description = "Get notifications about tasks and events.";
+            CharSequence name = "Low Importance Reminders";
+            String description = "Get simple notifications about low importance reminders.";
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel("1", name, importance);
+            if(imp == 1) {
+                name = "Mid Importance Reminders";
+                description = "Get your reminders in heads up notifications.";
+                importance = NotificationManager.IMPORTANCE_HIGH;
+            }
+            NotificationChannel channel = new NotificationChannel(Integer.toString(imp+1), name, importance);
             channel.setDescription(description);
             NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
@@ -46,25 +53,36 @@ public class NotificationReceiver extends BroadcastReceiver {
 
 
     void sendNotification(DataReminder reminder){
-        Intent intent = new Intent(context, ReminderActivity.class);
-        intent.putExtra("id", reminder.getReminderId());
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        int importance = reminder.getImportance();
+        if(importance == 2){
+            Intent i = new Intent(context, FullScreenReminderActivity.class);
+            i.putExtra("id", reminder.getReminderId());
+            context.startActivity(i);
+        }
+        else {
+            Intent intent = new Intent(context, ReminderActivity.class);
+            intent.putExtra("id", reminder.getReminderId());
+            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
-        createNotificationChannel();
-        Uri soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "1")
-                .setSmallIcon(R.drawable.ic_notifications_none_black_24dp);
-        builder.setContentTitle("Reminder: \""+reminder.getTitle()+"\"");
-        builder.setContentText(reminder.getDescription())
-                .setStyle(new NotificationCompat.BigTextStyle()
-                        .bigText(reminder.getDescription()))
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setContentIntent(pendingIntent)
-                .setSound(soundUri)
-                .setAutoCancel(true);
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
-        notificationManager.notify(notificationId, builder.build());
-        notificationId++;
+            createNotificationChannel(importance);
+            Uri soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "1")
+                    .setSmallIcon(R.drawable.ic_notifications_none_black_24dp);
+            builder.setContentTitle("Reminder: \"" + reminder.getTitle() + "\"");
+            builder.setContentText(reminder.getDescription())
+                    .setStyle(new NotificationCompat.BigTextStyle()
+                            .bigText(reminder.getDescription()))
+                    .setPriority(reminder.getImportance()==0 ? NotificationCompat.PRIORITY_DEFAULT : NotificationCompat.PRIORITY_HIGH)
+                    .setContentIntent(pendingIntent)
+                    .setSound(soundUri)
+                    .setVibrate(new long[]{100, 200, 300})
+                    .setChannelId(Integer.toString(reminder.getImportance()+1))
+                    .setAutoCancel(true);
+
+            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
+            notificationManager.notify(notificationId, builder.build());
+            notificationId++;
+        }
     }
 
 }

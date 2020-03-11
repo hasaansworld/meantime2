@@ -2,11 +2,15 @@ package app.meantime;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.viewpager.widget.ViewPager;
 import androidx.work.Constraints;
 import androidx.work.ExistingPeriodicWorkPolicy;
@@ -14,12 +18,17 @@ import androidx.work.NetworkType;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
+import android.Manifest;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -27,6 +36,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -36,9 +46,11 @@ import com.bumptech.glide.request.transition.Transition;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
+import com.nguyenhoanglam.imagepicker.helper.PermissionHelper;
 import com.nguyenhoanglam.imagepicker.ui.imagepicker.ImagePicker;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -54,6 +66,8 @@ public class MainActivity extends AppCompatActivity {
     Menu menu;
     BackgroundService backgroundService;
     Intent mServiceIntent;
+    String[] months = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+    boolean isPermissionGranted = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -181,10 +195,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        /*layoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(layoutManager);
-        adapter = new AdapterReminders(this);
-        recyclerView.setAdapter(adapter);*/
+        checkPermission();
     }
 
     public static float dpToPixel(float dp, Context context){
@@ -250,6 +261,109 @@ public class MainActivity extends AppCompatActivity {
 
         WorkManager.getInstance(this)
                 .enqueueUniquePeriodicWork("backgroundWork", ExistingPeriodicWorkPolicy.KEEP, backgroundRequest);
+
+    }
+
+    public void updateContacts(){
+        String lastContactsUpdate = sharedPreferences.getString("lastContactsUpdate", "");
+        String today = getCurrentDate();
+        if(!lastContactsUpdate.equals(today)){
+            ContactsTask task = new ContactsTask(this);
+            task.setOnFinishedListener(() -> {
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString("lastContactsUpdate", today);
+                editor.apply();
+                Toast.makeText(backgroundService, "Contacts Updated!", Toast.LENGTH_SHORT).show();
+            });
+            task.execute();
+        }
+        else
+            Toast.makeText(this, "Already updated contacts today!", Toast.LENGTH_SHORT).show();
+    }
+
+    public String getCurrentDate(){
+        Calendar now = Calendar.getInstance();
+        int day = now.get(Calendar.DAY_OF_MONTH);
+        int month = now.get(Calendar.MONTH);
+        int year = now.get(Calendar.YEAR);
+        return String.format("%02d", day) + " " + months[month] + " " + year;
+    }
+
+
+    public void checkPermission(){
+        if(!isPermissionGranted) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                        Manifest.permission.READ_CONTACTS)) {
+                    showPermissionDialog(false);
+                } else {
+                    // No explanation needed; request the permission
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{Manifest.permission.READ_CONTACTS},
+                            100);
+                }
+            } else {
+                isPermissionGranted = true;
+                updateContacts();
+            }
+        }
+    }
+
+
+    public void showPermissionDialog(boolean settings){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this)
+                .setTitle("Contacts Permission")
+                .setMessage("Please allow us to read your contacts so you can share reminders with your friends.");
+        if(settings){
+            builder.setPositiveButton("Settings", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    PermissionHelper.openAppSettings(MainActivity.this);
+                }
+            });
+        }
+        else {
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    ActivityCompat.requestPermissions(MainActivity.this,
+                            new String[]{Manifest.permission.READ_CONTACTS},
+                            100);
+                }
+            });
+        }
+        AlertDialog dialog = builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                finish();
+            }
+        })
+                .show();
+        int colorAccent = getResources().getColor(R.color.colorAccent);
+        dialog.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(colorAccent);
+        dialog.getButton(DialogInterface.BUTTON_NEGATIVE).setTextColor(colorAccent);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String[] permissions, int[] grantResults) {
+        for(int i = 0; i < permissions.length; i++) {
+            switch (requestCode) {
+                case 100: {
+                    if (grantResults.length > 0
+                            && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                        updateContacts();
+                        isPermissionGranted = true;
+                    } else {
+                        showPermissionDialog(Build.VERSION.SDK_INT >= 23 && !shouldShowRequestPermissionRationale(permissions[i]));
+                    }
+                    return;
+                }
+            }
+        }
     }
 
 }

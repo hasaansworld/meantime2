@@ -58,8 +58,8 @@ public class BackgroundWorker extends Worker {
 
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = "alerts";
-            String description = "test notifications.";
+            CharSequence name = "Low Importance Reminders";
+            String description = "Get simple notifications about low importance reminders.";
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
             NotificationChannel channel = new NotificationChannel("1", name, importance);
             channel.setDescription(description);

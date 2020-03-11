@@ -1,6 +1,8 @@
 package app.meantime;
 
 import android.content.Context;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +15,10 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.nguyenhoanglam.imagepicker.model.Image;
+import com.vanniktech.emoji.EmojiEditText;
+import com.vanniktech.emoji.EmojiPopup;
+import com.vanniktech.emoji.listeners.OnEmojiPopupDismissListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,18 +30,48 @@ public class AdapterCreateGroup extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     Context context;
     List<DataContact> contacts = new ArrayList<>();
+    View root;
+    String groupName = "";
+    EmojiPopup.Builder emojiPopupBuilder;
 
-    public AdapterCreateGroup(Context context){
+    public AdapterCreateGroup(Context context, View root){
         this.context = context;
+        this.root = root;
+        emojiPopupBuilder = EmojiPopup.Builder.fromRootView(root);
         Realm realm = RealmUtils.getRealm();
         contacts.addAll(realm.where(DataContact.class).findAll());
         Collections.sort(contacts);
     }
 
     public class ViewHolderName extends RecyclerView.ViewHolder{
+        EmojiEditText name;
+        ImageView emojiGroupName;
 
         public ViewHolderName(View v){
             super(v);
+            name = v.findViewById(R.id.name);
+            emojiGroupName = v.findViewById(R.id.emoji_group_name);
+            initializeEmoji();
+            name.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) { }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    groupName = s.toString();
+                }
+            });
+        }
+
+        public void initializeEmoji(){
+            emojiPopupBuilder.setOnEmojiPopupDismissListener(() -> emojiGroupName.setImageResource(R.drawable.outline_sentiment_satisfied_black_24));
+            EmojiPopup emojiPopup = emojiPopupBuilder.build(name);
+            emojiGroupName.setOnClickListener(v -> {
+                emojiGroupName.setImageResource(emojiPopup.isShowing() ? R.drawable.outline_sentiment_satisfied_black_24 : R.drawable.ic_keyboard_black_24dp);
+                emojiPopup.toggle();
+            });
         }
     }
 
@@ -79,6 +115,10 @@ public class AdapterCreateGroup extends RecyclerView.Adapter<RecyclerView.ViewHo
             holderContacts.name.setText(contact.getName());
             holderContacts.about.setText(contact.getAbout());
             Glide.with(context).asBitmap().load(contact.getProfilePic()).placeholder(R.drawable.profile_picture).into(holderContacts.profilePicture);
+        }
+        else if(holder instanceof ViewHolderName){
+            ViewHolderName holderName = (ViewHolderName) holder;
+            holderName.name.setText(groupName);
         }
     }
 

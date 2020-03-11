@@ -6,8 +6,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.view.MenuItem;
+import android.view.View;
 
 public class CreateGroupActivity extends AppCompatActivity {
+    View root;
     Toolbar toolbar;
     RecyclerView recyclerView;
 
@@ -22,9 +25,17 @@ public class CreateGroupActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_arrow_back_black_24dp);
 
+        root = findViewById(R.id.root);
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(new AdapterCreateGroup(this));
+        recyclerView.setAdapter(new AdapterCreateGroup(this, root));
 
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == android.R.id.home)
+            finish();
+        return true;
     }
 }

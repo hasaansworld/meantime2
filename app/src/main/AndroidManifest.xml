@@ -10,10 +10,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".CreateGroupActivity"
-            android:windowSoftInputMode="adjustNothing" />
+        <activity android:name=".FullScreenReminderActivity"></activity>
+        <activity
+            android:name=".CreateGroupActivity" />
         <activity android:name=".TestActivity" />
-        <activity android:name=".GroupActivity"/>
+        <activity android:name=".GroupActivity" />
         <activity android:name=".AddDescriptionActivity" />
         <activity android:name=".ProfileActivity" />
         <activity android:name=".CreateActivity" />
@@ -38,7 +39,7 @@
             android:name=".BackgroundServiceReceiver"
             android:enabled="true"
             android:exported="true"
-            android:label="RestartServiceWhenStopped"></receiver>
+            android:label="RestartServiceWhenStopped" />
         <receiver
             android:name=".WakeReceiver"
             android:enabled="true"
@@ -50,21 +51,21 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </receiver>
-
         <receiver android:name=".NotificationReceiver">
             <intent-filter>
                 <action android:name="app.meantime.ACTION_NOTIFICATION" />
             </intent-filter>
         </receiver>
+
         <service
             android:name=".BackgroundService"
-            android:enabled="true"></service>
+            android:enabled="true" />
         <service
             android:name=".ForegroundService"
             android:enabled="true" />
     </application>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
     <uses-permission android:name="android.permission.READ_CONTACTS" />
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
 </manifest>
