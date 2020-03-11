@@ -8,17 +8,17 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:113674588680:android:485d6f2bce603115adf7bd",
+        "mobilesdk_app_id": "1:113674588680:android:526466099f610e8fadf7bd",
         "android_client_info": {
-          "package_name": "dot.albums"
+          "package_name": "app.meantime"
         }
       },
       "oauth_client": [
         {
-          "client_id": "113674588680-4vj092ndsmopcrk0c9b04kmefafsb06a.apps.googleusercontent.com",
+          "client_id": "113674588680-6vp3395gu4bbe8nf6dcnl5ddc4lnnpsi.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "dot.albums",
+            "package_name": "app.meantime",
             "certificate_hash": "705ce1036190edcfa3ba0a20537a9d59c341b42e"
           }
         },

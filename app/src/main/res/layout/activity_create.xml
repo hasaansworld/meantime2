@@ -5,7 +5,7 @@
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".CreateActivity">
+    tools:context="app.meantime.CreateActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
