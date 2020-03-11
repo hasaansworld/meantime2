@@ -35,10 +35,18 @@ public class AdapterGroups extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         }
     }
 
-    public class ViewHolderNew extends RecyclerView.ViewHolder{
+    public class ViewHolderNew extends RecyclerView.ViewHolder implements View.OnClickListener {
+        LinearLayout newGroup;
 
         public ViewHolderNew(View v){
             super(v);
+            newGroup = v.findViewById(R.id.new_group);
+            newGroup.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            context.startActivity(new Intent(context, CreateGroupActivity.class));
         }
     }
 
