@@ -1,6 +1,7 @@
 package app.meantime;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -15,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.material.button.MaterialButton;
 import com.nguyenhoanglam.imagepicker.model.Image;
 import com.vanniktech.emoji.EmojiEditText;
 import com.vanniktech.emoji.EmojiPopup;
@@ -30,17 +32,25 @@ public class AdapterCreateGroup extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     Context context;
     List<DataContact> contacts = new ArrayList<>();
+    List<Boolean> selected = new ArrayList<>();
     View root;
+    TextView toolbarTitle;
+    MaterialButton createGroup;
     String groupName = "";
     EmojiPopup.Builder emojiPopupBuilder;
+    int selectCount = 0;
 
-    public AdapterCreateGroup(Context context, View root){
+    public AdapterCreateGroup(Context context, View root, TextView toolbarTitle, MaterialButton createGroup){
         this.context = context;
         this.root = root;
+        this.toolbarTitle = toolbarTitle;
+        this.createGroup = createGroup;
         emojiPopupBuilder = EmojiPopup.Builder.fromRootView(root);
         Realm realm = RealmUtils.getRealm();
         contacts.addAll(realm.where(DataContact.class).findAll());
         Collections.sort(contacts);
+        for(int i = 0; i < contacts.size(); i++)
+            selected.add(false);
     }
 
     public class ViewHolderName extends RecyclerView.ViewHolder{
@@ -76,21 +86,42 @@ public class AdapterCreateGroup extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     public class ViewHolderContacts extends RecyclerView.ViewHolder implements View.OnClickListener {
-        ImageView profilePicture;
+        ImageView profilePicture, checked;
         TextView name, about;
-        LinearLayout layout;
+        LinearLayout layout, backgroundLayout;
 
         public ViewHolderContacts(View v){
             super(v);
             name = v.findViewById(R.id.name);
             about = v.findViewById(R.id.about);
             profilePicture = v.findViewById(R.id.profilePicture);
+            checked = v.findViewById(R.id.checked);
             layout = v.findViewById(R.id.layout);
+            backgroundLayout = v.findViewById(R.id.background_layout);
             layout.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
+            int position = getAdapterPosition();
+            boolean previousSelection = selected.get(position-1);
+            selected.set(position-1, !previousSelection);
+            notifyItemChanged(position);
+            if(previousSelection)
+                selectCount--;
+            else
+                selectCount++;
+            if(selectCount == 0){
+                toolbarTitle.setText("Create Group");
+                createGroup.setVisibility(View.GONE);
+            }
+            else{
+                createGroup.setVisibility(View.VISIBLE);
+                if(selectCount == 1)
+                    toolbarTitle.setText("1 participant");
+                else
+                    toolbarTitle.setText(selectCount+" Participants");
+            }
 
         }
     }
@@ -114,7 +145,16 @@ public class AdapterCreateGroup extends RecyclerView.Adapter<RecyclerView.ViewHo
             DataContact contact = contacts.get(position-1);
             holderContacts.name.setText(contact.getName());
             holderContacts.about.setText(contact.getAbout());
-            Glide.with(context).asBitmap().load(contact.getProfilePic()).placeholder(R.drawable.profile_picture).into(holderContacts.profilePicture);
+            if(selected.get(position-1)) {
+                holderContacts.profilePicture.setImageResource(0);
+                holderContacts.checked.setVisibility(View.VISIBLE);
+                holderContacts.backgroundLayout.setBackgroundColor(Color.parseColor("#E3F2FD"));
+            }
+            else {
+                Glide.with(context).asBitmap().load(contact.getProfilePic()).placeholder(R.drawable.profile_picture).into(holderContacts.profilePicture);
+                holderContacts.checked.setVisibility(View.GONE);
+                holderContacts.backgroundLayout.setBackgroundColor(Color.WHITE);
+            }
         }
         else if(holder instanceof ViewHolderName){
             ViewHolderName holderName = (ViewHolderName) holder;

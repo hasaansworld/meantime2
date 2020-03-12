@@ -60,7 +60,7 @@ public class NotificationReceiver extends BroadcastReceiver {
             context.startActivity(i);
         }
         else {
-            Intent intent = new Intent(context, ReminderActivity.class);
+            Intent intent = new Intent(context, FullScreenReminderActivity.class);
             intent.putExtra("id", reminder.getReminderId());
             PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 

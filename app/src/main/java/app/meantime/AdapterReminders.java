@@ -11,9 +11,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -146,15 +149,14 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
             ViewHolderReminder holderReminder = (ViewHolderReminder)holder;
             DataReminder reminder = (DataReminder)allItems.get(position);
 
-            /*if(position%3 == 0){
+            if(reminder.getImage() != null && !reminder.getImage().equals("")){
                 holderReminder.image.setVisibility(View.VISIBLE);
-                Glide.with(context).asBitmap().load(R.drawable.sample).placeholder(R.drawable.imagepicker_image_placeholder).into(holderReminder.image);
+                Glide.with(context).asBitmap().load(reminder.getImage()).placeholder(R.drawable.imagepicker_image_placeholder).into(holderReminder.image);
             }
             else
-                holderReminder.image.setVisibility(View.GONE);*/
+                holderReminder.image.setVisibility(View.GONE);
             holderReminder.title.setText(reminder.getTitle());
             holderReminder.time.setText(reminder.getTime());
-            holderReminder.image.setVisibility(View.GONE);
             Drawable drawable = resources.getDrawable(R.drawable.circle_white);
             drawable.setColorFilter(Color.parseColor(colors[reminder.getImportance()]), PorterDuff.Mode.SRC_ATOP);
             holderReminder.circle.setBackground(drawable);

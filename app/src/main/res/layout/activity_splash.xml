@@ -28,6 +28,20 @@
             android:textColor="#444444"
             android:text="@string/app_name"/>
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:textSize="12sp"
+            android:textAllCaps="true"
+            android:textColor="@android:color/white"
+            android:text="BETA"
+            android:background="@drawable/beta_background"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="1dp"
+            android:paddingBottom="1dp"/>
+
     </LinearLayout>
 
     <LinearLayout

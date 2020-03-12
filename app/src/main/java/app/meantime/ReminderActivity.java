@@ -6,6 +6,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.Toolbar;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -37,9 +39,14 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import io.realm.Realm;
 
@@ -219,10 +226,21 @@ public class ReminderActivity extends AppCompatActivity {
                     .setTitle("Delete")
                     .setMessage("Do you really want to delete this reminder?")
                     .setPositiveButton("Delete", (dialog, which) -> {
-                        realm.beginTransaction();
                         DataReminder reminder = realm.where(DataReminder.class).equalTo("reminderId", id).findFirst();
+
+                        Intent intent1 = new Intent(getApplicationContext(), NotificationReceiver.class);
+                        intent1.setAction(NotificationReceiver.ACTION_NOTIFICATION);
+                        intent1.putExtra("id", reminder.getReminderId());
+                        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), getRequestCode(reminder), intent1,
+                                0);
+
+                        AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+                        alarmManager.cancel(pendingIntent);
+
+                        realm.beginTransaction();
                         reminder.setDeleted(true);
                         realm.commitTransaction();
+
                         Toast.makeText(this, "Reminder deleted!", Toast.LENGTH_SHORT).show();
                         finish();
                     })
@@ -313,5 +331,18 @@ public class ReminderActivity extends AppCompatActivity {
         inChannel.transferTo(0, inChannel.size(), outChannel);
         inStream.close();
         outStream.close();
+    }
+
+    public int getRequestCode(DataReminder reminder){
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd MMM yyyy hh:mm a");
+        try {
+            Date reminderDate = simpleDateFormat.parse(reminder.getDate() + " " + reminder.getTime());
+            Date now = Calendar.getInstance().getTime();
+            long timeInMillis = reminderDate.getTime();
+            return (int)timeInMillis/10000;
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 }

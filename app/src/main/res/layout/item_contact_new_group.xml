@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/background_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="center_vertical"
@@ -19,13 +20,27 @@
         android:paddingRight="15dp"
         android:paddingBottom="10dp">
 
-        <com.github.siyamed.shapeimageview.CircularImageView
-            android:id="@+id/profilePicture"
+        <FrameLayout
             android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:src="@drawable/profile_picture"
-            app:siBorderColor="#dddddd"
-            app:siBorderWidth="1dp" />
+            android:layout_height="36dp">
+
+            <com.github.siyamed.shapeimageview.CircularImageView
+                android:id="@+id/profilePicture"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:src="@drawable/profile_picture"
+                app:siBorderColor="#dddddd"
+                app:siBorderWidth="1dp" />
+
+            <ImageView
+                android:id="@+id/checked"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:src="@drawable/outline_done_white_24"
+                android:padding="6dp"
+                android:background="@drawable/new_group_checked_background" />
+
+        </FrameLayout>
 
         <LinearLayout
             android:layout_width="0dp"

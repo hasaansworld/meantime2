@@ -12,7 +12,8 @@
         android:theme="@style/AppTheme">
         <activity android:name=".FullScreenReminderActivity"></activity>
         <activity
-            android:name=".CreateGroupActivity" />
+            android:name=".CreateGroupActivity"
+            android:windowSoftInputMode="stateHidden"/>
         <activity android:name=".TestActivity" />
         <activity android:name=".GroupActivity" />
         <activity android:name=".AddDescriptionActivity" />

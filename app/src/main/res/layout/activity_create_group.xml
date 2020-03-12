@@ -61,6 +61,7 @@
         android:paddingBottom="8dp"
         app:cornerRadius="40dp"
         android:elevation="4dp"
-        android:clickable="true"/>
+        android:clickable="true"
+        android:visibility="gone"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
