@@ -10,10 +10,13 @@ import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
+import android.widget.Toast;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
+
+import java.util.Random;
 
 import io.realm.Realm;
 
@@ -29,8 +32,8 @@ public class NotificationReceiver extends BroadcastReceiver {
         Realm realm = Realm.getDefaultInstance();
         String id = intent.getStringExtra("id");
         DataReminder reminder = realm.where(DataReminder.class).equalTo("reminderId", id).findFirst();
+        notificationId = reminder.getReminderNumber();
         sendNotification(reminder);
-        notificationId = (int)System.currentTimeMillis()/10000;
     }
 
 
@@ -57,6 +60,9 @@ public class NotificationReceiver extends BroadcastReceiver {
         if(importance == 2){
             Intent i = new Intent(context, FullScreenReminderActivity.class);
             i.putExtra("id", reminder.getReminderId());
+            i.setFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+            if(Build.VERSION.SDK_INT >= 21)
+                i.setFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK | Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
             context.startActivity(i);
         }
         else {

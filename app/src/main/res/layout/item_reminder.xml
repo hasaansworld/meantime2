@@ -65,7 +65,8 @@
                 android:maxLines="1"
                 android:text="John, Adams, @KingPin and 3 more"
                 android:textColor="@android:color/black"
-                android:textSize="14sp" />
+                android:textSize="14sp"
+                android:visibility="gone"/>
 
         </LinearLayout>
 

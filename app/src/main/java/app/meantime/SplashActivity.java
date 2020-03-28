@@ -47,7 +47,7 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
 
         sharedPreferences = getSharedPreferences("data", MODE_PRIVATE);
-        isProfileSetup = sharedPreferences.getBoolean("profileDone", false);
+        isProfileSetup = sharedPreferences.getBoolean("profileDone", true);
 
         layoutSetup = findViewById(R.id.layoutSetup);
         handleSignIn();
@@ -63,15 +63,17 @@ public class SplashActivity extends AppCompatActivity {
                     finish();
                     overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                 }
-                FirebaseAuth auth = FirebaseAuth.getInstance();
-                if (auth.getCurrentUser() != null) {
-                    // already signed in
-                    if(!isProfileSetup) {
-                        profileSetupWithPermission();
+                else {
+                    FirebaseAuth auth = FirebaseAuth.getInstance();
+                    if (auth.getCurrentUser() != null) {
+                        // already signed in
+                        if (!isProfileSetup) {
+                            profileSetupWithPermission();
+                        }
+                    } else {
+                        // not signed in
+                        signIn();
                     }
-                } else {
-                    // not signed in
-                    signIn();
                 }
             }
         }, 1000);

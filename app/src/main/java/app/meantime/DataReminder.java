@@ -1,11 +1,14 @@
 package app.meantime;
 
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
 public class DataReminder extends RealmObject implements Comparable<DataReminder>{
+    @PrimaryKey
     String reminderId;
     String title, day, date, time, description, image, alarmtime;
     String owner;
+    int reminderNumber;
     int importance;
     boolean deleted = false;
     int status = STATUS_CREATED;
@@ -16,7 +19,8 @@ public class DataReminder extends RealmObject implements Comparable<DataReminder
 
     public DataReminder(){}
 
-    public DataReminder(String reminderId, String title, String day, String date, String time, String alarmtime, int importance, String owner) {
+    public DataReminder(int reminderNumber, String reminderId, String title, String day, String date, String time, String alarmtime, int importance, String owner) {
+        this.reminderNumber = reminderNumber;
         this.reminderId = reminderId;
         this.title = title;
         this.day = day;
@@ -24,6 +28,15 @@ public class DataReminder extends RealmObject implements Comparable<DataReminder
         this.time = time;
         this.alarmtime = alarmtime;
         this.importance = importance;
+        this.owner = owner;
+    }
+
+    public int getReminderNumber() {
+        return reminderNumber;
+    }
+
+    public void setReminderNumber(int reminderNumber) {
+        this.reminderNumber = reminderNumber;
     }
 
     public String getReminderId() {

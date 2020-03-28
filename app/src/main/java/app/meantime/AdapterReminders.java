@@ -157,6 +157,7 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
                 holderReminder.image.setVisibility(View.GONE);
             holderReminder.title.setText(reminder.getTitle());
             holderReminder.time.setText(reminder.getTime());
+            holderReminder.people.setText(reminder.getOwner());
             Drawable drawable = resources.getDrawable(R.drawable.circle_white);
             drawable.setColorFilter(Color.parseColor(colors[reminder.getImportance()]), PorterDuff.Mode.SRC_ATOP);
             holderReminder.circle.setBackground(drawable);

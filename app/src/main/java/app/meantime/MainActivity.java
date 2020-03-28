@@ -10,6 +10,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.viewpager.widget.ViewPager;
 import androidx.work.Constraints;
@@ -79,27 +80,33 @@ public class MainActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-        setProfilePicture();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        //setProfilePicture();
         toolbarTitle = findViewById(R.id.toolbarTitle);
 
-        viewPager = findViewById(R.id.viewpager);
+        /*viewPager = findViewById(R.id.viewpager);
         viewPager.setAdapter(new MainPagerAdapter(getSupportFragmentManager()));
         tabLayout = findViewById(R.id.tablayout);
-        tabLayout.setupWithViewPager(viewPager);
+        tabLayout.setupWithViewPager(viewPager);*/
+
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.content, new RemindersFragment());
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
 
         fabAdd = findViewById(R.id.fabAdd);
         fabAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(viewPager.getCurrentItem() == 0)
-                    startActivity(new Intent(MainActivity.this, CreateActivity.class));
+                //if(viewPager.getCurrentItem() == 0)
+                startActivity(new Intent(MainActivity.this, CreateActivity.class));
 
             }
         });
 
         groupAdd = findViewById(R.id.group_add);
 
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        /*viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             int[] menus = {R.menu.options_main_reminder, R.menu.options_main_groups, R.menu.options_main_people};
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) { }
@@ -115,16 +122,16 @@ public class MainActivity extends AppCompatActivity {
                         fabAdd.hide();
                         getMenuInflater().inflate(R.menu.options_main_groups, menu);
                     }
-                /*if(position == 1)
+                *//*if(position == 1)
                     groupAdd.setVisibility(View.VISIBLE);
                 else
-                    groupAdd.setVisibility(View.GONE);*/
+                    groupAdd.setVisibility(View.GONE);*//*
                 }
             }
 
             @Override
             public void onPageScrollStateChanged(int state) { }
-        });
+        });*/
 
         backgroundWork();
 
@@ -178,7 +185,8 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         int[] options = {R.menu.options_main_reminder, R.menu.options_main_groups, R.menu.options_main_people};
         this.menu = menu;
-        getMenuInflater().inflate(options[viewPager.getCurrentItem()], menu);
+        //getMenuInflater().inflate(options[viewPager.getCurrentItem()], menu);
+        getMenuInflater().inflate(R.menu.options_main_reminder, menu);
         return true;
     }
 
@@ -195,7 +203,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        checkPermission();
+        //checkPermission();
     }
 
     public static float dpToPixel(float dp, Context context){

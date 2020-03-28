@@ -54,7 +54,7 @@ public class ReminderActivity extends AppCompatActivity {
 
     Toolbar toolbar;
     AppBarLayout appBarLayout;
-    TextView title, time, day, date, alarmTime, description;
+    TextView title, people, time, day, date, alarmTime, description;
     ImageView image, removeImage, changeImage;
     View circle;
     List<String> titles = new ArrayList<>();
@@ -82,6 +82,7 @@ public class ReminderActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         title = findViewById(R.id.title);
+        people = findViewById(R.id.people);
         time = findViewById(R.id.time);
         day = findViewById(R.id.day);
         date = findViewById(R.id.date);
@@ -95,8 +96,6 @@ public class ReminderActivity extends AppCompatActivity {
         imageLayout = findViewById(R.id.layout_image);
         addDescription = findViewById(R.id.layout_add_description);
         description = findViewById(R.id.description);
-
-        setData();
 
         if(Build.VERSION.SDK_INT >= 21) {
             scrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
@@ -185,6 +184,11 @@ public class ReminderActivity extends AppCompatActivity {
         alarmTimesShort.put("1 hour before", "1 hour");
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        setData();
+    }
 
     void setData() {
         String[] colors = {"#FFEE58", "#FF9700", "#F44336"};
@@ -194,6 +198,7 @@ public class ReminderActivity extends AppCompatActivity {
         day.setText(reminder.getDay());
         date.setText(reminder.getDate());
         time.setText(reminder.getTime());
+        people.setText(reminder.getOwner());
         alarmTime.setText(alarmTimesShort.get(reminder.getAlarmtime()));
         Drawable d = getResources().getDrawable(R.drawable.circle_white);
         d.setColorFilter(Color.parseColor(colors[reminder.getImportance()]), PorterDuff.Mode.SRC_ATOP);
@@ -231,7 +236,7 @@ public class ReminderActivity extends AppCompatActivity {
                         Intent intent1 = new Intent(getApplicationContext(), NotificationReceiver.class);
                         intent1.setAction(NotificationReceiver.ACTION_NOTIFICATION);
                         intent1.putExtra("id", reminder.getReminderId());
-                        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), getRequestCode(reminder), intent1,
+                        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), reminder.getReminderNumber(), intent1,
                                 0);
 
                         AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
@@ -251,6 +256,12 @@ public class ReminderActivity extends AppCompatActivity {
             int colorAccent = getResources().getColor(R.color.colorAccent);
             d.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.parseColor("#F44336"));
             d.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(colorAccent);
+        }
+        else if(item.getItemId() == R.id.edit){
+            Intent i = new Intent(this, CreateActivity.class);
+            i.putExtra("isEditing", true);
+            i.putExtra("reminderId", id);
+            startActivity(i);
         }
         return true;
     }

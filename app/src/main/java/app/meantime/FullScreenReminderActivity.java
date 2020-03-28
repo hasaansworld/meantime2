@@ -9,7 +9,10 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
 
 import io.realm.Realm;
 
@@ -17,8 +20,9 @@ public class FullScreenReminderActivity extends AppCompatActivity {
     Realm realm;
     DataReminder reminder;
     Toolbar toolbar;
-    TextView title;
+    TextView title, description;
     TextView time, day, date, alarmTime;
+    ImageView image;
     View circle;
 
     @Override
@@ -36,6 +40,8 @@ public class FullScreenReminderActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         title = findViewById(R.id.title);
+        description = findViewById(R.id.description);
+        image = findViewById(R.id.image);
         title.setText(reminder.getTitle());
 
         time = findViewById(R.id.time);
@@ -52,6 +58,16 @@ public class FullScreenReminderActivity extends AppCompatActivity {
         d.setColorFilter(Color.parseColor(colors[reminder.getImportance()]), PorterDuff.Mode.SRC_ATOP);
         circle.setBackground(d);
         alarmTime.setText(reminder.getAlarmtime());
+
+        description = findViewById(R.id.description);
+        if(reminder.getDescription() != null && !reminder.getDescription().equals(""))
+            description.setText(reminder.getDescription());
+
+        String path = reminder.getImage();
+        if(path != null && !path.equals("")){
+            image.setVisibility(View.VISIBLE);
+            Glide.with(this).asBitmap().load(path).into(image);
+        }
 
     }
 

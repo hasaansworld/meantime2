@@ -157,7 +157,7 @@ public class BackgroundWorker extends Worker {
                 Intent intent1 = new Intent(getApplicationContext(), NotificationReceiver.class);
                 intent1.setAction(NotificationReceiver.ACTION_NOTIFICATION);
                 intent1.putExtra("id", reminder.getReminderId());
-                int requestCode = (int)timeInMillis/10000;
+                int requestCode = reminder.getReminderNumber();
                 PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), requestCode, intent1,
                         0);
                 if (Build.VERSION.SDK_INT >= 19)

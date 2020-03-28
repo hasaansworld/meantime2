@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.database.FirebaseDatabase;
@@ -36,11 +37,12 @@ import io.realm.Realm;
 public class CreateActivity extends AppCompatActivity {
     CoordinatorLayout root;
     Toolbar toolbar;
+    TextView toolbarTitle;
     ImageView emojiTitle, emojiDescription;
     LinearLayout alarmTime;
     TextView textAlarmTime;
     LinearLayout lowImportance, mediumImportance, highImportance, importanceLayout;
-    TextView textDate, textTime;
+    TextView textDate, textTime, textError;
     EmojiEditText title, description;
     MaterialButton saveButton;
     int importance=1;
@@ -50,6 +52,9 @@ public class CreateActivity extends AppCompatActivity {
     String dayOfWeek;
     long timeInMillis = -1;
     Realm realm;
+    boolean isEditing = false;
+    String reminderId;
+    DataReminder oldReminder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +67,7 @@ public class CreateActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_arrow_back_black_24dp);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
+        toolbarTitle = findViewById(R.id.toolbarTitle);
 
         root = findViewById(R.id.root);
         title = findViewById(R.id.title);
@@ -75,6 +81,7 @@ public class CreateActivity extends AppCompatActivity {
         importanceLayout = mediumImportance;
         textDate = findViewById(R.id.text_date);
         textTime = findViewById(R.id.text_time);
+        textError = findViewById(R.id.textError);
         saveButton = findViewById(R.id.saveButton);
         emojiDescription = findViewById(R.id.emojiDescription);
         initializeEmoji(emojiTitle, title);
@@ -146,29 +153,96 @@ public class CreateActivity extends AppCompatActivity {
         highImportance.setOnClickListener(importanceListener);
 
         saveButton.setOnClickListener(v -> {
-            DataReminder dataReminder = new DataReminder(
-                    FirebaseDatabase.getInstance().getReference().push().getKey(),
+            textError.setVisibility(View.GONE);
+            if(title.getText().toString().equals("")){
+                textError.setVisibility(View.VISIBLE);
+                textError.setText( "Title can't be empty!");
+            }
+            else {
+                Number id = realm.where(DataReminder.class).max("reminderNumber");
+                int next_id = (id == null) ? 117 : id.intValue() + 1;
+                DataReminder dataReminder = new DataReminder(
+                    isEditing ? oldReminder.getReminderNumber():next_id,
+                    isEditing ? oldReminder.getReminderId():FirebaseDatabase.getInstance().getReference().push().getKey(),
                     title.getText().toString(),
                     dayOfWeek,
                     textDate.getText().toString(),
                     textTime.getText().toString(),
                     textAlarmTime.getText().toString(),
                     importance,
-                    "me"
-            );
+                    "You"
+                );
+                boolean isTimeDifferent = false;
+                if(isEditing){
+                    isTimeDifferent = !textDate.getText().toString().equals(oldReminder.getDate())
+                            || !textTime.getText().toString().equals(oldReminder.getTime())
+                            || !textAlarmTime.getText().toString().equals(oldReminder.getAlarmtime());
+                    if(isTimeDifferent)
+                        dataReminder.setStatus(DataReminder.STATUS_CREATED);
+                    dataReminder.setDescription(oldReminder.getDescription());
+                    dataReminder.setImage(oldReminder.getImage());
+                    Intent intent1 = new Intent(getApplicationContext(), NotificationReceiver.class);
+                    intent1.setAction(NotificationReceiver.ACTION_NOTIFICATION);
+                    intent1.putExtra("id", oldReminder.getReminderId());
+                    PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), oldReminder.getReminderNumber(), intent1,
+                            0);
 
-            realm.beginTransaction();
-            realm.copyToRealm(dataReminder);
-            realm.commitTransaction();
+                    AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+                    alarmManager.cancel(pendingIntent);
+                }
 
-            Intent i = new Intent(CreateActivity.this, ReminderActivity.class);
-            i.putExtra("id", dataReminder.getReminderId());
-            startActivity(i);
-            finish();
-            if(shouldSchedule()){
-                scheduleReminder(dataReminder.getReminderId());
+                realm.beginTransaction();
+                realm.copyToRealmOrUpdate(dataReminder);
+                realm.commitTransaction();
+
+                if(!isEditing) {
+                    Intent i = new Intent(CreateActivity.this, ReminderActivity.class);
+                    i.putExtra("id", dataReminder.getReminderId());
+                    startActivity(i);
+                }
+                finish();
+                if (!isEditing && shouldSchedule() || isEditing && isTimeDifferent && shouldSchedule()) {
+                    scheduleReminder(dataReminder.getReminderId());
+                }
             }
         });
+
+        if(isEditing = getIntent().getBooleanExtra("isEditing", false)){
+            saveButton.setText("Update Reminder");
+            toolbarTitle.setText("Edit Reminder");
+            reminderId = getIntent().getStringExtra("reminderId");
+            DataReminder reminder = realm.where(DataReminder.class).equalTo("reminderId", reminderId).findFirst();
+            title.setText(reminder.getTitle());
+            textDate.setText(reminder.getDate());
+            textTime.setText(reminder.getTime());
+            textAlarmTime.setText(reminder.getAlarmtime());
+            importance = reminder.getImportance();
+            if(reminder.getImportance() == 0){
+                mediumImportance.setBackgroundResource(R.drawable.button_date);
+                lowImportance.setBackgroundResource(R.drawable.button_importance_selected);
+                importanceLayout = lowImportance;
+            }
+            else if(reminder.getImportance() == 2){
+                mediumImportance.setBackgroundResource(R.drawable.button_date);
+                highImportance.setBackgroundResource(R.drawable.button_importance_selected);
+                importanceLayout = highImportance;
+            }
+            oldReminder = reminder;
+
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd MMM yyyy hh:mm a");
+            try {
+                Date reminderDate = simpleDateFormat.parse(reminder.getDate() + " " + reminder.getTime());
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(reminderDate);
+                hour = calendar.get(Calendar.HOUR_OF_DAY);
+                minute = calendar.get(Calendar.MINUTE);
+                day = calendar.get(Calendar.DATE);
+                month = calendar.get(Calendar.MONTH);
+                year = calendar.get(Calendar.YEAR);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
 
     }
 
@@ -229,15 +303,17 @@ public class CreateActivity extends AppCompatActivity {
         Intent intent1 = new Intent(getApplicationContext(), NotificationReceiver.class);
         intent1.setAction(NotificationReceiver.ACTION_NOTIFICATION);
         intent1.putExtra("id", id);
-        int requestCode = (int)timeInMillis/10000;
+
+        DataReminder reminder = realm.where(DataReminder.class).equalTo("reminderId", id).findFirst();
+        int requestCode = reminder.getReminderNumber();
         PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), requestCode, intent1,
                 0);
         if (Build.VERSION.SDK_INT >= 19)
             alarmManager.setExact(AlarmManager.RTC, timeInMillis, pendingIntent);
         else
             alarmManager.set(AlarmManager.RTC, timeInMillis, pendingIntent);
+
         realm.beginTransaction();
-        DataReminder reminder = realm.where(DataReminder.class).equalTo("reminderId", id).findFirst();
         if(reminder != null)
             reminder.setStatus(DataReminder.STATUS_SCHEDULED);
         realm.commitTransaction();
