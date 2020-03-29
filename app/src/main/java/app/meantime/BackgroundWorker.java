@@ -129,7 +129,7 @@ public class BackgroundWorker extends Worker {
                 reminders.remove(i-1);
         }
 
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm dd MMM yyyy", Locale.getDefault());
+        SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy HH:mm", Locale.getDefault());
         String currentDateandTime = sdf.format(new Date());
         String appName = context.getApplicationInfo().loadLabel(context.getPackageManager()).toString();
         File dir = new File(Environment.getExternalStorageDirectory()+"/"+appName+"/Logs");
@@ -166,6 +166,7 @@ public class BackgroundWorker extends Worker {
                     alarmManager.set(AlarmManager.RTC, timeInMillis, pendingIntent);
                 realm.beginTransaction();
                 reminder.setStatus(DataReminder.STATUS_SCHEDULED);
+                realm.copyToRealmOrUpdate(reminder);
                 realm.commitTransaction();
             }
             else

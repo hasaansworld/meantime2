@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -39,41 +40,64 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
     Realm realm;
     RealmResults<DataReminder> reminders;
     List<DataReminder> allReminders = new ArrayList<>();
+    List<DataReminder> displayReminders = new ArrayList<>();
     ArrayList<Object> allItems = new ArrayList<>();
     ArrayList<Integer> datePositions = new ArrayList<>();
     String[] colors = {"#FFEE58", "#FF9700", "#F44336"};
     Resources resources;
+    String today, tomorrow, yesterday;
+    int mode = 0;
 
-    public AdapterReminders(Context context){
+    public AdapterReminders(Context context, int mode){
         this.context = context;
         resources = context.getResources();
-        /*dates.put("0", "Today");
-        dates.put("4", "Tomorrow");
-        dates.put("9", "15 Feb 2020");
-        titles.add("Sandra's Birthday Party");
-        titles.add("Dinner at Hardee's");
-        titles.add("Flutter Interact DSC CEME");
-        titles.add("Meeting");
-        titles.add("Raiding Area 51 and Recovering Alien Life");*/
+
         realm = RealmUtils.getRealm();
-        reminders = realm.where(DataReminder.class).equalTo("deleted", false).findAll();
-        allReminders.addAll(reminders);
-        Collections.sort(allReminders);
-        String previousDate = "";
-        int position = 0;
-        for(DataReminder reminder: allReminders){
-            if(!reminder.getDate().equals(previousDate)){
-                previousDate = reminder.getDate();
-                DataReminderDate drd = new DataReminderDate(position, reminder.getDay(), reminder.getDate());
-                allItems.add(drd);
-                datePositions.add(position);
-                position++;
-            }
-            allItems.add(reminder);
-            position++;
+
+        this.mode = mode;
+        if(mode == 0 || mode == 2) {
+            reminders = realm.where(DataReminder.class).equalTo("deleted", mode != 0).findAll();
+            allReminders.addAll(reminders);
+            Collections.sort(allReminders);
+
+            getTodayAndTomorrow();
+            removeOldReminders();
+            displayReminders.addAll(allReminders);
+            filterAndArrange(-1);
+        }
+        else if(mode == 1){
+            reminders = realm.where(DataReminder.class).equalTo("deleted", false).findAll();
+            allReminders.addAll(reminders);
+            Collections.sort(allReminders);
+            Collections.reverse(allReminders);
+
+            getTodayAndTomorrow();
+            removeNewReminders();
+            displayReminders.addAll(allReminders);
+            filterAndArrange(-1);
         }
 
         colorAccent = context.getResources().getColor(R.color.colorAccent);
+    }
+
+    private void filterAndArrange(int filter){
+        String previousDate = "";
+        int position = 0;
+        allItems.clear();
+        datePositions.clear();
+        for(DataReminder reminder: displayReminders){
+            if(filter == -1 || reminder.getImportance() == filter) {
+                if (!reminder.getDate().equals(previousDate)) {
+                    previousDate = reminder.getDate();
+                    DataReminderDate drd = new DataReminderDate(position, reminder.getDay(), reminder.getDate());
+                    allItems.add(drd);
+                    datePositions.add(position);
+                    position++;
+                }
+                allItems.add(reminder);
+                position++;
+            }
+        }
     }
 
     public class ViewHolderHeader extends RecyclerView.ViewHolder {
@@ -108,6 +132,10 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
         public void onClick(View v) {
             Intent i = new Intent(context, ReminderActivity.class);
             i.putExtra("id", ((DataReminder)allItems.get(getAdapterPosition())).getReminderId());
+            if(mode == 1)
+                i.putExtra("isHistory", true);
+            else if(mode == 2)
+                i.putExtra("isDeleted", true);
             context.startActivity(i);
         }
     }
@@ -175,18 +203,72 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
         }
     }
 
-    private String getTitleFromDate(String date) {
+    private void removeOldReminders(){
+        SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy");
+        int todayIndex = -1;
+        for(int i = 0; i < allReminders.size(); i++){
+            DataReminder reminder = allReminders.get(i);
+            try {
+                Date d = sdf.parse(today);
+                Date d2 = sdf.parse(reminder.getDate());
+                if(d2.getTime() >= d.getTime()) {
+                    todayIndex = i;
+                    break;
+                }
+            }
+            catch (ParseException e){
+                // Couldn't parse, maybe ignore?
+            }
+        }
+        if(todayIndex == -1)
+            allReminders.clear();
+        else
+            allReminders = allReminders.subList(todayIndex, allReminders.size());
+    }
+
+    private void removeNewReminders(){
+        SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy");
+        int todayIndex = -1;
+        for(int i = 0; i < allReminders.size(); i++){
+            DataReminder reminder = allReminders.get(i);
+            try {
+                Date d = sdf.parse(today);
+                Date d2 = sdf.parse(reminder.getDate());
+                if(d2.getTime() < d.getTime()) {
+                    todayIndex = i;
+                    break;
+                }
+            }
+            catch (ParseException e){
+                // Couldn't parse, maybe ignore?
+            }
+        }
+        if(todayIndex == -1)
+            allReminders.clear();
+        else
+            allReminders = allReminders.subList(todayIndex, allReminders.size());
+    }
+
+    private void getTodayAndTomorrow(){
         Calendar now = Calendar.getInstance();
         Date d = now.getTime();
         SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy");
-        String today = sdf.format(d);
+        today = sdf.format(d);
         now.add(Calendar.DATE, 1);
         d = now.getTime();
-        String tomorrow = sdf.format(d);
+        tomorrow = sdf.format(d);
+        now.add(Calendar.DATE, -2);
+        d = now.getTime();
+        yesterday = sdf.format(d);
+    }
+
+    private String getTitleFromDate(String date) {
         if(date.equals(today))
             return "Today";
         else if(date.equals(tomorrow))
             return "Tomorrow";
+        else if(date.equals(yesterday))
+            return "Yesterday";
         else
             return "";
     }
@@ -202,6 +284,13 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
             return 0;
         else
             return 1;
+    }
+
+    public void setFilter(int filter){
+        displayReminders.clear();
+        displayReminders.addAll(allReminders);
+        filterAndArrange(filter);
+        notifyDataSetChanged();
     }
 
     public int getHeaderPositionForItem(int itemPosition) {

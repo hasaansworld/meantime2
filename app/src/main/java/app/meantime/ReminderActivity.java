@@ -10,6 +10,7 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -65,6 +66,9 @@ public class ReminderActivity extends AppCompatActivity {
     String id, descriptionS = "";
     Realm realm;
     HashMap<String, String> alarmTimesShort = new HashMap<>();
+    boolean isHistory;
+    boolean isDeleted;
+    long timeInMillis = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -193,6 +197,8 @@ public class ReminderActivity extends AppCompatActivity {
     void setData() {
         String[] colors = {"#FFEE58", "#FF9700", "#F44336"};
         id = getIntent().getStringExtra("id");
+        isHistory = getIntent().getBooleanExtra("isHistory", false);
+        isDeleted = getIntent().getBooleanExtra("isDeleted", false);
         DataReminder reminder = realm.where(DataReminder.class).equalTo("reminderId", id).findFirst();
         title.setText(reminder.getTitle());
         day.setText(reminder.getDay());
@@ -214,11 +220,22 @@ public class ReminderActivity extends AppCompatActivity {
             description.setVisibility(View.VISIBLE);
             description.setText(reminder.getDescription());
         }
+        if(isHistory || isDeleted){
+            addDescription.setVisibility(View.GONE);
+            addImage.setVisibility(View.GONE);
+            description.setVisibility(View.VISIBLE);
+            findViewById(R.id.description_gap).setVisibility(View.VISIBLE);
+            if(reminder.getDescription() == null || reminder.getDescription().equals(""))
+                description.setText("No description.");
+        }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.options_reminder, menu);
+        if(!isDeleted)
+            getMenuInflater().inflate(R.menu.options_reminder, menu);
+        else
+            getMenuInflater().inflate(R.menu.options_reminder_deleted, menu);
         return true;
     }
 
@@ -229,7 +246,7 @@ public class ReminderActivity extends AppCompatActivity {
         else if(item.getItemId() == R.id.delete){
             AlertDialog d = new AlertDialog.Builder(ReminderActivity.this)
                     .setTitle("Delete")
-                    .setMessage("Do you really want to delete this reminder?")
+                    .setMessage(isHistory ? "This reminder will be deleted permanently. Do you want to continue?":"This reminder will be moved to the \"Deleted\" section. Do you want to continue?")
                     .setPositiveButton("Delete", (dialog, which) -> {
                         DataReminder reminder = realm.where(DataReminder.class).equalTo("reminderId", id).findFirst();
 
@@ -242,11 +259,24 @@ public class ReminderActivity extends AppCompatActivity {
                         AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
                         alarmManager.cancel(pendingIntent);
 
-                        realm.beginTransaction();
-                        reminder.setDeleted(true);
-                        realm.commitTransaction();
+                        SharedPreferences.Editor editor = getSharedPreferences("data", MODE_PRIVATE).edit();
+                        if(isHistory) {
+                            realm.beginTransaction();
+                            reminder.deleteFromRealm();
+                            realm.commitTransaction();
+                            editor.putBoolean("updateHistoryList", true);
+                            editor.apply();
+                        }
+                        else {
+                            realm.beginTransaction();
+                            reminder.setDeleted(true);
+                            realm.commitTransaction();
+                            editor.putBoolean("updateMainList", true);
+                            editor.apply();
+                        }
 
                         Toast.makeText(this, "Reminder deleted!", Toast.LENGTH_SHORT).show();
+
                         finish();
                     })
                     .setNegativeButton("Cancel", (dialog, which) -> {
@@ -258,10 +288,72 @@ public class ReminderActivity extends AppCompatActivity {
             d.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(colorAccent);
         }
         else if(item.getItemId() == R.id.edit){
+            if(isHistory) {
+                SharedPreferences.Editor editor = getSharedPreferences("data", MODE_PRIVATE).edit();
+                editor.putBoolean("updateHistoryList", true);
+                editor.apply();
+            }
             Intent i = new Intent(this, CreateActivity.class);
             i.putExtra("isEditing", true);
             i.putExtra("reminderId", id);
             startActivity(i);
+        }
+        else if(item.getItemId() == R.id.delete_permanently){
+            AlertDialog d = new AlertDialog.Builder(ReminderActivity.this)
+                    .setTitle("Delete")
+                    .setMessage("This reminder will be deleted permanently. Do you want to continue?")
+                    .setPositiveButton("Delete", (dialog, which) -> {
+
+                        DataReminder reminder = realm.where(DataReminder.class).equalTo("reminderId", id).findFirst();
+                        SharedPreferences.Editor editor = getSharedPreferences("data", MODE_PRIVATE).edit();
+                        realm.beginTransaction();
+                        reminder.deleteFromRealm();
+                        realm.commitTransaction();
+                        editor.putBoolean("updateDeletedList", true);
+                        editor.apply();
+
+                        Toast.makeText(this, "Reminder permanently deleted!", Toast.LENGTH_SHORT).show();
+
+                        finish();
+                    })
+                    .setNegativeButton("Cancel", (dialog, which) -> {
+                        dialog.dismiss();
+                    })
+                    .show();
+            int colorAccent = getResources().getColor(R.color.colorAccent);
+            d.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.parseColor("#F44336"));
+            d.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(colorAccent);
+        }
+        else if(item.getItemId() == R.id.restore){
+            AlertDialog d = new AlertDialog.Builder(ReminderActivity.this)
+                    .setTitle("Restore")
+                    .setMessage("This reminder will be restored and rescheduled. Do you want to continue?")
+                    .setPositiveButton("Restore", (dialog, which) -> {
+
+                        DataReminder reminder = realm.where(DataReminder.class).equalTo("reminderId", id).findFirst();
+                        SharedPreferences.Editor editor = getSharedPreferences("data", MODE_PRIVATE).edit();
+                        realm.beginTransaction();
+                        reminder.setDeleted(false);
+                        realm.copyToRealmOrUpdate(reminder);
+                        realm.commitTransaction();
+                        editor.putBoolean("updateDeletedList", true);
+                        editor.putBoolean("updateMainList", true);
+                        editor.apply();
+
+                        if(reminder.getStatus() == DataReminder.STATUS_CREATED && shouldSchedule(reminder))
+                            scheduleReminder(reminder.getReminderId());
+
+                        Toast.makeText(this, "Reminder restored!", Toast.LENGTH_SHORT).show();
+                        finish();
+                    })
+                    .setNegativeButton("Cancel", (dialog, which) -> {
+                        dialog.dismiss();
+                    })
+                    .show();
+            int colorAccent = getResources().getColor(R.color.colorAccent);
+            d.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.parseColor("#4CAF50"));
+            d.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(colorAccent);
+
         }
         return true;
     }
@@ -356,4 +448,70 @@ public class ReminderActivity extends AppCompatActivity {
         }
         return 0;
     }
+
+
+    public boolean shouldSchedule(DataReminder reminder){
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd MMM yyyy hh:mm a");
+
+        try {
+            Date reminderDate = simpleDateFormat.parse(reminder.getDate() + " " + reminder.getTime());
+            reminderDate = getDisplayTime(reminderDate, reminder);
+            Date now = Calendar.getInstance().getTime();
+            timeInMillis = reminderDate.getTime();
+            long differenceInMillis = reminderDate.getTime() - now.getTime();
+            long differenceInMinutes = TimeUnit.MINUTES.convert(differenceInMillis, TimeUnit.MILLISECONDS);
+
+            return differenceInMinutes <= 40;
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public Date getDisplayTime(Date date, DataReminder reminder){
+        String displayTime = reminder.getAlarmtime();
+        if(displayTime.equals("Exact time")){
+            return date;
+        }
+        else if(displayTime.equals("5 minutes before")) {
+            return new Date(date.getTime() - TimeUnit.MINUTES.toMillis(5));
+        }
+        else if(displayTime.equals("10 minutes before")) {
+            return new Date(date.getTime() - TimeUnit.MINUTES.toMillis(10));
+        }
+        else if(displayTime.equals("15 minutes before")) {
+            return new Date(date.getTime() - TimeUnit.MINUTES.toMillis(15));
+        }
+        else if(displayTime.equals("30 minutes before")) {
+            return new Date(date.getTime() - TimeUnit.MINUTES.toMillis(30));
+        }
+        else if(displayTime.equals("1 hour before")) {
+            return new Date(date.getTime() - TimeUnit.HOURS.toMillis(1));
+        }
+        return date;
+    }
+
+    public void scheduleReminder(String id){
+        Realm realm = RealmUtils.getRealm();
+        AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+        Intent intent1 = new Intent(getApplicationContext(), NotificationReceiver.class);
+        intent1.setAction(NotificationReceiver.ACTION_NOTIFICATION);
+        intent1.putExtra("id", id);
+
+        DataReminder reminder = realm.where(DataReminder.class).equalTo("reminderId", id).findFirst();
+        int requestCode = reminder.getReminderNumber();
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), requestCode, intent1,
+                0);
+        if (Build.VERSION.SDK_INT >= 19)
+            alarmManager.setExact(AlarmManager.RTC, timeInMillis, pendingIntent);
+        else
+            alarmManager.set(AlarmManager.RTC, timeInMillis, pendingIntent);
+
+        realm.beginTransaction();
+        if(reminder != null)
+            reminder.setStatus(DataReminder.STATUS_SCHEDULED);
+        realm.copyToRealmOrUpdate(reminder);
+        realm.commitTransaction();
+    }
+
 }

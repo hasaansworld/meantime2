@@ -137,6 +137,12 @@
 
             </LinearLayout>
 
+            <View
+                android:id="@+id/description_gap"
+                android:layout_width="match_parent"
+                android:layout_height="12dp"
+                android:visibility="gone" />
+
             <LinearLayout
                 android:id="@+id/layout_add_image"
                 android:layout_width="match_parent"

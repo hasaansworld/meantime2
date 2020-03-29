@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/restore"
+        android:title="Restore"
+        android:icon="@drawable/outline_settings_backup_restore_black_24"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/delete_permanently"
+        android:title="Delete Permanently"
+        android:icon="@drawable/outline_delete_forever_black_24"
+        app:showAsAction="always" />
+
+</menu>

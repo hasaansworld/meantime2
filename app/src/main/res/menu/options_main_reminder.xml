@@ -32,11 +32,11 @@
         android:icon="@drawable/outline_archive_black_24"
         app:showAsAction="always" />!-->
 
-    <item
+    <!--<item
         android:id="@+id/jump"
         android:title="Go to..." />
 
-    <!--<item
+    <item
         android:id="@+id/showOnly"
         android:title="Show only"
         android:enabled="true">
@@ -75,9 +75,10 @@
         android:id="@+id/deleted"
         android:title="Deleted" />
 
+    <!--
     <item
         android:id="@+id/contacts"
-        android:title="Contacts" />
+        android:title="Contacts" /> !-->
 
     <item
         android:id="@+id/settings"

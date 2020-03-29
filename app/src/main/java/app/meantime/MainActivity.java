@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -27,12 +28,15 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -69,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
     Intent mServiceIntent;
     String[] months = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
     boolean isPermissionGranted = false;
+    RemindersFragment remindersFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,9 +94,10 @@ public class MainActivity extends AppCompatActivity {
         tabLayout = findViewById(R.id.tablayout);
         tabLayout.setupWithViewPager(viewPager);*/
 
+        remindersFragment = new RemindersFragment();
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.content, new RemindersFragment());
-        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.replace(R.id.content, remindersFragment);
+        //fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
 
         fabAdd = findViewById(R.id.fabAdd);
@@ -195,6 +201,35 @@ public class MainActivity extends AppCompatActivity {
         if(item.getItemId() == android.R.id.home)
             //startActivity(new Intent(this, ProfileActivity.class));
             startActivity(new Intent(this, TestActivity.class));
+        else if(item.getItemId() == R.id.filter){
+            PopupMenu popup = new PopupMenu(this, toolbar);
+            popup.setGravity(Gravity.END);
+            popup.setOnMenuItemClickListener(popupItem -> {
+                if(popupItem.getItemId() == R.id.no_filter) {
+                    remindersFragment.setFilter(-1);
+                    item.setIcon(R.drawable.ic_filter_list_black_24dp);
+                }
+                else if(popupItem.getItemId() == R.id.low_importance) {
+                    remindersFragment.setFilter(0);
+                    item.setIcon(R.drawable.circle_low_importance);
+                }
+                else if(popupItem.getItemId() == R.id.mid_importance) {
+                    remindersFragment.setFilter(1);
+                    item.setIcon(R.drawable.circle_mid_importance);
+                }
+                else if(popupItem.getItemId() == R.id.high_importance) {
+                    remindersFragment.setFilter(2);
+                    item.setIcon(R.drawable.circle_high_importance);
+                }
+                return true;
+            });
+            popup.inflate(R.menu.options_filter);
+            popup.show();
+        }
+        else if(item.getItemId() == R.id.history)
+            startActivity(new Intent(this, HistoryActivity.class));
+        else if(item.getItemId() == R.id.deleted)
+            startActivity(new Intent(this, DeletedActivity.class));
         else if(item.getItemId() == R.id.contacts)
             startActivity(new Intent(this, ContactsActivity.class));
         return true;

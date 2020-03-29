@@ -10,11 +10,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".FullScreenReminderActivity"
-            android:launchMode="standard"/>
+        <activity android:name=".DeletedActivity"></activity>
+        <activity android:name=".HistoryActivity" />
+        <activity
+            android:name=".FullScreenReminderActivity"
+            android:launchMode="standard" />
         <activity
             android:name=".CreateGroupActivity"
-            android:windowSoftInputMode="stateHidden"/>
+            android:windowSoftInputMode="stateHidden" />
         <activity android:name=".TestActivity" />
         <activity android:name=".GroupActivity" />
         <activity android:name=".AddDescriptionActivity" />
@@ -42,7 +45,8 @@
             android:enabled="true"
             android:exported="true"
             android:label="RestartServiceWhenStopped" />
-        <!--<receiver
+        <!--
+<receiver
             android:name=".WakeReceiver"
             android:enabled="true"
             android:exported="true"
@@ -52,7 +56,8 @@
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
-        </receiver>!-->
+        </receiver>!
+        -->
         <receiver android:name=".NotificationReceiver">
             <intent-filter>
                 <action android:name="app.meantime.ACTION_NOTIFICATION" />

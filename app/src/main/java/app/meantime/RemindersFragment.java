@@ -1,5 +1,7 @@
 package app.meantime;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -13,6 +15,9 @@ import android.view.ViewGroup;
 
 public class RemindersFragment extends Fragment {
     RecyclerView recyclerView;
+    AdapterReminders adapterReminders;
+    SharedPreferences sharedPreferences;
+    int filter = -1;
 
     public RemindersFragment() {
         // Required empty public constructor
@@ -21,8 +26,13 @@ public class RemindersFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        sharedPreferences = getContext().getSharedPreferences("data", Context.MODE_PRIVATE);
         View v = inflater.inflate(R.layout.fragment_reminders, container, false);
         recyclerView = v.findViewById(R.id.recyclerView);
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        adapterReminders = new AdapterReminders(getContext(), 0);
+        recyclerView.setAdapter(adapterReminders);
 
         return v;
     }
@@ -30,8 +40,21 @@ public class RemindersFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        AdapterReminders adapterReminders = new AdapterReminders(getContext());
-        recyclerView.setAdapter(adapterReminders);
+        if(sharedPreferences.getBoolean("updateMainList", false)) {
+            recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+            adapterReminders = new AdapterReminders(getContext(), 0);
+            recyclerView.setAdapter(adapterReminders);
+            if (filter != -1)
+                adapterReminders.setFilter(filter);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putBoolean("updateMainList", false);
+            editor.apply();
+        }
     }
+
+    public void setFilter(int filter){
+        this.filter = filter;
+        adapterReminders.setFilter(filter);
+    }
+
 }

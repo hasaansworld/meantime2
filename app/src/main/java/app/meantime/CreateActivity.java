@@ -9,6 +9,7 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -55,12 +56,14 @@ public class CreateActivity extends AppCompatActivity {
     boolean isEditing = false;
     String reminderId;
     DataReminder oldReminder;
+    SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create);
         realm = RealmUtils.getRealm();
+        sharedPreferences = getSharedPreferences("data", MODE_PRIVATE);
 
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -195,15 +198,20 @@ public class CreateActivity extends AppCompatActivity {
                 realm.copyToRealmOrUpdate(dataReminder);
                 realm.commitTransaction();
 
+                if (!isEditing && shouldSchedule() || isEditing && isTimeDifferent && shouldSchedule()) {
+                    scheduleReminder(dataReminder.getReminderId());
+                }
+
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putBoolean("updateMainList", true);
+                editor.apply();
+
                 if(!isEditing) {
                     Intent i = new Intent(CreateActivity.this, ReminderActivity.class);
                     i.putExtra("id", dataReminder.getReminderId());
                     startActivity(i);
                 }
                 finish();
-                if (!isEditing && shouldSchedule() || isEditing && isTimeDifferent && shouldSchedule()) {
-                    scheduleReminder(dataReminder.getReminderId());
-                }
             }
         });
 
@@ -316,6 +324,7 @@ public class CreateActivity extends AppCompatActivity {
         realm.beginTransaction();
         if(reminder != null)
             reminder.setStatus(DataReminder.STATUS_SCHEDULED);
+        realm.copyToRealmOrUpdate(reminder);
         realm.commitTransaction();
     }
 
