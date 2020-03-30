@@ -6,7 +6,49 @@
     android:layout_height="match_parent"
     tools:context="app.meantime.MainActivity">
 
+    <LinearLayout
+        android:id="@+id/content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior" />
+
+    <!--<com.google.android.material.tabs.TabLayout
+        android:id="@+id/tablayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:tabIndicatorHeight="3dp"
+        android:layout_marginTop="-8dp"
+        app:tabSelectedTextColor="@color/colorAccent"
+        app:tabTextAppearance="@style/TextAppearance.Tab">
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Reminders"/>
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Groups"/>
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="People"/>
+
+    </com.google.android.material.tabs.TabLayout>
+
+</com.google.android.material.appbar.AppBarLayout>
+
+<androidx.viewpager.widget.ViewPager
+    android:id="@+id/viewpager"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior" />!-->
+
     <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -29,46 +71,78 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-        <!--<com.google.android.material.tabs.TabLayout
-            android:id="@+id/tablayout"
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appbar_search"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="invisible">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar_search"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:contentInsetStartWithNavigation="10dp"
+        app:layout_scrollFlags="enterAlways|scroll|snap">
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:tabIndicatorHeight="3dp"
-            android:layout_marginTop="-8dp"
-            app:tabSelectedTextColor="@color/colorAccent"
-            app:tabTextAppearance="@style/TextAppearance.Tab">
+            android:layout_height="?attr/actionBarSize"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
-            <com.google.android.material.tabs.TabItem
-                android:layout_width="wrap_content"
+            <EditText
+                android:id="@+id/search"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Reminders"/>
+                android:layout_weight="1"
+                android:hint="Search title, date, time etc."
+                android:maxLength="180"
+                android:singleLine="true"
+                android:textColor="@android:color/black"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:background="@android:color/transparent" />
 
-            <com.google.android.material.tabs.TabItem
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Groups"/>
+            <ImageView
+                android:id="@+id/button_search"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginLeft="10dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:padding="12dp"
+                android:src="@drawable/ic_search_black_24dp" />
 
-            <com.google.android.material.tabs.TabItem
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="People"/>
+        </LinearLayout>
 
-        </com.google.android.material.tabs.TabLayout>
+    </androidx.appcompat.widget.Toolbar>
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.viewpager.widget.ViewPager
-        android:id="@+id/viewpager"
-        android:layout_width="match_parent"
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/group_add"
+        style="@style/AppTheme.MaterialButton"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior" />!-->
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="16dp"
+        android:clickable="true"
+        android:elevation="4dp"
+        android:letterSpacing="0"
+        android:paddingLeft="15dp"
+        android:paddingTop="8dp"
+        android:paddingRight="15dp"
+        android:paddingBottom="8dp"
+        android:text="New Group"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        app:cornerRadius="40dp"
+        app:icon="@drawable/ic_add_white_24dp"
+        tools:targetApi="LOLLIPOP" />
 
-    <LinearLayout
-        android:id="@+id/content"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAdd"
@@ -79,29 +153,5 @@
         android:clickable="true"
         android:src="@drawable/ic_add_white_24dp"
         app:rippleColor="#dddddd" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/group_add"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center_horizontal"
-        android:layout_marginBottom="16dp"
-        android:text="New Group"
-        android:textStyle="bold"
-        android:textSize="16sp"
-        android:textColor="@android:color/white"
-        app:icon="@drawable/ic_add_white_24dp"
-        style="@style/AppTheme.MaterialButton"
-        android:textAllCaps="false"
-        android:letterSpacing="0"
-        tools:targetApi="LOLLIPOP"
-        android:paddingLeft="15dp"
-        android:paddingRight="15dp"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
-        app:cornerRadius="40dp"
-        android:elevation="4dp"
-        android:clickable="true"
-        android:visibility="gone"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

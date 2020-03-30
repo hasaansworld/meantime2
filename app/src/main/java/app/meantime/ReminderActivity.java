@@ -55,6 +55,7 @@ public class ReminderActivity extends AppCompatActivity {
 
     Toolbar toolbar;
     AppBarLayout appBarLayout;
+    SharedPreferences sharedPreferences;
     TextView title, people, time, day, date, alarmTime, description;
     ImageView image, removeImage, changeImage;
     View circle;
@@ -69,6 +70,7 @@ public class ReminderActivity extends AppCompatActivity {
     boolean isHistory;
     boolean isDeleted;
     long timeInMillis = 0;
+    boolean update = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +78,7 @@ public class ReminderActivity extends AppCompatActivity {
         setContentView(R.layout.activity_reminder);
         elevation = dpToPixel(4, this);
         realm = RealmUtils.getRealm();
+        sharedPreferences = getSharedPreferences("data", MODE_PRIVATE);
         fillAlarmTimes();
 
         toolbar = findViewById(R.id.toolbar);
@@ -101,6 +104,8 @@ public class ReminderActivity extends AppCompatActivity {
         addDescription = findViewById(R.id.layout_add_description);
         description = findViewById(R.id.description);
 
+        setData();
+
         if(Build.VERSION.SDK_INT >= 21) {
             scrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
                 @Override
@@ -118,18 +123,13 @@ public class ReminderActivity extends AppCompatActivity {
 
         addImage.setOnClickListener(v -> {
             pickPhoto();
+            updateLists();
         });
 
-        changeImage.setOnClickListener(v -> {
-            pickPhoto();
+        addDescription.setOnClickListener(v -> {
+            editDescription();
+            updateLists();
         });
-
-        removeImage.setOnClickListener(v -> {
-
-        });
-
-        addDescription.setOnClickListener(v -> editDescription());
-        description.setOnClickListener(v -> editDescription());
 
         imageLayout.setOnClickListener(v -> {
             PopupMenu popup = new PopupMenu(ReminderActivity.this, v);
@@ -144,31 +144,34 @@ public class ReminderActivity extends AppCompatActivity {
                     addImage.setVisibility(View.VISIBLE);
                     imageLayout.setVisibility(View.GONE);
                 }
+                updateLists();
                 return true;
             });
             popup.inflate(R.menu.options_image);
             popup.show();
         });
 
-        description.setOnClickListener(v -> {
-            PopupMenu popup = new PopupMenu(ReminderActivity.this, v);
-            popup.setOnMenuItemClickListener(item -> {
-                if(item.getItemId() == R.id.edit){
-                    editDescription();
-                }
-                else{
-                    realm.beginTransaction();
-                    DataReminder reminder = realm.where(DataReminder.class).equalTo("reminderId", id).findFirst();
-                    reminder.setDescription("");
-                    realm.commitTransaction();
-                    addDescription.setVisibility(View.VISIBLE);
-                    description.setVisibility(View.GONE);
-                }
-                return true;
+        if(!isHistory && !isDeleted) {
+            description.setOnClickListener(v -> {
+                PopupMenu popup = new PopupMenu(ReminderActivity.this, v);
+                popup.setOnMenuItemClickListener(item -> {
+                    if (item.getItemId() == R.id.edit) {
+                        editDescription();
+                    } else {
+                        realm.beginTransaction();
+                        DataReminder reminder = realm.where(DataReminder.class).equalTo("reminderId", id).findFirst();
+                        reminder.setDescription("");
+                        realm.commitTransaction();
+                        addDescription.setVisibility(View.VISIBLE);
+                        description.setVisibility(View.GONE);
+                    }
+                    updateLists();
+                    return true;
+                });
+                popup.inflate(R.menu.options_description);
+                popup.show();
             });
-            popup.inflate(R.menu.options_description);
-            popup.show();
-        });
+        }
 
     }
 
@@ -177,6 +180,17 @@ public class ReminderActivity extends AppCompatActivity {
         Intent i = new Intent(ReminderActivity.this, AddDescriptionActivity.class);
         i.putExtra("id", id);
         startActivityForResult(i, 125);
+    }
+
+    private void updateLists(){
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        if(isHistory)
+            editor.putBoolean("updateHistoryList", true);
+        else if(isDeleted)
+            editor.putBoolean("updateDeletedList", true);
+        else
+            editor.putBoolean("updateMainList", true);
+        editor.apply();
     }
 
     private void fillAlarmTimes() {
@@ -191,7 +205,10 @@ public class ReminderActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        setData();
+        if(!update)
+            update = true;
+        else
+            setData();
     }
 
     void setData() {
@@ -296,6 +313,7 @@ public class ReminderActivity extends AppCompatActivity {
             Intent i = new Intent(this, CreateActivity.class);
             i.putExtra("isEditing", true);
             i.putExtra("reminderId", id);
+            i.putExtra("isHistory", isHistory);
             startActivity(i);
         }
         else if(item.getItemId() == R.id.delete_permanently){

@@ -10,6 +10,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -40,8 +41,8 @@ public class CreateActivity extends AppCompatActivity {
     Toolbar toolbar;
     TextView toolbarTitle;
     ImageView emojiTitle, emojiDescription;
-    LinearLayout alarmTime;
-    TextView textAlarmTime;
+    LinearLayout alarmTime, layoutRepeat;
+    TextView textAlarmTime, textRepeat;
     LinearLayout lowImportance, mediumImportance, highImportance, importanceLayout;
     TextView textDate, textTime, textError;
     EmojiEditText title, description;
@@ -53,7 +54,7 @@ public class CreateActivity extends AppCompatActivity {
     String dayOfWeek;
     long timeInMillis = -1;
     Realm realm;
-    boolean isEditing = false;
+    boolean isEditing = false, isHistory = false;
     String reminderId;
     DataReminder oldReminder;
     SharedPreferences sharedPreferences;
@@ -84,6 +85,8 @@ public class CreateActivity extends AppCompatActivity {
         importanceLayout = mediumImportance;
         textDate = findViewById(R.id.text_date);
         textTime = findViewById(R.id.text_time);
+        layoutRepeat = findViewById(R.id.layout_repeat);
+        textRepeat = findViewById(R.id.text_repeat);
         textError = findViewById(R.id.textError);
         saveButton = findViewById(R.id.saveButton);
         emojiDescription = findViewById(R.id.emojiDescription);
@@ -155,6 +158,19 @@ public class CreateActivity extends AppCompatActivity {
         mediumImportance.setOnClickListener(importanceListener);
         highImportance.setOnClickListener(importanceListener);
 
+        layoutRepeat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PopupMenu popup = new PopupMenu(CreateActivity.this, v);
+                popup.setOnMenuItemClickListener(item -> {
+                    textRepeat.setText(item.getTitle());
+                    return true;
+                });
+                popup.inflate(R.menu.options_repeat);
+                popup.show();
+            }
+        });
+
         saveButton.setOnClickListener(v -> {
             textError.setVisibility(View.GONE);
             if(title.getText().toString().equals("")){
@@ -173,6 +189,7 @@ public class CreateActivity extends AppCompatActivity {
                     textTime.getText().toString(),
                     textAlarmTime.getText().toString(),
                     importance,
+                    textRepeat.getText().toString(),
                     "You"
                 );
                 boolean isTimeDifferent = false;
@@ -215,12 +232,20 @@ public class CreateActivity extends AppCompatActivity {
             }
         });
 
+        if(isHistory = getIntent().getBooleanExtra("isHistory", false)){
+            title.setEnabled(false);
+            title.setTextColor(Color.parseColor("#999999"));
+            lowImportance.setClickable(false);
+            mediumImportance.setClickable(false);
+            highImportance.setClickable(false);
+        }
         if(isEditing = getIntent().getBooleanExtra("isEditing", false)){
             saveButton.setText("Update Reminder");
             toolbarTitle.setText("Edit Reminder");
             reminderId = getIntent().getStringExtra("reminderId");
             DataReminder reminder = realm.where(DataReminder.class).equalTo("reminderId", reminderId).findFirst();
             title.setText(reminder.getTitle());
+            title.setSelection(title.getText().toString().length());
             textDate.setText(reminder.getDate());
             textTime.setText(reminder.getTime());
             textAlarmTime.setText(reminder.getAlarmtime());

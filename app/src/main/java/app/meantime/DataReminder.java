@@ -6,7 +6,7 @@ import io.realm.annotations.PrimaryKey;
 public class DataReminder extends RealmObject implements Comparable<DataReminder>{
     @PrimaryKey
     String reminderId;
-    String title, day, date, time, description, image, alarmtime;
+    String title, day, date, time, description, image, alarmtime, repeat;
     String owner;
     int reminderNumber;
     int importance;
@@ -19,7 +19,7 @@ public class DataReminder extends RealmObject implements Comparable<DataReminder
 
     public DataReminder(){}
 
-    public DataReminder(int reminderNumber, String reminderId, String title, String day, String date, String time, String alarmtime, int importance, String owner) {
+    public DataReminder(int reminderNumber, String reminderId, String title, String day, String date, String time, String alarmtime, int importance, String repeat, String owner) {
         this.reminderNumber = reminderNumber;
         this.reminderId = reminderId;
         this.title = title;
@@ -28,6 +28,7 @@ public class DataReminder extends RealmObject implements Comparable<DataReminder
         this.time = time;
         this.alarmtime = alarmtime;
         this.importance = importance;
+        this.repeat = repeat;
         this.owner = owner;
     }
 
@@ -117,6 +118,14 @@ public class DataReminder extends RealmObject implements Comparable<DataReminder
 
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
+    }
+
+    public String getRepeat() {
+        return repeat;
+    }
+
+    public void setRepeat(String repeat) {
+        this.repeat = repeat;
     }
 
     public String getOwner() {

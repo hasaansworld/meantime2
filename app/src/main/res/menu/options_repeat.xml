@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/no_repeat"
+        android:title="No repeat" />
+    <item android:id="@+id/repeat_every_day"
+        android:title="Repeat every day" />
+    <item android:id="@+id/repeat_every_week"
+        android:title="Repeat every week" />
+    <item android:id="@+id/repeat_every_week_day"
+        android:title="Repeat every weekday (Mon-Fri)" />
+    <item android:id="@+id/repeat_every_month"
+        android:title="Repeat every month" />
+    <item android:id="@+id/repeat_every_year"
+        android:title="Repeat every year" />
+
+</menu>

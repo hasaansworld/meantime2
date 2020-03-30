@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -44,9 +45,11 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
     ArrayList<Object> allItems = new ArrayList<>();
     ArrayList<Integer> datePositions = new ArrayList<>();
     String[] colors = {"#FFEE58", "#FF9700", "#F44336"};
+    String[] days = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
     Resources resources;
-    String today, tomorrow, yesterday;
+    String day, today, tomorrow, yesterday;
     int mode = 0;
+    int filter = -1;
 
     public AdapterReminders(Context context, int mode){
         this.context = context;
@@ -55,15 +58,14 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
         realm = RealmUtils.getRealm();
 
         this.mode = mode;
+        getTodayAndTomorrow();
         if(mode == 0 || mode == 2) {
             reminders = realm.where(DataReminder.class).equalTo("deleted", mode != 0).findAll();
             allReminders.addAll(reminders);
             Collections.sort(allReminders);
 
-            getTodayAndTomorrow();
-            removeOldReminders();
-            displayReminders.addAll(allReminders);
-            filterAndArrange(-1);
+            if(mode == 0)
+                removeOldReminders();
         }
         else if(mode == 1){
             reminders = realm.where(DataReminder.class).equalTo("deleted", false).findAll();
@@ -71,11 +73,10 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
             Collections.sort(allReminders);
             Collections.reverse(allReminders);
 
-            getTodayAndTomorrow();
             removeNewReminders();
-            displayReminders.addAll(allReminders);
-            filterAndArrange(-1);
         }
+        displayReminders.addAll(allReminders);
+        filterAndArrange(filter);
 
         colorAccent = context.getResources().getColor(R.color.colorAccent);
     }
@@ -85,15 +86,32 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
         int position = 0;
         allItems.clear();
         datePositions.clear();
+        titles.clear();
+        if(mode == 0){
+            previousDate = today;
+            DataReminderDate drd = new DataReminderDate(position, day, today);
+            allItems.add(drd);
+            datePositions.add(position);
+            titles.add("Today");
+            position++;
+            if(displayReminders.size() == 0 || !displayReminders.get(0).getDate().equals(today)) {
+                allItems.add(null);
+                position++;
+                titles.add("Today");
+            }
+        }
         for(DataReminder reminder: displayReminders){
             if(filter == -1 || reminder.getImportance() == filter) {
+                String title = getTitleFromDate(reminder.getDate());
                 if (!reminder.getDate().equals(previousDate)) {
                     previousDate = reminder.getDate();
                     DataReminderDate drd = new DataReminderDate(position, reminder.getDay(), reminder.getDate());
                     allItems.add(drd);
                     datePositions.add(position);
                     position++;
+                    titles.add(title);
                 }
+                titles.add(title);
                 allItems.add(reminder);
                 position++;
             }
@@ -140,6 +158,13 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
         }
     }
 
+    public class ViewHolderNone extends RecyclerView.ViewHolder{
+
+        public ViewHolderNone(View v){
+            super(v);
+        }
+    }
+
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -147,9 +172,13 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
             View v = LayoutInflater.from(context).inflate(R.layout.item_reminder_header, parent, false);
             return new ViewHolderHeader(v);
         }
-        else{
+        else if(viewType == 1){
             View v = LayoutInflater.from(context).inflate(R.layout.item_reminder, parent, false);
             return new ViewHolderReminder(v);
+        }
+        else{
+            View v = LayoutInflater.from(context).inflate(R.layout.item_reminder_none, parent, false);
+            return new ViewHolderNone(v);
         }
     }
 
@@ -158,7 +187,9 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
         if(holder instanceof ViewHolderHeader){
             ViewHolderHeader holderHeader = (ViewHolderHeader)holder;
             DataReminderDate reminderDate = (DataReminderDate)allItems.get(position);
-            String title = getTitleFromDate(reminderDate.getDate());
+            String title = "";
+            if(position == 0 || position > 0 && !titles.get(position).equals(titles.get(position-1)))
+                title = getTitleFromDate(reminderDate.getDate());
             holderHeader.title.setText(title);
             holderHeader.day.setText(reminderDate.getDay());
             holderHeader.date.setText(reminderDate.getDate());
@@ -173,7 +204,7 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
                 }
             }
         }
-        else{
+        else if (holder instanceof ViewHolderReminder){
             ViewHolderReminder holderReminder = (ViewHolderReminder)holder;
             DataReminder reminder = (DataReminder)allItems.get(position);
 
@@ -254,6 +285,7 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
         Date d = now.getTime();
         SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy");
         today = sdf.format(d);
+        day = days[now.get(Calendar.DAY_OF_WEEK)-1];
         now.add(Calendar.DATE, 1);
         d = now.getTime();
         tomorrow = sdf.format(d);
@@ -269,8 +301,35 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
             return "Tomorrow";
         else if(date.equals(yesterday))
             return "Yesterday";
-        else
+        else {
+            SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy");
+            Calendar now = Calendar.getInstance();
+            try {
+                Date d = sdf.parse(date);
+                Calendar rem = Calendar.getInstance();
+                rem.setTime(d);
+                if(rem.get(Calendar.YEAR) == now.get(Calendar.YEAR)) {
+                    if(rem.get(Calendar.MONTH) == now.get(Calendar.MONTH)+1)
+                        return "Next Month";
+                    else if(rem.get(Calendar.MONTH) == now.get(Calendar.MONTH)-1)
+                        return "Last Month";
+                    else if (rem.get(Calendar.WEEK_OF_YEAR) == now.get(Calendar.WEEK_OF_YEAR))
+                        return "This Week";
+                    else if (rem.get(Calendar.WEEK_OF_YEAR) == now.get(Calendar.WEEK_OF_YEAR)+1)
+                        return "Next Week";
+                    else if (rem.get(Calendar.WEEK_OF_YEAR) == now.get(Calendar.WEEK_OF_YEAR)-1)
+                        return "Last Week";
+                }
+                else if(rem.get(Calendar.YEAR) == now.get(Calendar.YEAR)+1)
+                    return "Next Year";
+                else if(rem.get(Calendar.YEAR) == now.get(Calendar.YEAR)-1)
+                    return "Last Year";
+            }
+            catch (ParseException e){
+
+            }
             return "";
+        }
     }
 
     @Override
@@ -280,7 +339,10 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     @Override
     public int getItemViewType(int position) {
-        if(datePositions.contains(position))
+        Object object = allItems.get(position);
+        if(object == null)
+            return 2;
+        else if(object instanceof DataReminderDate)
             return 0;
         else
             return 1;
@@ -291,66 +353,47 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
         displayReminders.addAll(allReminders);
         filterAndArrange(filter);
         notifyDataSetChanged();
+        this.filter = filter;
     }
 
-    public int getHeaderPositionForItem(int itemPosition) {
-        if(itemPosition < 4)
-            return 0;
-        else if(itemPosition < 9)
-            return 1;
-        else
-            return 2;
-    }
-
-    public int getTodayPosition(){
-        return todayPosition;
-    }
-
-    /*public String getHeaderFromPosition(int p){
-        int position = getHeaderPositionForItem(p);
-        if(position == 0)
-            return "Today";
-        else if(position == 1)
-            return "Tomorrow";
-        else
-            return "3 Weeks";
-    }
-
-    public String getDateFromPositon(int p){
-        int position = getHeaderPositionForItem(p);
-        if(position == 0)
-            return "7 Jan 2020";
-        else if(position == 1)
-            return "8 Jan 2020";
-        else
-            return "15 Feb 2020";
-    }
-
-    public String getTitleFromPositon(int p){
-        int position = getHeaderPositionForItem(p);
-        if(position == 0)
-            return "Today";
-        else if(position == 1)
-            return "Tomorrow";
-        else
-            return "Next Week";
-    }*/
-
-    /*@Override
-    public RecyclerView.ViewHolder onCreateHeaderViewHolder(ViewGroup parent) {
-        return createViewHolder(parent, 0);
-    }
-
-    @Override
-    public void onBindHeaderViewHolder(RecyclerView.ViewHolder holder, int position) {
-        ViewHolderHeader holderHeader = (ViewHolderHeader)holder;
-        holderHeader.title.setText(getHeaderFromPosition(position));
-        holderHeader.title.setVisibility(View.VISIBLE);
-        if(position == 2){
-            holderHeader.v.setBackgroundColor(colorAccent);
+    public void search(String query){
+        query = query.toLowerCase().trim();
+        displayReminders.clear();
+        for(int i = 0; i < allReminders.size(); i++){
+            DataReminder reminder = allReminders.get(i);
+            if(reminder.getTitle().toLowerCase().contains(query)
+            || reminder.getDescription() != null && reminder.getDescription().toLowerCase().contains(query)
+            || reminder.getDate().toLowerCase().contains(query)
+            || getFullMonth(reminder.getDate()).toLowerCase().contains(query)
+            || reminder.getTime().toLowerCase().contains(query)
+            || getTitleFromDate(reminder.getDate()).toLowerCase().contains(query))
+                displayReminders.add(reminder);
         }
-        else{
-            holderHeader.v.setBackgroundColor(Color.parseColor("#999999"));
+        int prevMode = mode;
+        if(!query.equals("today"))
+            mode = -1;
+        filterAndArrange(filter);
+        mode = prevMode;
+        notifyDataSetChanged();
+    }
+
+    public void cancelSearch(){
+        displayReminders.clear();
+        displayReminders.addAll(allReminders);
+        filterAndArrange(filter);
+        notifyDataSetChanged();
+    }
+
+    String[] short_months = {"Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                            "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+    String[] full_months = {"January", "February", "March", "April", "May", "June",
+                            "July", "August", "September", "October", "November", "December"};
+    private String getFullMonth(String date){
+        String updatedDate = date;
+        for(int i = 0; i < 12; i++){
+            updatedDate = updatedDate.replace(short_months[i], full_months[i]);
         }
-    }*/
+        return updatedDate;
+    }
+
 }

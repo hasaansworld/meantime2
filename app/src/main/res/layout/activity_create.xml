@@ -346,7 +346,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="15dp"
-                    android:text="No Repeat"
+                    android:text="No repeat"
                     android:textColor="@android:color/black"
                     android:textSize="16sp" />
 

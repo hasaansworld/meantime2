@@ -23,6 +23,7 @@ import androidx.work.WorkManager;
 import android.Manifest;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -35,11 +36,16 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewTreeObserver;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -48,6 +54,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
@@ -62,8 +69,11 @@ import java.util.concurrent.TimeUnit;
 public class MainActivity extends AppCompatActivity {
 
     SharedPreferences sharedPreferences;
-    Toolbar toolbar;
+    AppBarLayout appbar, appbarSearch;
+    Toolbar toolbar, searchToolbar;
     TextView toolbarTitle;
+    EditText search;
+    ImageView searchButton;
     FloatingActionButton fabAdd;
     ViewPager viewPager;
     TabLayout tabLayout;
@@ -82,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
 
         sharedPreferences = getSharedPreferences("data", MODE_PRIVATE);
 
+        appbar = findViewById(R.id.appbar);
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -141,6 +152,69 @@ public class MainActivity extends AppCompatActivity {
 
         backgroundWork();
 
+        search = findViewById(R.id.search);
+        appbarSearch = findViewById(R.id.appbar_search);
+        searchToolbar = findViewById(R.id.toolbar_search);
+        searchButton = findViewById(R.id.button_search);
+        searchToolbar.setNavigationIcon(R.drawable.ic_close_black_24dp);
+        searchToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                hideSearch();
+            }
+        });
+        appbarSearch.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                appbarSearch.setTranslationY(0-appbarSearch.getHeight());
+                appbarSearch.setVisibility(View.GONE);
+                appbarSearch.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            }
+        });
+
+        searchButton.setOnClickListener(v-> remindersFragment.search(search.getText().toString()));
+
+    }
+
+    private void showSearch(){
+        appbarSearch.setTranslationY(0-appbarSearch.getHeight());
+        ObjectAnimator anim = ObjectAnimator.ofFloat(appbarSearch, "translationY", 0-appbarSearch.getHeight(), 0);
+        anim.setDuration(200);
+        anim.start();
+        appbarSearch.setVisibility(View.VISIBLE);
+        fabAdd.hide();
+        search.setText("");
+        search.requestFocus();
+        showKeyboard();
+    }
+
+    private void hideSearch(){
+        ObjectAnimator anim = ObjectAnimator.ofFloat(appbarSearch, "translationY", 0, 0-appbarSearch.getHeight());
+        anim.setDuration(200);
+        anim.start();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                appbarSearch.setVisibility(View.GONE);
+            }
+        }, 200);
+        fabAdd.show();
+        hideKeyboard();
+        remindersFragment.cancelSearch();
+    }
+
+    private void hideKeyboard(){
+        InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
+        View view = getCurrentFocus();
+        if(view == null){
+            view = new View(this);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
+    private void showKeyboard(){
+        InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
     }
 
     private void showAddGroup(){
@@ -226,6 +300,8 @@ public class MainActivity extends AppCompatActivity {
             popup.inflate(R.menu.options_filter);
             popup.show();
         }
+        else if(item.getItemId() == R.id.search)
+            showSearch();
         else if(item.getItemId() == R.id.history)
             startActivity(new Intent(this, HistoryActivity.class));
         else if(item.getItemId() == R.id.deleted)

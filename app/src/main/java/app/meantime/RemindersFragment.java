@@ -57,4 +57,12 @@ public class RemindersFragment extends Fragment {
         adapterReminders.setFilter(filter);
     }
 
+    public void search(String query){
+        adapterReminders.search(query);
+    }
+
+    public void cancelSearch(){
+        adapterReminders.cancelSearch();
+    }
+
 }

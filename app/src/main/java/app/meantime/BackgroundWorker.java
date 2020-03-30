@@ -90,8 +90,8 @@ public class BackgroundWorker extends Worker {
     @NonNull
     @Override
     public Result doWork() {
-        sendNotification(1100, "Background Worker: v2");
-        FirebaseDatabase fdb = FirebaseDatabase.getInstance();
+        sendNotification(1100, "Background Worker: v3");
+        /*FirebaseDatabase fdb = FirebaseDatabase.getInstance();
         fdb.getReference("messages").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -103,7 +103,7 @@ public class BackgroundWorker extends Worker {
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
-        });
+        });*/
         scheduleReminders();
         return Result.success();
     }
