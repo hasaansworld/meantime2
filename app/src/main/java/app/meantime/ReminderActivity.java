@@ -230,7 +230,7 @@ public class ReminderActivity extends AppCompatActivity {
         if(path != null && !path.equals("")){
             addImage.setVisibility(View.GONE);
             imageLayout.setVisibility(View.VISIBLE);
-            Glide.with(this).asBitmap().load(path).into(image);
+            Glide.with(this).asBitmap().load(path).placeholder(R.drawable.broken_image).into(image);
         }
         if(reminder.getDescription() != null && !reminder.getDescription().equals("")){
             addDescription.setVisibility(View.GONE);

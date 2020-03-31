@@ -210,7 +210,7 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
 
             if(reminder.getImage() != null && !reminder.getImage().equals("")){
                 holderReminder.image.setVisibility(View.VISIBLE);
-                Glide.with(context).asBitmap().load(reminder.getImage()).placeholder(R.drawable.imagepicker_image_placeholder).into(holderReminder.image);
+                Glide.with(context).asBitmap().load(reminder.getImage()).placeholder(R.drawable.broken_image).into(holderReminder.image);
             }
             else
                 holderReminder.image.setVisibility(View.GONE);
