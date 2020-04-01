@@ -11,13 +11,19 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 
 public class RemindersFragment extends Fragment {
     RecyclerView recyclerView;
     AdapterReminders adapterReminders;
     SharedPreferences sharedPreferences;
+    LinearLayout searchNoResults;
     int filter = -1;
+    boolean isSearching = false;
+    String query = "";
 
     public RemindersFragment() {
         // Required empty public constructor
@@ -34,6 +40,8 @@ public class RemindersFragment extends Fragment {
         adapterReminders = new AdapterReminders(getContext(), 0);
         recyclerView.setAdapter(adapterReminders);
 
+        searchNoResults = v.findViewById(R.id.search_no_results);
+
         return v;
     }
 
@@ -49,6 +57,8 @@ public class RemindersFragment extends Fragment {
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putBoolean("updateMainList", false);
             editor.apply();
+            if(isSearching)
+                search(query);
         }
     }
 
@@ -58,11 +68,19 @@ public class RemindersFragment extends Fragment {
     }
 
     public void search(String query){
+        this.query = query;
+        isSearching = true;
         adapterReminders.search(query);
+        if(adapterReminders.getItemCount() == 0)
+            searchNoResults.setVisibility(View.VISIBLE);
+        else
+            searchNoResults.setVisibility(View.GONE);
     }
 
     public void cancelSearch(){
+        isSearching = false;
         adapterReminders.cancelSearch();
+        searchNoResults.setVisibility(View.GONE);
     }
 
 }

@@ -179,7 +179,7 @@ public class MainActivity extends AppCompatActivity {
     private void showSearch(){
         appbarSearch.setTranslationY(0-appbarSearch.getHeight());
         ObjectAnimator anim = ObjectAnimator.ofFloat(appbarSearch, "translationY", 0-appbarSearch.getHeight(), 0);
-        anim.setDuration(200);
+        anim.setDuration(400);
         anim.start();
         appbarSearch.setVisibility(View.VISIBLE);
         fabAdd.hide();
@@ -190,14 +190,14 @@ public class MainActivity extends AppCompatActivity {
 
     private void hideSearch(){
         ObjectAnimator anim = ObjectAnimator.ofFloat(appbarSearch, "translationY", 0, 0-appbarSearch.getHeight());
-        anim.setDuration(200);
+        anim.setDuration(400);
         anim.start();
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 appbarSearch.setVisibility(View.GONE);
             }
-        }, 200);
+        }, 400);
         fabAdd.show();
         hideKeyboard();
         remindersFragment.cancelSearch();

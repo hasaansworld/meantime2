@@ -131,26 +131,6 @@ public class ReminderActivity extends AppCompatActivity {
             updateLists();
         });
 
-        imageLayout.setOnClickListener(v -> {
-            PopupMenu popup = new PopupMenu(ReminderActivity.this, v);
-            popup.setOnMenuItemClickListener(item -> {
-                if(item.getItemId() == R.id.change)
-                    pickPhoto();
-                else{
-                    realm.beginTransaction();
-                    DataReminder reminder = realm.where(DataReminder.class).equalTo("reminderId", id).findFirst();
-                    reminder.setImage("");
-                    realm.commitTransaction();
-                    addImage.setVisibility(View.VISIBLE);
-                    imageLayout.setVisibility(View.GONE);
-                }
-                updateLists();
-                return true;
-            });
-            popup.inflate(R.menu.options_image);
-            popup.show();
-        });
-
         if(!isHistory && !isDeleted) {
             description.setOnClickListener(v -> {
                 PopupMenu popup = new PopupMenu(ReminderActivity.this, v);
@@ -169,6 +149,26 @@ public class ReminderActivity extends AppCompatActivity {
                     return true;
                 });
                 popup.inflate(R.menu.options_description);
+                popup.show();
+            });
+
+            imageLayout.setOnClickListener(v -> {
+                PopupMenu popup = new PopupMenu(ReminderActivity.this, v);
+                popup.setOnMenuItemClickListener(item -> {
+                    if(item.getItemId() == R.id.change)
+                        pickPhoto();
+                    else{
+                        realm.beginTransaction();
+                        DataReminder reminder = realm.where(DataReminder.class).equalTo("reminderId", id).findFirst();
+                        reminder.setImage("");
+                        realm.commitTransaction();
+                        addImage.setVisibility(View.VISIBLE);
+                        imageLayout.setVisibility(View.GONE);
+                    }
+                    updateLists();
+                    return true;
+                });
+                popup.inflate(R.menu.options_image);
                 popup.show();
             });
         }

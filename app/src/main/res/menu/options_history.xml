@@ -14,4 +14,10 @@
         android:icon="@drawable/ic_filter_list_black_24dp"
         app:showAsAction="always" />
 
+    <item
+        android:id="@+id/delete_all"
+        android:title="Delete All"
+        android:icon="@drawable/outline_delete_sweep_black_24"
+        app:showAsAction="always" />
+
 </menu>

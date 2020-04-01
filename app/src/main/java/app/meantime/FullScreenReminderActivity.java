@@ -69,6 +69,10 @@ public class FullScreenReminderActivity extends AppCompatActivity {
             Glide.with(this).asBitmap().load(path).into(image);
         }
 
+        realm.beginTransaction();
+        reminder.setStatus(DataReminder.STATUS_COMPLETED);
+        realm.commitTransaction();
+
     }
 
     @Override
