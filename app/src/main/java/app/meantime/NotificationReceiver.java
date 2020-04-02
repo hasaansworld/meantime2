@@ -7,6 +7,8 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
@@ -72,6 +74,7 @@ public class NotificationReceiver extends BroadcastReceiver {
 
             createNotificationChannel(importance);
             Uri soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+            //Uri path = Uri.parse("android.resource://"+context.getPackageName()+"/raw/quite_impressed");
             NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "1")
                     .setSmallIcon(R.drawable.ic_notifications_none_black_24dp);
             builder.setContentTitle("Reminder: \"" + reminder.getTitle() + "\"");
@@ -80,15 +83,26 @@ public class NotificationReceiver extends BroadcastReceiver {
                             .bigText(reminder.getDescription()))
                     .setPriority(reminder.getImportance()==0 ? NotificationCompat.PRIORITY_DEFAULT : NotificationCompat.PRIORITY_HIGH)
                     .setContentIntent(pendingIntent)
-                    .setSound(soundUri)
                     .setVibrate(new long[]{100, 200, 300})
                     .setChannelId(Integer.toString(reminder.getImportance()+1))
                     .setAutoCancel(true);
 
             NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
             notificationManager.notify(notificationId, builder.build());
+            //playSound();
             notificationId++;
         }
     }
 
+    /*private void playSound(){
+        MediaPlayer mMediaPlayer = MediaPlayer.create(context, R.raw.quite_impressed);
+        mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                mMediaPlayer.setAudioStreamType(AudioManager.STREAM_NOTIFICATION);
+                mMediaPlayer.start();
+                }
+            });
+        mMediaPlayer.setOnCompletionListener(mp -> mMediaPlayer.release());
+    }*/
 }

@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Gravity;
@@ -85,16 +86,24 @@ public class HistoryActivity extends AppCompatActivity {
         });
 
         searchButton.setOnClickListener(v-> {
-            adapterReminders.search(search.getText().toString());
-            if(adapterReminders.getItemCount() == 0)
-                searchNoResults.setVisibility(View.VISIBLE);
-            else
-                searchNoResults.setVisibility(View.GONE);
+            search();
+        });
+        search.setOnEditorActionListener((v, actionId, event) -> {
+            search();
+            return true;
         });
 
         nothingHere = findViewById(R.id.nothing_here);
         if(adapterReminders.getItemCount() == 0)
             nothingHere.setVisibility(View.VISIBLE);
+    }
+
+    private void search(){
+        adapterReminders.search(search.getText().toString());
+        if(adapterReminders.getItemCount() == 0)
+            searchNoResults.setVisibility(View.VISIBLE);
+        else
+            searchNoResults.setVisibility(View.GONE);
     }
 
     private void showSearch(){
@@ -109,6 +118,14 @@ public class HistoryActivity extends AppCompatActivity {
         isSearching = true;
         if(nothingHere.getVisibility() == View.VISIBLE)
             nothingHere.setVisibility(View.INVISIBLE);
+        if(Build.VERSION.SDK_INT >= 21){
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    appbar.setElevation(0);
+                }
+            }, 400);
+        }
     }
 
     private void hideSearch(){
@@ -127,6 +144,8 @@ public class HistoryActivity extends AppCompatActivity {
         searchNoResults.setVisibility(View.GONE);
         if(nothingHere.getVisibility() == View.INVISIBLE)
             nothingHere.setVisibility(View.VISIBLE);
+        if(Build.VERSION.SDK_INT >= 21)
+            appbar.setElevation(MainActivity.dpToPixel(4, HistoryActivity.this));
     }
 
     private void hideKeyboard(){

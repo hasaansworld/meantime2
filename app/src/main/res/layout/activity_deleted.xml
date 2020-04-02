@@ -7,6 +7,7 @@
     tools:context="app.meantime.MainActivity">
 
     <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -56,6 +57,7 @@
                     android:hint="Search title, date, time etc."
                     android:maxLength="180"
                     android:singleLine="true"
+                    android:imeOptions="actionSearch"
                     android:textColor="@android:color/black"
                     android:textSize="18sp"
                     android:textStyle="bold"
@@ -115,7 +117,6 @@
         android:id="@+id/nothing_here"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="?attr/actionBarSize"
         android:orientation="vertical"
         android:layout_gravity="center"
         android:gravity="center"
@@ -126,7 +127,7 @@
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_gravity="center"
-            android:src="@drawable/nothing_here" />
+            android:src="@drawable/trashcan" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -134,7 +135,7 @@
             android:textSize="16sp"
             android:textColor="@android:color/black"
             android:textStyle="bold"
-            android:text="Nothing Here."
+            android:text="No deleted reminders."
             android:layout_marginTop="15dp" />
 
     </LinearLayout>

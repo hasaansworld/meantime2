@@ -104,6 +104,11 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
             if(filter == -1 || reminder.getImportance() == filter) {
                 String title = getTitleFromDate(reminder.getDate());
                 if (!reminder.getDate().equals(previousDate)) {
+                    if(position == 1) {
+                        allItems.add(null);
+                        position++;
+                        titles.add("Today");
+                    }
                     previousDate = reminder.getDate();
                     DataReminderDate drd = new DataReminderDate(position, reminder.getDay(), reminder.getDate());
                     allItems.add(drd);
@@ -115,6 +120,10 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
                 allItems.add(reminder);
                 position++;
             }
+        }
+        if(allItems.size() == 1) {
+            allItems.add(null);
+            titles.add("Today");
         }
     }
 

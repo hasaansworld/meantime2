@@ -39,6 +39,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -173,6 +174,10 @@ public class MainActivity extends AppCompatActivity {
         });
 
         searchButton.setOnClickListener(v-> remindersFragment.search(search.getText().toString()));
+        search.setOnEditorActionListener((v, actionId, event) -> {
+            remindersFragment.search(search.getText().toString());
+            return true;
+        });
 
     }
 
@@ -186,6 +191,14 @@ public class MainActivity extends AppCompatActivity {
         search.setText("");
         search.requestFocus();
         showKeyboard();
+        if(Build.VERSION.SDK_INT >= 21) {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    appbar.setElevation(0);
+                }
+            }, 400);
+        }
     }
 
     private void hideSearch(){
@@ -201,6 +214,8 @@ public class MainActivity extends AppCompatActivity {
         fabAdd.show();
         hideKeyboard();
         remindersFragment.cancelSearch();
+        if(Build.VERSION.SDK_INT >= 21)
+            appbar.setElevation(dpToPixel(4, MainActivity.this));
     }
 
     private void hideKeyboard(){
@@ -308,6 +323,8 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(this, DeletedActivity.class));
         else if(item.getItemId() == R.id.contacts)
             startActivity(new Intent(this, ContactsActivity.class));
+        else if(item.getItemId() == R.id.more)
+            startActivity(new Intent(this, SettingsActivity.class));
         return true;
     }
 

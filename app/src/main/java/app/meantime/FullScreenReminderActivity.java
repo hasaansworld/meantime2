@@ -6,6 +6,7 @@ import androidx.appcompat.widget.Toolbar;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,6 +25,7 @@ public class FullScreenReminderActivity extends AppCompatActivity {
     TextView time, day, date, alarmTime;
     ImageView image;
     View circle;
+    MediaPlayer mediaPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +75,9 @@ public class FullScreenReminderActivity extends AppCompatActivity {
         reminder.setStatus(DataReminder.STATUS_COMPLETED);
         realm.commitTransaction();
 
+        mediaPlayer = MediaPlayer.create(this, R.raw.quite_impressed);
+        mediaPlayer.start();
+
     }
 
     @Override
@@ -81,5 +86,11 @@ public class FullScreenReminderActivity extends AppCompatActivity {
             finish();
         }
         return true;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mediaPlayer.release();
     }
 }
