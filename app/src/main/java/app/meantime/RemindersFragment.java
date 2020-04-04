@@ -15,6 +15,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.google.android.gms.ads.formats.UnifiedNativeAd;
+
 
 public class RemindersFragment extends Fragment {
     RecyclerView recyclerView;
@@ -24,6 +26,7 @@ public class RemindersFragment extends Fragment {
     int filter = -1;
     boolean isSearching = false;
     String query = "";
+    UnifiedNativeAd ad;
 
     public RemindersFragment() {
         // Required empty public constructor
@@ -59,6 +62,8 @@ public class RemindersFragment extends Fragment {
             editor.apply();
             if(isSearching)
                 search(query);
+            if(ad != null)
+                adapterReminders.showAd(ad);
         }
     }
 
@@ -81,6 +86,11 @@ public class RemindersFragment extends Fragment {
         isSearching = false;
         adapterReminders.cancelSearch();
         searchNoResults.setVisibility(View.GONE);
+    }
+
+    public void showAd(UnifiedNativeAd ad){
+        this.ad = ad;
+        adapterReminders.showAd(ad);
     }
 
 }

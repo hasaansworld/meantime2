@@ -10,6 +10,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-1683035414743855~6808926402"/>
+
         <activity android:name=".SettingsActivity"></activity>
         <activity android:name=".DeletedActivity" />
         <activity android:name=".HistoryActivity" />

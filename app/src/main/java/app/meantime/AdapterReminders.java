@@ -9,7 +9,10 @@ import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,10 +21,18 @@ import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.ads.AdLoader;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.RequestConfiguration;
+import com.google.android.gms.ads.formats.MediaView;
+import com.google.android.gms.ads.formats.NativeAdOptions;
+import com.google.android.gms.ads.formats.UnifiedNativeAd;
+import com.google.android.gms.ads.formats.UnifiedNativeAdView;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -43,13 +54,15 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
     List<DataReminder> allReminders = new ArrayList<>();
     List<DataReminder> displayReminders = new ArrayList<>();
     ArrayList<Object> allItems = new ArrayList<>();
-    ArrayList<Integer> datePositions = new ArrayList<>();
     String[] colors = {"#FFEE58", "#FF9700", "#F44336"};
     String[] days = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
     Resources resources;
     String day, today, tomorrow, yesterday;
     int mode = 0;
     int filter = -1;
+    boolean isSearching = false;
+    UnifiedNativeAd ad;
+    int adPostion = -1;
 
     public AdapterReminders(Context context, int mode){
         this.context = context;
@@ -85,13 +98,11 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
         String previousDate = "";
         int position = 0;
         allItems.clear();
-        datePositions.clear();
         titles.clear();
         if(mode == 0){
             previousDate = today;
             DataReminderDate drd = new DataReminderDate(position, day, today);
             allItems.add(drd);
-            datePositions.add(position);
             titles.add("Today");
             position++;
             if(displayReminders.size() == 0 || !displayReminders.get(0).getDate().equals(today)) {
@@ -112,7 +123,6 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
                     previousDate = reminder.getDate();
                     DataReminderDate drd = new DataReminderDate(position, reminder.getDay(), reminder.getDate());
                     allItems.add(drd);
-                    datePositions.add(position);
                     position++;
                     titles.add(title);
                 }
@@ -174,6 +184,39 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
         }
     }
 
+    public class ViewHolderAds extends RecyclerView.ViewHolder{
+        View v;
+        UnifiedNativeAdView adView;
+        ImageView appIcon;
+        TextView adHeadline, adAdvertiser, adBody, adPrice, adStore;
+        RatingBar adStars;
+        TextView adCallToAction;
+        //MediaView adMediaView;
+        public ViewHolderAds(View v){
+            super(v);
+            this.v = v;
+            adView = v.findViewById(R.id.ad_view);
+            adHeadline = adView.findViewById(R.id.ad_headline);
+            adAdvertiser = adView.findViewById(R.id.ad_advertiser);
+            adBody = adView.findViewById(R.id.ad_body);
+            adPrice = adView.findViewById(R.id.ad_price);
+            adStore = adView.findViewById(R.id.ad_store);
+            adStars = adView.findViewById(R.id.ad_stars);
+            adCallToAction = adView.findViewById(R.id.ad_call_to_action);
+            //adMediaView = adView.findViewById(R.id.ad_media);
+            appIcon = adView.findViewById(R.id.ad_app_icon);
+            adView.setHeadlineView(adHeadline);
+            adView.setIconView(appIcon);
+            adView.setAdvertiserView(adAdvertiser);
+            adView.setBodyView(adBody);
+            adView.setPriceView(adPrice);
+            adView.setStoreView(adStore);
+            adView.setStarRatingView(adStars);
+            adView.setCallToActionView(adCallToAction);
+            //adView.setMediaView(adMediaView);
+        }
+    }
+
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -184,6 +227,10 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
         else if(viewType == 1){
             View v = LayoutInflater.from(context).inflate(R.layout.item_reminder, parent, false);
             return new ViewHolderReminder(v);
+        }
+        else if(viewType == 3){
+            View v = LayoutInflater.from(context).inflate(R.layout.item_ads, parent, false);
+            return new ViewHolderAds(v);
         }
         else{
             View v = LayoutInflater.from(context).inflate(R.layout.item_reminder_none, parent, false);
@@ -239,6 +286,26 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
             }
             else{
                 holderReminder.description.setMaxLines(2);
+            }
+        }
+        else if(holder instanceof ViewHolderAds){
+            ViewHolderAds holderAds = (ViewHolderAds)holder;
+            holderAds.v.setVisibility(ad != null ? View.VISIBLE : View.GONE);
+            if(ad != null) {
+                holderAds.adHeadline.setText(ad.getHeadline());
+                holderAds.adAdvertiser.setText(ad.getAdvertiser());
+                holderAds.appIcon.setImageDrawable(ad.getIcon().getDrawable());
+                if(ad.getStarRating() != null){
+                    holderAds.adStars.setRating(ad.getStarRating().floatValue());
+                    holderAds.adStars.setVisibility(View.VISIBLE);
+                }
+                else
+                    holderAds.adStars.setVisibility(View.GONE);
+                holderAds.adBody.setText(ad.getBody());
+                holderAds.adPrice.setText(ad.getPrice());
+                holderAds.adStore.setText(ad.getStore());
+                holderAds.adCallToAction.setText(ad.getCallToAction());
+                //holderAds.adView.setNativeAd(ad);
             }
         }
     }
@@ -353,6 +420,8 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
             return 2;
         else if(object instanceof DataReminderDate)
             return 0;
+        else if(object instanceof DataAds)
+            return 3;
         else
             return 1;
     }
@@ -383,14 +452,32 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
             mode = -1;
         filterAndArrange(filter);
         mode = prevMode;
+        isSearching = true;
         notifyDataSetChanged();
     }
 
     public void cancelSearch(){
         displayReminders.clear();
         displayReminders.addAll(allReminders);
+        isSearching = false;
         filterAndArrange(filter);
         notifyDataSetChanged();
+    }
+
+    public void showAd(UnifiedNativeAd ad){
+        this.ad = ad;
+        if(!titles.contains("Ad") && mode == 0 && !isSearching){
+            int lastTodayPosition = 0;
+            for(String title:titles)
+                if(title.equals("Today"))
+                    lastTodayPosition++;
+
+            allItems.add(lastTodayPosition, new DataAds());
+            titles.add(lastTodayPosition, "Ad");
+            notifyItemInserted(lastTodayPosition);
+        }
+        //if(adPostion != -1)
+            //notifyItemChanged(adPostion);
     }
 
     String[] short_months = {"Jan", "Feb", "Mar", "Apr", "May", "Jun",

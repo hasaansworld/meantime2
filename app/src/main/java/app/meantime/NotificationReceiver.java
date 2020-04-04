@@ -36,6 +36,9 @@ public class NotificationReceiver extends BroadcastReceiver {
         DataReminder reminder = realm.where(DataReminder.class).equalTo("reminderId", id).findFirst();
         notificationId = reminder.getReminderNumber();
         sendNotification(reminder);
+        realm.beginTransaction();
+        reminder.setStatus(DataReminder.STATUS_COMPLETED);
+        realm.commitTransaction();
     }
 
 

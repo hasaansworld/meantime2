@@ -55,6 +55,14 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.google.android.gms.ads.AdLoader;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.RequestConfiguration;
+import com.google.android.gms.ads.formats.NativeAdOptions;
+import com.google.android.gms.ads.formats.UnifiedNativeAd;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -63,6 +71,7 @@ import com.nguyenhoanglam.imagepicker.helper.PermissionHelper;
 import com.nguyenhoanglam.imagepicker.ui.imagepicker.ImagePicker;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -179,6 +188,36 @@ public class MainActivity extends AppCompatActivity {
             return true;
         });
 
+        toolbarTitle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, TestActivity.class));
+            }
+        });
+
+        initializeAds();
+
+    }
+
+
+    private void initializeAds(){
+        // Test Ads
+        // Native "ca-app-pub-3940256099942544/2247696110"
+        // Native video "ca-app-pub-3940256099942544/1044960115"
+        // My Native "ca-app-pub-1683035414743855/4296467221"
+        MobileAds.initialize(this, initializationStatus -> {
+            Toast.makeText(this, "Ads SDK initialized.", Toast.LENGTH_SHORT).show();
+        });
+
+        RequestConfiguration configuration = new RequestConfiguration.Builder().setTestDeviceIds(Arrays.asList("F68088F697A5D97E60C69783F1EBD9A4")).build();
+        MobileAds.setRequestConfiguration(configuration);
+
+        AdLoader.Builder builder = new AdLoader.Builder(this, "ca-app-pub-1683035414743855/4296467221");
+        AdLoader loader = builder.forUnifiedNativeAd(unifiedNativeAd -> remindersFragment.showAd(unifiedNativeAd))
+        .withNativeAdOptions(new NativeAdOptions.Builder().setAdChoicesPlacement(NativeAdOptions.ADCHOICES_TOP_RIGHT).build())
+        .build();
+        AdRequest adRequest = new AdRequest.Builder().build();
+        loader.loadAd(adRequest);
     }
 
     private void showSearch(){
@@ -191,14 +230,7 @@ public class MainActivity extends AppCompatActivity {
         search.setText("");
         search.requestFocus();
         showKeyboard();
-        if(Build.VERSION.SDK_INT >= 21) {
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    appbar.setElevation(0);
-                }
-            }, 400);
-        }
+        new Handler().postDelayed(() -> appbar.setVisibility(View.GONE), 400);
     }
 
     private void hideSearch(){
@@ -214,8 +246,7 @@ public class MainActivity extends AppCompatActivity {
         fabAdd.show();
         hideKeyboard();
         remindersFragment.cancelSearch();
-        if(Build.VERSION.SDK_INT >= 21)
-            appbar.setElevation(dpToPixel(4, MainActivity.this));
+        appbar.setVisibility(View.VISIBLE);
     }
 
     private void hideKeyboard(){

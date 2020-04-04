@@ -122,7 +122,7 @@ public class BackgroundWorker extends Worker {
                         .findAll()
         );
 
-        // Don't scheduled deleted reminders
+        // Don't schedule deleted reminders
         for(int i = reminders.size(); i > 0; i--) {
             DataReminder reminder = reminders.get(i-1);
             if (reminder.isDeleted() || reminder.getStatus() != DataReminder.STATUS_CREATED)
@@ -151,7 +151,8 @@ public class BackgroundWorker extends Worker {
         }
         PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(buffStream)));
         String log = "Items found matching criteria: " + reminders.size() + "\n";
-        for(DataReminder reminder: reminders){
+        for(int i = 0; i < reminders.size(); i++){
+            DataReminder reminder = reminders.get(i);
             if(shouldSchedule(reminder)){
                 log = log + "\nShould schedule:\n"+reminder.getTitle()+"\n"+reminder.getDate()+" "+reminder.getTime()+"\n"+reminder.getStatus();
                 Intent intent1 = new Intent(getApplicationContext(), NotificationReceiver.class);
@@ -172,8 +173,17 @@ public class BackgroundWorker extends Worker {
             else
                 log = log + "\nDon't schedule:\n"+reminder.getTitle()+"\n"+reminder.getDate()+" "+reminder.getTime();
         }
+        List<DataReminder> updatedList = new ArrayList<>();
+        updatedList.addAll(realm.where(DataReminder.class).equalTo("date", today)
+                .or()
+                .equalTo("date", tomorrow)
+                .findAll());
+        log = log+"\n\nAfter Scheduling:\n";
+        for(DataReminder reminder: updatedList)
+            log = log + "\n"+reminder.getTitle()+"\n"+reminder.getDate()+" "+reminder.getTime()+"\n"+reminder.getStatus();
         pw.append(log);
         pw.close();
+        realm.close();
     }
 
     public boolean shouldSchedule(DataReminder dataReminder){

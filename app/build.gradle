@@ -47,6 +47,7 @@ dependencies {
     implementation 'id.zelory:compressor:2.1.0'
     implementation 'com.android.support:multidex:1.0.3'
     implementation 'com.wdullaer:materialdatetimepicker:4.2.3'
+    implementation 'com.google.android.gms:play-services-ads:19.0.1'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'

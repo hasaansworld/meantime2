@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
@@ -71,9 +72,8 @@ public class FullScreenReminderActivity extends AppCompatActivity {
             Glide.with(this).asBitmap().load(path).into(image);
         }
 
-        realm.beginTransaction();
-        reminder.setStatus(DataReminder.STATUS_COMPLETED);
-        realm.commitTransaction();
+        int status = realm.where(DataReminder.class).equalTo("reminderId", reminder.getReminderId()).findFirst().getStatus();
+        title.setText(title.getText()+"\nStatus: "+status);
 
         mediaPlayer = MediaPlayer.create(this, R.raw.quite_impressed);
         mediaPlayer.start();

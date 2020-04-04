@@ -217,7 +217,7 @@ public class ReminderActivity extends AppCompatActivity {
         isHistory = getIntent().getBooleanExtra("isHistory", false);
         isDeleted = getIntent().getBooleanExtra("isDeleted", false);
         DataReminder reminder = realm.where(DataReminder.class).equalTo("reminderId", id).findFirst();
-        title.setText(reminder.getTitle());
+        title.setText(reminder.getTitle()+"\nStatus:"+reminder.getStatus());
         day.setText(reminder.getDay());
         date.setText(reminder.getDate());
         time.setText(reminder.getTime());

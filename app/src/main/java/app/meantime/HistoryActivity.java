@@ -118,14 +118,7 @@ public class HistoryActivity extends AppCompatActivity {
         isSearching = true;
         if(nothingHere.getVisibility() == View.VISIBLE)
             nothingHere.setVisibility(View.INVISIBLE);
-        if(Build.VERSION.SDK_INT >= 21){
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    appbar.setElevation(0);
-                }
-            }, 400);
-        }
+        new Handler().postDelayed(() -> appbar.setVisibility(View.GONE), 400);
     }
 
     private void hideSearch(){
@@ -144,8 +137,7 @@ public class HistoryActivity extends AppCompatActivity {
         searchNoResults.setVisibility(View.GONE);
         if(nothingHere.getVisibility() == View.INVISIBLE)
             nothingHere.setVisibility(View.VISIBLE);
-        if(Build.VERSION.SDK_INT >= 21)
-            appbar.setElevation(MainActivity.dpToPixel(4, HistoryActivity.this));
+        appbar.setVisibility(View.VISIBLE);
     }
 
     private void hideKeyboard(){

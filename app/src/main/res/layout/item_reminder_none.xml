@@ -8,9 +8,9 @@
     android:padding="30dp">
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="120dp"
-        android:src="@drawable/no_reminders_2" />
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@drawable/island_palm_trees" />
 
     <TextView
         android:layout_width="wrap_content"
