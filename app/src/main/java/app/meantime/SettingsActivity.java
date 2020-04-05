@@ -13,7 +13,7 @@ import android.widget.LinearLayout;
 
 public class SettingsActivity extends AppCompatActivity {
     Toolbar toolbar;
-    LinearLayout feedback;
+    LinearLayout feedback, support, removeAds;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +31,22 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 composeEmail(new String[]{"jinnahinc.pk@gmail.com"}, "Meantime: Feedback");
+            }
+        });
+
+        removeAds = findViewById(R.id.remove_ads);
+        removeAds.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(SettingsActivity.this, RemoveAdsActivity.class));
+            }
+        });
+
+        support = findViewById(R.id.support);
+        support.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(SettingsActivity.this, SupportActivity.class));
             }
         });
 

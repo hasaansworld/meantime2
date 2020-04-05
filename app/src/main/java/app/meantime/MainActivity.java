@@ -206,7 +206,7 @@ public class MainActivity extends AppCompatActivity {
         // Native video "ca-app-pub-3940256099942544/1044960115"
         // My Native "ca-app-pub-1683035414743855/4296467221"
         MobileAds.initialize(this, initializationStatus -> {
-            Toast.makeText(this, "Ads SDK initialized.", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "Ads SDK initialized.", Toast.LENGTH_SHORT).show();
         });
 
         RequestConfiguration configuration = new RequestConfiguration.Builder().setTestDeviceIds(Arrays.asList("F68088F697A5D97E60C69783F1EBD9A4")).build();

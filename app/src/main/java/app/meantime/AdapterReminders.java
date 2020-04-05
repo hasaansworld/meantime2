@@ -294,7 +294,12 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
             if(ad != null) {
                 holderAds.adHeadline.setText(ad.getHeadline());
                 holderAds.adAdvertiser.setText(ad.getAdvertiser());
-                holderAds.appIcon.setImageDrawable(ad.getIcon().getDrawable());
+                if(ad.getIcon() != null) {
+                    holderAds.appIcon.setVisibility(View.VISIBLE);
+                    holderAds.appIcon.setImageDrawable(ad.getIcon().getDrawable());
+                }
+                else
+                    holderAds.appIcon.setVisibility(View.GONE);
                 if(ad.getStarRating() != null){
                     holderAds.adStars.setRating(ad.getStarRating().floatValue());
                     holderAds.adStars.setVisibility(View.VISIBLE);
@@ -302,8 +307,18 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
                 else
                     holderAds.adStars.setVisibility(View.GONE);
                 holderAds.adBody.setText(ad.getBody());
-                holderAds.adPrice.setText(ad.getPrice());
-                holderAds.adStore.setText(ad.getStore());
+                if(ad.getPrice() != null && !ad.getPrice().equals("")){
+                    holderAds.adPrice.setVisibility(View.VISIBLE);
+                    holderAds.adPrice.setText(ad.getPrice());
+                }
+                else
+                    holderAds.adPrice.setVisibility(View.GONE);
+                if(ad.getStore() != null && !ad.getStore().equals("")){
+                    holderAds.adStore.setVisibility(View.VISIBLE);
+                    holderAds.adStore.setText(ad.getStore());
+                }
+                else
+                    holderAds.adStore.setVisibility(View.GONE);
                 holderAds.adCallToAction.setText(ad.getCallToAction());
                 //holderAds.adView.setNativeAd(ad);
             }
@@ -466,15 +481,17 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     public void showAd(UnifiedNativeAd ad){
         this.ad = ad;
-        if(!titles.contains("Ad") && mode == 0 && !isSearching){
-            int lastTodayPosition = 0;
-            for(String title:titles)
-                if(title.equals("Today"))
-                    lastTodayPosition++;
+        if(ad != null) {
+            if (!titles.contains("Ad") && mode == 0 && !isSearching) {
+                int lastTodayPosition = 0;
+                for (String title : titles)
+                    if (title.equals("Today"))
+                        lastTodayPosition++;
 
-            allItems.add(lastTodayPosition, new DataAds());
-            titles.add(lastTodayPosition, "Ad");
-            notifyItemInserted(lastTodayPosition);
+                allItems.add(lastTodayPosition, new DataAds());
+                titles.add(lastTodayPosition, "Ad");
+                notifyItemInserted(lastTodayPosition);
+            }
         }
         //if(adPostion != -1)
             //notifyItemChanged(adPostion);

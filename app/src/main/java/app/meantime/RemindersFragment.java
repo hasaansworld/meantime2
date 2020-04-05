@@ -70,6 +70,7 @@ public class RemindersFragment extends Fragment {
     public void setFilter(int filter){
         this.filter = filter;
         adapterReminders.setFilter(filter);
+        adapterReminders.showAd(ad);
     }
 
     public void search(String query){
@@ -86,6 +87,7 @@ public class RemindersFragment extends Fragment {
         isSearching = false;
         adapterReminders.cancelSearch();
         searchNoResults.setVisibility(View.GONE);
+        adapterReminders.showAd(ad);
     }
 
     public void showAd(UnifiedNativeAd ad){

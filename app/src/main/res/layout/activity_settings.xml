@@ -92,12 +92,13 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
                     android:textColor="@android:color/black"
-                    android:textSize="18sp"
+                    android:textSize="16sp"
                     android:text="Feedback" />
 
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/remove_ads"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -119,12 +120,13 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
                     android:textColor="@android:color/black"
-                    android:textSize="18sp"
+                    android:textSize="16sp"
                     android:text="Remove Ads" />
 
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/support"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -146,7 +148,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
                     android:textColor="@android:color/black"
-                    android:textSize="18sp"
+                    android:textSize="16sp"
                     android:text="Support Us" />
 
             </LinearLayout>
@@ -166,14 +168,14 @@
                 <ImageView
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:src="@drawable/outline_gavel_black_24" />
+                    android:src="@drawable/outline_info_black_24" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
                     android:textColor="@android:color/black"
-                    android:textSize="18sp"
+                    android:textSize="16sp"
                     android:text="Licenses" />
 
             </LinearLayout>
