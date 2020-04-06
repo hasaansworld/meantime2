@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,7 +24,8 @@ public class FullScreenReminderActivity extends AppCompatActivity {
     DataReminder reminder;
     Toolbar toolbar;
     TextView title, description;
-    TextView time, day, date, alarmTime;
+    TextView time, day, date, alarmTime, repeat;
+    LinearLayout repeatLayout;
     ImageView image;
     View circle;
     MediaPlayer mediaPlayer;
@@ -52,6 +54,8 @@ public class FullScreenReminderActivity extends AppCompatActivity {
         date = findViewById(R.id.date);
         circle = findViewById(R.id.circle);
         alarmTime = findViewById(R.id.text_alarm_time);
+        repeat = findViewById(R.id.text_repeat);
+        repeatLayout = findViewById(R.id.layout_repeat);
 
         day.setText(reminder.getDay());
         date.setText(reminder.getDate());
@@ -61,6 +65,10 @@ public class FullScreenReminderActivity extends AppCompatActivity {
         d.setColorFilter(Color.parseColor(colors[reminder.getImportance()]), PorterDuff.Mode.SRC_ATOP);
         circle.setBackground(d);
         alarmTime.setText(reminder.getAlarmtime());
+        if(!reminder.getRepeat().equals("No repeat")) {
+            repeatLayout.setVisibility(View.VISIBLE);
+            repeat.setText(reminder.getRepeat());
+        }
 
         description = findViewById(R.id.description);
         if(reminder.getDescription() != null && !reminder.getDescription().equals(""))
@@ -72,8 +80,7 @@ public class FullScreenReminderActivity extends AppCompatActivity {
             Glide.with(this).asBitmap().load(path).into(image);
         }
 
-        int status = realm.where(DataReminder.class).equalTo("reminderId", reminder.getReminderId()).findFirst().getStatus();
-        title.setText(title.getText()+"\nStatus: "+status);
+        title.setText(title.getText());
 
         mediaPlayer = MediaPlayer.create(this, R.raw.quite_impressed);
         mediaPlayer.start();

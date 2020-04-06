@@ -151,7 +151,7 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     public class ViewHolderReminder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        TextView title, people, description, time;
+        TextView title, people, description, time, repeat;
         ImageView image;
         View circle;
         public ViewHolderReminder(View v){
@@ -162,6 +162,7 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
             people = v.findViewById(R.id.people);
             description = v.findViewById(R.id.description);
             image = v.findViewById(R.id.image);
+            repeat = v.findViewById(R.id.repeat);
             v.setOnClickListener(this);
         }
 
@@ -271,6 +272,8 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
             else
                 holderReminder.image.setVisibility(View.GONE);
             holderReminder.title.setText(reminder.getTitle());
+            if(mode == 0)
+                holderReminder.title.setTextColor(reminder.getStatus() != DataReminder.STATUS_COMPLETED ? Color.BLACK : Color.parseColor("#666666"));
             holderReminder.time.setText(reminder.getTime());
             holderReminder.people.setText(reminder.getOwner());
             Drawable drawable = resources.getDrawable(R.drawable.circle_white);
@@ -287,6 +290,9 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
             else{
                 holderReminder.description.setMaxLines(2);
             }
+            holderReminder.repeat.setVisibility(reminder.getRepeat().equals("No repeat") ? View.GONE : View.VISIBLE);
+            if(!reminder.getRepeat().equals("No repeat"))
+                holderReminder.repeat.setText(getRepeatTitle(reminder.getRepeat()));
         }
         else if(holder instanceof ViewHolderAds){
             ViewHolderAds holderAds = (ViewHolderAds)holder;
@@ -495,6 +501,24 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
         }
         //if(adPostion != -1)
             //notifyItemChanged(adPostion);
+    }
+
+    private String getRepeatTitle(String repeat){
+        if(repeat.equals("Repeat every day")){
+            return "Every day";
+        }
+        else if(repeat.equals("Repeat every week")){
+            return "Every week";
+        }
+        else if(repeat.equals("Repeat every weekday (Mon-Fri)")){
+            return "Every Mon-Fri";
+        }
+        else if(repeat.equals("Repeat every month")){
+            return "Every month";
+        }
+        else{
+            return "Every year";
+        }
     }
 
     String[] short_months = {"Jan", "Feb", "Mar", "Apr", "May", "Jun",

@@ -115,7 +115,8 @@ public class CreateActivity extends AppCompatActivity {
                     this.month, // Initial month selection
                     this.day // Inital day selection
             );
-             dpd.show(getSupportFragmentManager(), "Datepickerdialog");
+            dpd.setMinDate(Calendar.getInstance());
+            dpd.show(getSupportFragmentManager(), "Datepickerdialog");
         });
 
         textTime.setOnClickListener(v -> {
@@ -238,6 +239,7 @@ public class CreateActivity extends AppCompatActivity {
             lowImportance.setClickable(false);
             mediumImportance.setClickable(false);
             highImportance.setClickable(false);
+            layoutRepeat.setClickable(false);
         }
         if(isEditing = getIntent().getBooleanExtra("isEditing", false)){
             saveButton.setText("Update Reminder");
@@ -249,6 +251,7 @@ public class CreateActivity extends AppCompatActivity {
             textDate.setText(reminder.getDate());
             textTime.setText(reminder.getTime());
             textAlarmTime.setText(reminder.getAlarmtime());
+            textRepeat.setText(reminder.getRepeat());
             importance = reminder.getImportance();
             if(reminder.getImportance() == 0){
                 mediumImportance.setBackgroundResource(R.drawable.button_date);

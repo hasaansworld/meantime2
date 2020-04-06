@@ -56,13 +56,13 @@ public class ReminderActivity extends AppCompatActivity {
     Toolbar toolbar;
     AppBarLayout appBarLayout;
     SharedPreferences sharedPreferences;
-    TextView title, people, time, day, date, alarmTime, description;
+    TextView title, people, time, day, date, alarmTime, description, repeat;
     ImageView image, removeImage, changeImage;
     View circle;
     List<String> titles = new ArrayList<>();
     int elevation;
     ScrollView scrollView;
-    LinearLayout addImage, addDescription;
+    LinearLayout addImage, addDescription, repeatLayout;
     FrameLayout imageLayout;
     String id, descriptionS = "";
     Realm realm;
@@ -103,6 +103,8 @@ public class ReminderActivity extends AppCompatActivity {
         imageLayout = findViewById(R.id.layout_image);
         addDescription = findViewById(R.id.layout_add_description);
         description = findViewById(R.id.description);
+        repeat = findViewById(R.id.text_repeat);
+        repeatLayout = findViewById(R.id.layout_repeat);
 
         setData();
 
@@ -217,12 +219,16 @@ public class ReminderActivity extends AppCompatActivity {
         isHistory = getIntent().getBooleanExtra("isHistory", false);
         isDeleted = getIntent().getBooleanExtra("isDeleted", false);
         DataReminder reminder = realm.where(DataReminder.class).equalTo("reminderId", id).findFirst();
-        title.setText(reminder.getTitle()+"\nStatus:"+reminder.getStatus());
+        title.setText(reminder.getTitle());
         day.setText(reminder.getDay());
         date.setText(reminder.getDate());
         time.setText(reminder.getTime());
         people.setText(reminder.getOwner());
         alarmTime.setText(alarmTimesShort.get(reminder.getAlarmtime()));
+        if(!reminder.getRepeat().equals("No repeat")){
+            repeatLayout.setVisibility(View.VISIBLE);
+            repeat.setText(reminder.getRepeat());
+        }
         Drawable d = getResources().getDrawable(R.drawable.circle_white);
         d.setColorFilter(Color.parseColor(colors[reminder.getImportance()]), PorterDuff.Mode.SRC_ATOP);
         circle.setBackground(d);
