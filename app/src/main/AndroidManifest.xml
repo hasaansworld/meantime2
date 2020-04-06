@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="app.meantime">
 
+    <uses-permission android:name="com.android.vending.BILLING" />
+
     <application
         android:name=".MyApplication"
         android:allowBackup="true"
@@ -48,13 +50,12 @@
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-1683035414743855~6808926402" />
 
-        <receiver
+        <!--<receiver
             android:name=".BackgroundServiceReceiver"
             android:enabled="true"
             android:exported="true"
-            android:label="RestartServiceWhenStopped" />
-        <!--
-<receiver
+            android:label="RestartServiceWhenStopped" />-->
+        <receiver
             android:name=".WakeReceiver"
             android:enabled="true"
             android:exported="true"
@@ -64,20 +65,19 @@
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
-        </receiver>!
-        -->
+        </receiver>
         <receiver android:name=".NotificationReceiver">
             <intent-filter>
                 <action android:name="app.meantime.ACTION_NOTIFICATION" />
             </intent-filter>
         </receiver>
 
-        <service
+        <!--<service
             android:name=".BackgroundService"
             android:enabled="true" />
         <service
             android:name=".ForegroundService"
-            android:enabled="true" />
+            android:enabled="true" />-->
     </application>
     <uses-permission android:name="android.permission.READ_CONTACTS" />
 

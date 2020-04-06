@@ -102,7 +102,8 @@
                 <ImageView
                     android:layout_width="18dp"
                     android:layout_height="18dp"
-                    android:src="@drawable/outline_replay_black_18" />
+                    android:src="@drawable/outline_replay_black_18"
+                    android:tint="#666666"/>
 
                 <TextView
                     android:id="@+id/text_repeat"
