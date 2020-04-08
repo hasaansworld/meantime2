@@ -4,16 +4,19 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 public class SettingsActivity extends AppCompatActivity {
     Toolbar toolbar;
     LinearLayout feedback, support, removeAds;
+    ImageView checkNoAds, checkSupportUs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +53,21 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
 
+        checkNoAds = findViewById(R.id.check_no_ads);
+        checkSupportUs = findViewById(R.id.check_support_us);
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        SharedPreferences sharedPreferences = getSharedPreferences("data", MODE_PRIVATE);
+        if(sharedPreferences.getBoolean("noAds", false))
+            checkNoAds.setVisibility(View.VISIBLE);
+        if(sharedPreferences.getBoolean("supportUs", false)){
+            checkNoAds.setVisibility(View.VISIBLE);
+            checkSupportUs.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override

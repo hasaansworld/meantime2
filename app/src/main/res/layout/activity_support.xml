@@ -48,6 +48,7 @@
                 android:layout_marginRight="30dp"/>
 
             <TextView
+                android:id="@+id/headline"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="30dp"
@@ -59,6 +60,7 @@
                 android:text="We're working hard to make apps you love." />
 
             <TextView
+                android:id="@+id/text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="30dp"
@@ -66,9 +68,33 @@
                 android:layout_marginTop="10dp"
                 android:textSize="16sp"
                 android:textColor="#666666"
-                android:text="Your support will help us continue and bring you new features every week." />
+                android:text="Your support will help us continue to bring you new features every week. We'll also remove all ads from your app." />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="30dp" />
+
+            <TextView
+                android:id="@+id/textError"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="5dp"
+                android:textColor="#E53935"
+                android:textSize="14sp"
+                android:visibility="gone" />
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_margin="10dp"
+                android:indeterminate="true"
+                android:visibility="gone" />
 
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_buy_coffee"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="16sp"
@@ -78,7 +104,7 @@
                 android:paddingRight="20dp"
                 android:paddingTop="10dp"
                 android:paddingBottom="10dp"
-                android:layout_marginTop="40dp"
+                android:layout_marginTop="10dp"
                 android:layout_gravity="center_horizontal"
                 android:theme="@style/AppTheme.MaterialButton"
                 android:clickable="true"

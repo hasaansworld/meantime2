@@ -131,11 +131,11 @@ public class NotificationReceiver extends BroadcastReceiver {
             String newDate = sdf.format(d);
             String newDayOfWeek = days[now.get(Calendar.DAY_OF_WEEK)-1];
 
-            Number id = realm.where(DataReminder.class).max("reminderNumber");
-            int next_id = (id == null) ? 117 : id.intValue() + 1;
+            //Number id = realm.where(DataReminder.class).max("reminderNumber");
+            //int next_id = (id == null) ? 117 : id.intValue() + 1;
             DataReminder dataReminder = new DataReminder(
-                    next_id,
-                    FirebaseDatabase.getInstance().getReference().push().getKey(),
+                    reminder.getReminderNumber(),
+                    reminder.getReminderId(),
                     reminder.getTitle(),
                     newDayOfWeek,
                     newDate,

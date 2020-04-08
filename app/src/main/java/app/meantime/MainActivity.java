@@ -195,7 +195,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        initializeAds();
+        if(!sharedPreferences.getBoolean("noAds", false))
+            initializeAds();
 
     }
 

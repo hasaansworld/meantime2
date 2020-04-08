@@ -123,6 +123,15 @@
                     android:textSize="16sp"
                     android:text="Remove Ads" />
 
+                <ImageView
+                    android:id="@+id/check_no_ads"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_marginLeft="15dp"
+                    android:src="@drawable/baseline_check_circle_black_18"
+                    android:tint="@color/green"
+                    android:visibility="gone"/>
+
             </LinearLayout>
 
             <LinearLayout
@@ -150,6 +159,15 @@
                     android:textColor="@android:color/black"
                     android:textSize="16sp"
                     android:text="Support Us" />
+
+                <ImageView
+                    android:id="@+id/check_support_us"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_marginLeft="23dp"
+                    android:src="@drawable/baseline_check_circle_black_18"
+                    android:tint="@color/green"
+                    android:visibility="gone"/>
 
             </LinearLayout>
 
