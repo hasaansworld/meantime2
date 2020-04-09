@@ -15,7 +15,7 @@ import android.widget.LinearLayout;
 
 public class SettingsActivity extends AppCompatActivity {
     Toolbar toolbar;
-    LinearLayout feedback, support, removeAds;
+    LinearLayout feedback, support, removeAds, licences;
     ImageView checkNoAds, checkSupportUs;
 
     @Override
@@ -50,6 +50,14 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(SettingsActivity.this, SupportActivity.class));
+            }
+        });
+
+        licences = findViewById(R.id.licences);
+        licences.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(SettingsActivity.this, LicencesActivity.class));
             }
         });
 

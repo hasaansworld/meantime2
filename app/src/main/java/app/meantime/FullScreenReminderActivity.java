@@ -84,11 +84,13 @@ public class FullScreenReminderActivity extends AppCompatActivity {
             String path = reminder.getImage();
             if (path != null && !path.equals("")) {
                 image.setVisibility(View.VISIBLE);
-                Glide.with(this).asBitmap().load(path).into(image);
+                Glide.with(this).asBitmap().placeholder(R.drawable.broken_image).load(path).into(image);
             }
 
-            mediaPlayer = MediaPlayer.create(this, R.raw.quite_impressed);
-            mediaPlayer.start();
+            if(reminder.getImportance() == 2) {
+                mediaPlayer = MediaPlayer.create(this, R.raw.you_have_new_message);
+                mediaPlayer.start();
+            }
 
             if(!reminder.getRepeat().equals("No repeat")){
                 Calendar now = Calendar.getInstance();

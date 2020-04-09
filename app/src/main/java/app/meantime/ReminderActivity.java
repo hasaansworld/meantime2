@@ -125,12 +125,12 @@ public class ReminderActivity extends AppCompatActivity {
 
         addImage.setOnClickListener(v -> {
             pickPhoto();
-            updateLists();
+            updateLists("");
         });
 
         addDescription.setOnClickListener(v -> {
             editDescription();
-            updateLists();
+            updateLists("");
         });
 
         if(!isHistory && !isDeleted) {
@@ -147,7 +147,7 @@ public class ReminderActivity extends AppCompatActivity {
                         addDescription.setVisibility(View.VISIBLE);
                         description.setVisibility(View.GONE);
                     }
-                    updateLists();
+                    updateLists("");
                     return true;
                 });
                 popup.inflate(R.menu.options_description);
@@ -167,7 +167,7 @@ public class ReminderActivity extends AppCompatActivity {
                         addImage.setVisibility(View.VISIBLE);
                         imageLayout.setVisibility(View.GONE);
                     }
-                    updateLists();
+                    updateLists("");
                     return true;
                 });
                 popup.inflate(R.menu.options_image);
@@ -184,7 +184,7 @@ public class ReminderActivity extends AppCompatActivity {
         startActivityForResult(i, 125);
     }
 
-    private void updateLists(){
+    private void updateLists(String message){
         SharedPreferences.Editor editor = sharedPreferences.edit();
         if(isHistory)
             editor.putBoolean("updateHistoryList", true);
@@ -192,6 +192,7 @@ public class ReminderActivity extends AppCompatActivity {
             editor.putBoolean("updateDeletedList", true);
         else
             editor.putBoolean("updateMainList", true);
+        editor.putString("message", message);
         editor.apply();
     }
 
@@ -288,6 +289,7 @@ public class ReminderActivity extends AppCompatActivity {
                             reminder.deleteFromRealm();
                             realm.commitTransaction();
                             editor.putBoolean("updateHistoryList", true);
+                            editor.putString("message", "Reminder deleted!");
                             editor.apply();
                         }
                         else {
@@ -295,10 +297,11 @@ public class ReminderActivity extends AppCompatActivity {
                             reminder.setDeleted(true);
                             realm.commitTransaction();
                             editor.putBoolean("updateMainList", true);
+                            editor.putString("message", "Reminder deleted!");
                             editor.apply();
                         }
 
-                        Toast.makeText(this, "Reminder deleted!", Toast.LENGTH_SHORT).show();
+                        //.makeText(this, "Reminder deleted!", Toast.LENGTH_SHORT).show();
 
                         finish();
                     })
@@ -334,9 +337,10 @@ public class ReminderActivity extends AppCompatActivity {
                         reminder.deleteFromRealm();
                         realm.commitTransaction();
                         editor.putBoolean("updateDeletedList", true);
+                        editor.putString("message", "Reminder permanently deleted!");
                         editor.apply();
 
-                        Toast.makeText(this, "Reminder permanently deleted!", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(this, "Reminder permanently deleted!", Toast.LENGTH_SHORT).show();
 
                         finish();
                     })
@@ -362,12 +366,13 @@ public class ReminderActivity extends AppCompatActivity {
                         realm.commitTransaction();
                         editor.putBoolean("updateDeletedList", true);
                         editor.putBoolean("updateMainList", true);
+                        editor.putString("message", "Reminder restored!");
                         editor.apply();
 
                         if(reminder.getStatus() == DataReminder.STATUS_CREATED && shouldSchedule(reminder))
                             scheduleReminder(reminder.getReminderId());
 
-                        Toast.makeText(this, "Reminder restored!", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(this, "Reminder restored!", Toast.LENGTH_SHORT).show();
                         finish();
                     })
                     .setNegativeButton("Cancel", (dialog, which) -> {

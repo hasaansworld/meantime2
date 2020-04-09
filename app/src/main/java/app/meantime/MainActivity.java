@@ -6,6 +6,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.Toolbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -18,6 +19,7 @@ import androidx.work.Constraints;
 import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.NetworkType;
 import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 
 import android.Manifest;
@@ -38,6 +40,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -66,6 +69,7 @@ import com.google.android.gms.ads.initialization.OnInitializationCompleteListene
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 import com.nguyenhoanglam.imagepicker.helper.PermissionHelper;
 import com.nguyenhoanglam.imagepicker.ui.imagepicker.ImagePicker;
@@ -81,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
     SharedPreferences sharedPreferences;
     AppBarLayout appbar, appbarSearch;
     Toolbar toolbar, searchToolbar;
+    CoordinatorLayout coordinatorLayout;
     TextView toolbarTitle;
     EditText search;
     ImageView searchButton;
@@ -109,6 +114,8 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         //setProfilePicture();
         toolbarTitle = findViewById(R.id.toolbarTitle);
+
+        coordinatorLayout = findViewById(R.id.coordinator_layout);
 
         /*viewPager = findViewById(R.id.viewpager);
         viewPager.setAdapter(new MainPagerAdapter(getSupportFragmentManager()));
@@ -366,6 +373,31 @@ public class MainActivity extends AppCompatActivity {
         //checkPermission();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(sharedPreferences.getBoolean("updateMainList", false)){
+            appbar.setExpanded(true, true);
+            String message = sharedPreferences.getString("message", "");
+            if(message != null && !message.equals("")){
+                showSnackbar(message);
+            }
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putBoolean("updateMainList", false);
+            editor.putString("message", "");
+            editor.apply();
+        }
+    }
+
+    private void showSnackbar(String message){
+        Snackbar snackbar = Snackbar
+                .make(coordinatorLayout, message, Snackbar.LENGTH_LONG);
+        TextView textView = snackbar.getView().findViewById(com.google.android.material.R.id.snackbar_text);
+        textView.setTextColor(Color.WHITE);
+        snackbar.show();
+    }
+
+
     public static float dpToPixel(float dp, Context context){
         return dp * ((float) context.getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
     }
@@ -427,9 +459,8 @@ public class MainActivity extends AppCompatActivity {
                 new PeriodicWorkRequest.Builder(BackgroundWorker.class, 30, TimeUnit.MINUTES)
                         .build();
 
-        WorkManager.getInstance(this)
-                .enqueueUniquePeriodicWork("backgroundWork", ExistingPeriodicWorkPolicy.KEEP, backgroundRequest);
-
+        WorkManager workManager = WorkManager.getInstance(this);
+        workManager.enqueueUniquePeriodicWork("backgroundWork", ExistingPeriodicWorkPolicy.KEEP, backgroundRequest);
     }
 
     public void updateContacts(){

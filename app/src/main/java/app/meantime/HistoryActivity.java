@@ -4,11 +4,13 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.Toolbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.animation.ObjectAnimator;
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -22,8 +24,10 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -39,6 +43,8 @@ import io.realm.RealmResults;
 public class HistoryActivity extends AppCompatActivity {
     AppBarLayout appbar, appbarSearch;
     Toolbar toolbar, searchToolbar;
+    CoordinatorLayout coordinatorLayout;
+    SharedPreferences sharedPreferences;
     EditText search;
     ImageView searchButton;
     LinearLayout searchNoResults, nothingHere;
@@ -51,6 +57,9 @@ public class HistoryActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
+        sharedPreferences = getSharedPreferences("data", MODE_PRIVATE);
+
+        coordinatorLayout = findViewById(R.id.coordinator_layout);
 
         appbar = findViewById(R.id.appbar);
         toolbar = findViewById(R.id.toolbar);
@@ -157,7 +166,7 @@ public class HistoryActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        if(getSharedPreferences("data", MODE_PRIVATE).getBoolean("updateHistoryList", false)){
+        if(sharedPreferences.getBoolean("updateHistoryList", false)){
             adapterReminders = new AdapterReminders(this, 1);
             recyclerView.setAdapter(adapterReminders);
             if (filter != -1)
@@ -168,7 +177,31 @@ public class HistoryActivity extends AppCompatActivity {
                 nothingHere.setVisibility(View.VISIBLE);
             else
                 nothingHere.setVisibility(View.GONE);
+            String message = sharedPreferences.getString("message", "");
+            if(message != null && !message.equals("")){
+                showSnackbar(message);
+            }
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(sharedPreferences.getBoolean("updateHistoryList", false)){
+            appbar.setExpanded(true, true);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putBoolean("updateHistoryList", false);
+            editor.putString("message", "");
+            editor.apply();
+        }
+    }
+
+    private void showSnackbar(String message){
+        Snackbar snackbar = Snackbar
+                .make(coordinatorLayout, message, Snackbar.LENGTH_LONG);
+        TextView textView = snackbar.getView().findViewById(com.google.android.material.R.id.snackbar_text);
+        textView.setTextColor(Color.WHITE);
+        snackbar.show();
     }
 
     @Override

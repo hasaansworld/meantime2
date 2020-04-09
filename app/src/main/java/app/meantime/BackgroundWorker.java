@@ -10,6 +10,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
@@ -17,6 +18,7 @@ import androidx.core.app.NotificationManagerCompat;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
+import com.balsikandar.crashreporter.CrashReporter;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
@@ -104,9 +106,15 @@ public class BackgroundWorker extends Worker {
 
             }
         });*/
-        scheduleReminders();
+        try {
+            scheduleReminders();
+        }
+        catch (Exception e){
+            CrashReporter.logException(e);
+        }
         return Result.success();
     }
+
 
     private void scheduleReminders() {
         realm = Realm.getDefaultInstance();

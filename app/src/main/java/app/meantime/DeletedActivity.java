@@ -4,6 +4,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.Toolbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -27,9 +28,11 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -42,8 +45,10 @@ import io.realm.Realm;
 import io.realm.RealmResults;
 
 public class DeletedActivity extends AppCompatActivity {
+    CoordinatorLayout coordinatorLayout;
     AppBarLayout appbar, appbarSearch;
     Toolbar toolbar, searchToolbar;
+    SharedPreferences sharedPreferences;
     RecyclerView recyclerView;
     EditText search;
     ImageView searchButton;
@@ -56,6 +61,9 @@ public class DeletedActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_deleted);
+        sharedPreferences = getSharedPreferences("data", MODE_PRIVATE);
+
+        coordinatorLayout = findViewById(R.id.coordinator_layout);
 
         appbar = findViewById(R.id.appbar);
         toolbar = findViewById(R.id.toolbar);
@@ -165,7 +173,7 @@ public class DeletedActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        if(getSharedPreferences("data", MODE_PRIVATE).getBoolean("updateDeletedList", false)){
+        if(sharedPreferences.getBoolean("updateDeletedList", false)){
             adapterReminders = new AdapterReminders(this, 2);
             recyclerView.setAdapter(adapterReminders);
             if (filter != -1)
@@ -176,7 +184,31 @@ public class DeletedActivity extends AppCompatActivity {
                 nothingHere.setVisibility(View.VISIBLE);
             else
                 nothingHere.setVisibility(View.GONE);
+            String message = sharedPreferences.getString("message", "");
+            if(message != null && !message.equals("")){
+                showSnackbar(message);
+            }
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(sharedPreferences.getBoolean("updateDeletedList", false)){
+            appbar.setExpanded(true, true);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putBoolean("updateDeletedList", false);
+            editor.putString("message", "");
+            editor.apply();
+        }
+    }
+
+    private void showSnackbar(String message){
+        Snackbar snackbar = Snackbar
+                .make(coordinatorLayout, message, Snackbar.LENGTH_LONG);
+        TextView textView = snackbar.getView().findViewById(com.google.android.material.R.id.snackbar_text);
+        textView.setTextColor(Color.WHITE);
+        snackbar.show();
     }
 
     @Override

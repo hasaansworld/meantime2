@@ -57,9 +57,6 @@ public class RemindersFragment extends Fragment {
             recyclerView.setAdapter(adapterReminders);
             if (filter != -1)
                 adapterReminders.setFilter(filter);
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putBoolean("updateMainList", false);
-            editor.apply();
             if(isSearching)
                 search(query);
             if(ad != null)
