@@ -12,6 +12,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.android.billingclient.api.AcknowledgePurchaseParams;
+import com.android.billingclient.api.AcknowledgePurchaseResponseListener;
 import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.BillingClientStateListener;
 import com.android.billingclient.api.BillingFlowParams;
@@ -149,6 +151,18 @@ public class SupportActivity extends AppCompatActivity implements PurchasesUpdat
             for(Purchase purchase: list){
                 if(purchase.getSku().equals(PURCHASE_ID) && purchase.getPurchaseState() == Purchase.PurchaseState.PURCHASED){
                     completedPurchase();
+                    if (!purchase.isAcknowledged()) {
+                        AcknowledgePurchaseParams acknowledgePurchaseParams =
+                                AcknowledgePurchaseParams.newBuilder()
+                                        .setPurchaseToken(purchase.getPurchaseToken())
+                                        .build();
+                        billingClient.acknowledgePurchase(acknowledgePurchaseParams, new AcknowledgePurchaseResponseListener() {
+                            @Override
+                            public void onAcknowledgePurchaseResponse(BillingResult billingResult) {
+
+                            }
+                        });
+                    }
                 }
             }
         }

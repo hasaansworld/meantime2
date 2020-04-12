@@ -1,6 +1,4 @@
 <!-- Glide !-->
-License for everything not in third_party and not otherwise marked:
-
 Copyright 2014 Google, Inc. All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are

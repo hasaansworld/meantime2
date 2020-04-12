@@ -31,6 +31,7 @@ public class LicencesActivity extends AppCompatActivity {
         addLicense("license_glide.txt");
         addLicense("license_vanniktech_emoji.txt");
         addLicense("license_wdullaer_material_date_time_picker.txt");
+        addLicense("license_nguyenhoanglam_image_picker.txt");
         addLicense("license_yalantis_ucrop.txt");
         addLicense("license_crash_reporter.txt");
         addLicense("license_zetbaitsu_compressor.txt");

@@ -16,6 +16,7 @@ import android.widget.LinearLayout;
 public class SettingsActivity extends AppCompatActivity {
     Toolbar toolbar;
     LinearLayout feedback, support, removeAds, licences;
+    ImageView facebook, twitter;
     ImageView checkNoAds, checkSupportUs;
 
     @Override
@@ -63,6 +64,29 @@ public class SettingsActivity extends AppCompatActivity {
 
         checkNoAds = findViewById(R.id.check_no_ads);
         checkSupportUs = findViewById(R.id.check_support_us);
+
+        facebook = findViewById(R.id.button_facebook);
+        twitter = findViewById(R.id.button_twitter);
+
+        facebook.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String url = "http://facebook.com/meantime.reminders";
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(url));
+                startActivity(i);
+            }
+        });
+
+        twitter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String url = "http://twitter.com/meantime_app";
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(url));
+                startActivity(i);
+            }
+        });
 
     }
 

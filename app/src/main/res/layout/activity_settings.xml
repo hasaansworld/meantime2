@@ -129,7 +129,7 @@
                     android:layout_height="18dp"
                     android:layout_marginLeft="15dp"
                     android:src="@drawable/baseline_check_circle_black_18"
-                    android:tint="@color/green"
+                    android:tint="@color/colorAccent"
                     android:visibility="gone"/>
 
             </LinearLayout>
@@ -166,7 +166,7 @@
                     android:layout_height="18dp"
                     android:layout_marginLeft="23dp"
                     android:src="@drawable/baseline_check_circle_black_18"
-                    android:tint="@color/green"
+                    android:tint="@color/colorAccent"
                     android:visibility="gone"/>
 
             </LinearLayout>

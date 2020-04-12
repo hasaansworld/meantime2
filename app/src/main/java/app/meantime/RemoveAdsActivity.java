@@ -2,6 +2,7 @@ package app.meantime;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -11,6 +12,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.android.billingclient.api.AcknowledgePurchaseParams;
+import com.android.billingclient.api.AcknowledgePurchaseResponseListener;
 import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.BillingClientStateListener;
 import com.android.billingclient.api.BillingFlowParams;
@@ -98,7 +101,12 @@ public class RemoveAdsActivity extends AppCompatActivity implements PurchasesUpd
                         }
                     }
                     else {
-                        queryPrice();
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                queryPrice();
+                            }
+                        }, 2000);
                     }
                 });
     }
@@ -167,6 +175,18 @@ public class RemoveAdsActivity extends AppCompatActivity implements PurchasesUpd
             for(Purchase purchase: list){
                 if(purchase.getSku().equals(PURCHASE_ID) && purchase.getPurchaseState() == Purchase.PurchaseState.PURCHASED){
                     completedPurchase();
+                    if (!purchase.isAcknowledged()) {
+                        AcknowledgePurchaseParams acknowledgePurchaseParams =
+                                AcknowledgePurchaseParams.newBuilder()
+                                        .setPurchaseToken(purchase.getPurchaseToken())
+                                        .build();
+                        billingClient.acknowledgePurchase(acknowledgePurchaseParams, new AcknowledgePurchaseResponseListener() {
+                            @Override
+                            public void onAcknowledgePurchaseResponse(BillingResult billingResult) {
+
+                            }
+                        });
+                    }
                 }
             }
         }

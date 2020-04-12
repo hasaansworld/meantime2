@@ -2,8 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="app.meantime">
 
-    <uses-permission android:name="com.android.vending.BILLING" />
-
     <application
         android:name=".MyApplication"
         android:allowBackup="true"
@@ -12,7 +10,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".LicencesActivity"></activity>
+        <activity android:name=".IntroActivity"></activity>
+        <activity android:name=".LicencesActivity" />
         <activity android:name=".RemoveAdsActivity" />
         <activity android:name=".SupportActivity" />
         <activity android:name=".SettingsActivity" />
@@ -49,12 +48,13 @@
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-1683035414743855~6808926402" />
-
-        <!--<receiver
+        <!--
+<receiver
             android:name=".BackgroundServiceReceiver"
             android:enabled="true"
             android:exported="true"
-            android:label="RestartServiceWhenStopped" />-->
+            android:label="RestartServiceWhenStopped" />
+        -->
         <receiver
             android:name=".WakeReceiver"
             android:enabled="true"
@@ -71,16 +71,10 @@
                 <action android:name="app.meantime.ACTION_NOTIFICATION" />
             </intent-filter>
         </receiver>
-
-        <!--<service
-            android:name=".BackgroundService"
-            android:enabled="true" />
-        <service
-            android:name=".ForegroundService"
-            android:enabled="true" />-->
     </application>
     <uses-permission android:name="android.permission.READ_CONTACTS" />
-
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <uses-permission android:name="com.android.vending.BILLING" />
 
 </manifest>
