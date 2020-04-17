@@ -92,7 +92,7 @@ public class BackgroundWorker extends Worker {
     @NonNull
     @Override
     public Result doWork() {
-        sendNotification(1100, "Background Worker: v3");
+        //sendNotification(1100, "Background Worker: v3");
         /*FirebaseDatabase fdb = FirebaseDatabase.getInstance();
         fdb.getReference("messages").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -137,7 +137,7 @@ public class BackgroundWorker extends Worker {
                 reminders.remove(i-1);
         }
 
-        SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy HH:mm", Locale.getDefault());
+        /*SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy HH:mm", Locale.getDefault());
         String currentDateandTime = sdf.format(new Date());
         String appName = context.getApplicationInfo().loadLabel(context.getPackageManager()).toString();
         File dir = new File(Environment.getExternalStorageDirectory()+"/"+appName+"/Logs");
@@ -158,11 +158,11 @@ public class BackgroundWorker extends Worker {
 
         }
         PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(buffStream)));
-        String log = "Items found matching criteria: " + reminders.size() + "\n";
+        String log = "Items found matching criteria: " + reminders.size() + "\n";*/
         for(int i = 0; i < reminders.size(); i++){
             DataReminder reminder = reminders.get(i);
             if(shouldSchedule(reminder)){
-                log = log + "\nShould schedule:\n"+reminder.getTitle()+"\n"+reminder.getDate()+" "+reminder.getTime()+"\n"+reminder.getStatus();
+                //log = log + "\nShould schedule:\n"+reminder.getTitle()+"\n"+reminder.getDate()+" "+reminder.getTime()+"\n"+reminder.getStatus();
                 Intent intent1 = new Intent(getApplicationContext(), NotificationReceiver.class);
                 intent1.setAction(NotificationReceiver.ACTION_NOTIFICATION);
                 intent1.putExtra("id", reminder.getReminderId());
@@ -178,19 +178,19 @@ public class BackgroundWorker extends Worker {
                 realm.copyToRealmOrUpdate(reminder);
                 realm.commitTransaction();
             }
-            else
-                log = log + "\nDon't schedule:\n"+reminder.getTitle()+"\n"+reminder.getDate()+" "+reminder.getTime();
+            //else
+                //log = log + "\nDon't schedule:\n"+reminder.getTitle()+"\n"+reminder.getDate()+" "+reminder.getTime();
         }
         List<DataReminder> updatedList = new ArrayList<>();
         updatedList.addAll(realm.where(DataReminder.class).equalTo("date", today)
                 .or()
                 .equalTo("date", tomorrow)
                 .findAll());
-        log = log+"\n\nAfter Scheduling:\n";
-        for(DataReminder reminder: updatedList)
-            log = log + "\n"+reminder.getTitle()+"\n"+reminder.getDate()+" "+reminder.getTime()+"\n"+reminder.getStatus();
-        pw.append(log);
-        pw.close();
+        //log = log+"\n\nAfter Scheduling:\n";
+        //for(DataReminder reminder: updatedList)
+            //log = log + "\n"+reminder.getTitle()+"\n"+reminder.getDate()+" "+reminder.getTime()+"\n"+reminder.getStatus();
+        //pw.append(log);
+        //pw.close();
         realm.close();
     }
 
