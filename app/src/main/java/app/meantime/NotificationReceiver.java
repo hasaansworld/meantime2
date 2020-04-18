@@ -78,7 +78,9 @@ public class NotificationReceiver extends BroadcastReceiver {
             i.putExtra("id", reminder.getReminderId());
             i.setFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
             if(Build.VERSION.SDK_INT >= 21)
-                i.setFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK | Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+                i.setFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK | Intent.FLAG_ACTIVITY_NEW_DOCUMENT | Intent.FLAG_ACTIVITY_NEW_TASK);
+            else
+                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(i);
         }
         else {
@@ -90,7 +92,7 @@ public class NotificationReceiver extends BroadcastReceiver {
             Uri soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
             //Uri path = Uri.parse("android.resource://"+context.getPackageName()+"/raw/quite_impressed");
             NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "1")
-                    .setSmallIcon(R.drawable.ic_notifications_none_black_24dp);
+                    .setSmallIcon(Build.VERSION.SDK_INT >= 21 ? R.drawable.ic_notifications_none_black_24dp : R.drawable.ic_notifications_none_white_24dp);
             builder.setContentTitle("Reminder: \"" + reminder.getTitle() + "\"");
             builder.setContentText(reminder.getDescription())
                     .setStyle(new NotificationCompat.BigTextStyle()

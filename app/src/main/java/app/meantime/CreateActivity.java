@@ -96,6 +96,8 @@ public class CreateActivity extends AppCompatActivity {
 
         String dateS = getCurrentDate();
         textDate.setText(dateS);
+        String timeS = getCurrentTime();
+        textTime.setText(timeS);
         textDate.setOnClickListener(v -> {
             DatePickerDialog dpd = DatePickerDialog.newInstance(
                     (view, year, monthOfYear, dayOfMonth) -> {
@@ -131,6 +133,12 @@ public class CreateActivity extends AppCompatActivity {
                 String time = String.format("%02d", hour)+":"+String.format("%02d", minute)+" "+am;
                 textTime.setText(time);
             }, this.hour, this.minute, false);
+            if(textDate.getText().toString().equals(getCurrentDate())){
+                Calendar calendar = Calendar.getInstance();
+                int min_hour = calendar.get(Calendar.HOUR_OF_DAY);
+                int min_minute = calendar.get(Calendar.MINUTE);
+                tpd.setMinTime(min_hour, min_minute, 0);
+            }
             tpd.show(getSupportFragmentManager(), "Timepickerdialog");
         });
 
@@ -288,9 +296,16 @@ public class CreateActivity extends AppCompatActivity {
         dayOfWeek = days[now.get(Calendar.DAY_OF_WEEK)-1];
         month = now.get(Calendar.MONTH);
         year = now.get(Calendar.YEAR);
-        hour = 0;
-        minute = 0;
+        hour = now.get(Calendar.HOUR_OF_DAY);
+        minute = now.get(Calendar.MINUTE);
         return String.format("%02d", day) + " " + months[month] + " " + year;
+    }
+
+    public String getCurrentTime(){
+        Calendar now = Calendar.getInstance();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh:mm a");
+        Date date = now.getTime();
+        return simpleDateFormat.format(date);
     }
 
     public boolean shouldSchedule(){

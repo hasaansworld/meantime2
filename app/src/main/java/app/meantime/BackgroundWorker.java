@@ -78,7 +78,7 @@ public class BackgroundWorker extends Worker {
         createNotificationChannel();
         Uri soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "1")
-                .setSmallIcon(R.drawable.ic_notifications_none_black_24dp);
+                .setSmallIcon(Build.VERSION.SDK_INT >= 21 ? R.drawable.ic_notifications_none_black_24dp : R.drawable.ic_notifications_none_white_24dp);
         builder.setContentTitle("New Message:");
         builder.setContentText(message)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
