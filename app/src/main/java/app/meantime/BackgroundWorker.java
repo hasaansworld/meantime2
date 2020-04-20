@@ -79,8 +79,8 @@ public class BackgroundWorker extends Worker {
         Uri soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "1")
                 .setSmallIcon(Build.VERSION.SDK_INT >= 21 ? R.drawable.ic_notifications_none_black_24dp : R.drawable.ic_notifications_none_white_24dp);
-        builder.setContentTitle("New Message:");
-        builder.setContentText(message)
+        builder.setContentTitle(message);
+        builder.setContentText("debug message")
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setContentIntent(pendingIntent)
                 .setSound(soundUri)
@@ -92,7 +92,7 @@ public class BackgroundWorker extends Worker {
     @NonNull
     @Override
     public Result doWork() {
-        //sendNotification(1100, "Background Worker: v3");
+        sendNotification(1100, "Background Worker is running. It will schedule your reminders.");
         /*FirebaseDatabase fdb = FirebaseDatabase.getInstance();
         fdb.getReference("messages").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -195,7 +195,7 @@ public class BackgroundWorker extends Worker {
     }
 
     public boolean shouldSchedule(DataReminder dataReminder){
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd MMM yyyy hh:mm a");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd MMM yyyy hh:mm a", Locale.ENGLISH);
 
         try {
             Date reminderDate = simpleDateFormat.parse(dataReminder.getDate() + " " + dataReminder.getTime());

@@ -71,6 +71,7 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
+import com.google.firebase.database.FirebaseDatabase;
 import com.nguyenhoanglam.imagepicker.helper.PermissionHelper;
 import com.nguyenhoanglam.imagepicker.ui.imagepicker.ImagePicker;
 
@@ -104,7 +105,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         sharedPreferences = getSharedPreferences("data", MODE_PRIVATE);
 
         appbar = findViewById(R.id.appbar);
@@ -195,12 +195,12 @@ public class MainActivity extends AppCompatActivity {
             return true;
         });
 
-        toolbarTitle.setOnClickListener(new View.OnClickListener() {
+        /*toolbarTitle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(MainActivity.this, TestActivity.class));
             }
-        });
+        });*/
 
         if(!sharedPreferences.getBoolean("noAds", false))
             initializeAds();

@@ -10,6 +10,8 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -39,6 +41,11 @@ public class FullScreenReminderActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_full_screen_reminder);
+
+
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
+                            |WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
+                            |WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
 
         realm = Realm.getDefaultInstance();
         reminder = realm.where(DataReminder.class).equalTo("reminderId", getIntent().getStringExtra("id")).findFirst();

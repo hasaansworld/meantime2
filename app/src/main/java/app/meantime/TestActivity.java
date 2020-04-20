@@ -39,8 +39,11 @@ public class TestActivity extends AppCompatActivity {
 
         print = findViewById(R.id.print);
 
-
-        scheduleReminders();
+        String message = getIntent().getStringExtra("message");
+        if(message != null && !message.equals(""))
+            print.setText(message);
+        else
+            print.setText("No message");
     }
 
     @Override

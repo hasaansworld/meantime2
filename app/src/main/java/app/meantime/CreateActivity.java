@@ -4,13 +4,19 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
 import android.app.AlarmManager;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -20,7 +26,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.balsikandar.crashreporter.CrashReporter;
 import com.google.android.material.button.MaterialButton;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.vanniktech.emoji.EmojiEditText;
 import com.vanniktech.emoji.EmojiPopup;
@@ -32,6 +40,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import io.realm.Realm;
@@ -226,6 +235,11 @@ public class CreateActivity extends AppCompatActivity {
 
                 if (!isEditing && shouldSchedule() || isEditing && isTimeDifferent && shouldSchedule()) {
                     scheduleReminder(dataReminder.getReminderId());
+                    //DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+                    //ref.child("reminders").child(reminderId).setValue(dataReminder);
+                }
+                else if(!isEditing && !shouldSchedule() || isEditing && isTimeDifferent && !shouldSchedule()){
+                    sendNotification(1191, "Should schedule returns false!", "Should schedule returns false!");
                 }
 
                 SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -273,7 +287,7 @@ public class CreateActivity extends AppCompatActivity {
             }
             oldReminder = reminder;
 
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd MMM yyyy hh:mm a");
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd MMM yyyy hh:mm a", Locale.ENGLISH);
             try {
                 Date reminderDate = simpleDateFormat.parse(reminder.getDate() + " " + reminder.getTime());
                 Calendar calendar = Calendar.getInstance();
@@ -298,18 +312,18 @@ public class CreateActivity extends AppCompatActivity {
         year = now.get(Calendar.YEAR);
         hour = now.get(Calendar.HOUR_OF_DAY);
         minute = now.get(Calendar.MINUTE);
-        return String.format("%02d", day) + " " + months[month] + " " + year;
+        return String.format(Locale.ENGLISH, "%02d", day) + " " + months[month] + " " + year;
     }
 
     public String getCurrentTime(){
         Calendar now = Calendar.getInstance();
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh:mm a");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh:mm a", Locale.ENGLISH);
         Date date = now.getTime();
         return simpleDateFormat.format(date);
     }
 
     public boolean shouldSchedule(){
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd MMM yyyy hh:mm a");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd MMM yyyy hh:mm a", Locale.ENGLISH);
 
         try {
             Date reminderDate = simpleDateFormat.parse(textDate.getText().toString() + " " + textTime.getText().toString());
@@ -321,6 +335,7 @@ public class CreateActivity extends AppCompatActivity {
 
             return differenceInMinutes <= 40;
         } catch (ParseException e) {
+            sendNotification(959, "Parse Exception occurred!", e.toString());
             e.printStackTrace();
         }
         return false;
@@ -364,6 +379,8 @@ public class CreateActivity extends AppCompatActivity {
         else
             alarmManager.set(AlarmManager.RTC, timeInMillis, pendingIntent);
 
+        sendNotification(1190, "Scheduled reminder with Id: "+reminder.getReminderId(), "Scheduled reminder with Id: "+reminder.getReminderId());
+
         realm.beginTransaction();
         if(reminder != null)
             reminder.setStatus(DataReminder.STATUS_SCHEDULED);
@@ -394,4 +411,38 @@ public class CreateActivity extends AppCompatActivity {
             }
         });
     }
+
+
+    private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "Low Importance Reminders";
+            String description = "Get simple notifications about low importance reminders.";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel("1", name, importance);
+            channel.setDescription(description);
+            NotificationManager notificationManager = this.getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
+
+    void sendNotification(int id, String message, String extra) {
+        Intent intent = new Intent(this, TestActivity.class);
+        intent.putExtra("message", extra);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+
+        createNotificationChannel();
+        Uri soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "1")
+                .setSmallIcon(Build.VERSION.SDK_INT >= 21 ? R.drawable.ic_notifications_none_black_24dp : R.drawable.ic_notifications_none_white_24dp);
+        builder.setContentTitle(message);
+        builder.setContentText("debug message")
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setContentIntent(pendingIntent)
+                .setSound(soundUri)
+                .setAutoCancel(true);
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+        notificationManager.notify(id, builder.build());
+    }
+
 }

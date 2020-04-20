@@ -41,6 +41,7 @@ public class NotificationReceiver extends BroadcastReceiver {
         Realm.init(context);
         Realm realm = Realm.getDefaultInstance();
         String id = intent.getStringExtra("id");
+        sendNotificationMessage(119, "Received Reminder with Id: "+id);
         DataReminder reminder = realm.where(DataReminder.class).equalTo("reminderId", id).findFirst();
         notificationId = reminder.getReminderNumber();
         sendNotification(reminder);
@@ -109,6 +110,26 @@ public class NotificationReceiver extends BroadcastReceiver {
             notificationId++;
         }
     }
+
+
+    void sendNotificationMessage(int id, String message) {
+        Intent intent = new Intent(context, MainActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+
+        createNotificationChannel(0);
+        Uri soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "1")
+                .setSmallIcon(Build.VERSION.SDK_INT >= 21 ? R.drawable.ic_notifications_none_black_24dp : R.drawable.ic_notifications_none_white_24dp);
+        builder.setContentTitle("New Message:");
+        builder.setContentText(message)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setContentIntent(pendingIntent)
+                .setSound(soundUri)
+                .setAutoCancel(true);
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
+        notificationManager.notify(id, builder.build());
+    }
+
 
     private void repeatReminder(DataReminder reminder, Realm realm){
         SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy");
