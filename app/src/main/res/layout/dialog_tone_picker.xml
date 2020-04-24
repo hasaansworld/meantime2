@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <RadioGroup
+        android:id="@+id/tone_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
+        android:clipToPadding="false">
+
+        <RadioButton
+            android:id="@+id/new_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="New message"
+            android:textSize="16sp"
+            android:textColor="@android:color/black"
+            android:checked="true"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:background="?attr/selectableItemBackground"/>
+
+        <RadioButton
+            android:id="@+id/happy_life"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Happy life"
+            android:textSize="16sp"
+            android:textColor="@android:color/black"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:background="?attr/selectableItemBackground"/>
+
+        <RadioButton
+            android:id="@+id/get_it_done"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Get it done"
+            android:textSize="16sp"
+            android:textColor="@android:color/black"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:background="?attr/selectableItemBackground"/>
+
+        <RadioButton
+            android:id="@+id/ringing_bells"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Ringing Bells"
+            android:textSize="16sp"
+            android:textColor="@android:color/black"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:background="?attr/selectableItemBackground"/>
+
+    </RadioGroup>
+
+</ScrollView>

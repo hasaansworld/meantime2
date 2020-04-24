@@ -26,7 +26,7 @@ public class RemindersFragment extends Fragment {
     int filter = -1;
     boolean isSearching = false;
     String query = "";
-    UnifiedNativeAd ad;
+    //UnifiedNativeAd ad;
 
     public RemindersFragment() {
         // Required empty public constructor
@@ -59,15 +59,15 @@ public class RemindersFragment extends Fragment {
                 adapterReminders.setFilter(filter);
             if(isSearching)
                 search(query);
-            if(ad != null)
-                adapterReminders.showAd(ad);
+            //if(ad != null)
+                //adapterReminders.showAd(ad);
         }
     }
 
     public void setFilter(int filter){
         this.filter = filter;
         adapterReminders.setFilter(filter);
-        adapterReminders.showAd(ad);
+        //adapterReminders.showAd(ad);
     }
 
     public void search(String query){
@@ -84,12 +84,12 @@ public class RemindersFragment extends Fragment {
         isSearching = false;
         adapterReminders.cancelSearch();
         searchNoResults.setVisibility(View.GONE);
-        adapterReminders.showAd(ad);
+        //adapterReminders.showAd(ad);
     }
 
-    public void showAd(UnifiedNativeAd ad){
+    /*public void showAd(UnifiedNativeAd ad){
         this.ad = ad;
         adapterReminders.showAd(ad);
-    }
+    }*/
 
 }

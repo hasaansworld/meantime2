@@ -3,11 +3,15 @@ package app.meantime;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
@@ -28,6 +32,7 @@ import io.realm.Realm;
 
 public class FullScreenReminderActivity extends AppCompatActivity {
     Realm realm;
+    SharedPreferences sharedPreferences;
     DataReminder reminder;
     Toolbar toolbar;
     TextView title, description;
@@ -41,7 +46,7 @@ public class FullScreenReminderActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_full_screen_reminder);
-
+        sharedPreferences = getSharedPreferences("data", MODE_PRIVATE);
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
                             |WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
@@ -95,8 +100,33 @@ public class FullScreenReminderActivity extends AppCompatActivity {
             }
 
             if(reminder.getImportance() == 2) {
-                mediaPlayer = MediaPlayer.create(this, R.raw.you_have_new_message);
+                int tone = R.raw.you_have_new_message;
+                String tonePref = sharedPreferences.getString("tone", "new_message");
+                if(tonePref != null && tonePref.equals("happy_life")){
+                    tone = R.raw.happy_life;
+                }
+                else if(tonePref != null && tonePref.equals("ringing_bells")){
+                    tone = R.raw.slow_guitar;
+                }
+                else if(tonePref != null && tonePref.equals("get_it_done")){
+                    tone = R.raw.quick_piano;
+                }
+                mediaPlayer = MediaPlayer.create(this, tone);
                 mediaPlayer.start();
+
+                Vibrator vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+                if(vibrator != null && vibrator.hasVibrator()){
+                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        long[] mVibratePattern = new long[]{0, 400, 1000, 600, 1000, 800, 1000, 1000};
+                        // -1 : Play exactly once
+                        VibrationEffect effect = VibrationEffect.createWaveform(mVibratePattern, -1);
+                        vibrator.vibrate(effect);
+                    }
+                    else{
+                        // -1 : Play exactly once
+                        vibrator.vibrate(new long[]{0, 400, 1000, 600, 1000, 800, 1000, 1000}, -1);
+                    }
+                }
             }
 
             if(!reminder.getRepeat().equals("No repeat")){

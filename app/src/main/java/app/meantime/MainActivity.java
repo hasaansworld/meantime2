@@ -202,13 +202,18 @@ public class MainActivity extends AppCompatActivity {
             }
         });*/
 
-        if(!sharedPreferences.getBoolean("noAds", false))
-            initializeAds();
+        /*new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if(!sharedPreferences.getBoolean("noAds", false))
+                    initializeAds();
+            }
+        }, 3000);*/
 
     }
 
 
-    private void initializeAds(){
+    /*private void initializeAds(){
         // Test Ads
         // Native "ca-app-pub-3940256099942544/2247696110"
         // Native video "ca-app-pub-3940256099942544/1044960115"
@@ -226,7 +231,7 @@ public class MainActivity extends AppCompatActivity {
         .build();
         AdRequest adRequest = new AdRequest.Builder().build();
         loader.loadAd(adRequest);
-    }
+    }*/
 
     private void showSearch(){
         appbarSearch.setTranslationY(0-appbarSearch.getHeight());

@@ -41,15 +41,20 @@ public class NotificationReceiver extends BroadcastReceiver {
         Realm.init(context);
         Realm realm = Realm.getDefaultInstance();
         String id = intent.getStringExtra("id");
-        sendNotificationMessage(119, "Received Reminder with Id: "+id);
+        //sendNotificationMessage(119, "Received Reminder with Id: "+id);
         DataReminder reminder = realm.where(DataReminder.class).equalTo("reminderId", id).findFirst();
-        notificationId = reminder.getReminderNumber();
-        sendNotification(reminder);
-        realm.beginTransaction();
-        reminder.setStatus(DataReminder.STATUS_COMPLETED);
-        realm.commitTransaction();
-        if(!reminder.getRepeat().equals("No repeat"))
-            repeatReminder(reminder, realm);
+        if(reminder != null) {
+            notificationId = reminder.getReminderNumber();
+            sendNotification(reminder);
+            realm.beginTransaction();
+            reminder.setStatus(DataReminder.STATUS_COMPLETED);
+            realm.commitTransaction();
+            if (!reminder.getRepeat().equals("No repeat"))
+                repeatReminder(reminder, realm);
+        }
+        else{
+            sendNotificationMessage(767, "You may have pending reminders", "Tap to see.");
+        }
         realm.close();
     }
 
@@ -95,7 +100,7 @@ public class NotificationReceiver extends BroadcastReceiver {
             NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "1")
                     .setSmallIcon(Build.VERSION.SDK_INT >= 21 ? R.drawable.ic_notifications_none_black_24dp : R.drawable.ic_notifications_none_white_24dp);
             builder.setContentTitle("Reminder: \"" + reminder.getTitle() + "\"");
-            builder.setContentText(reminder.getDescription())
+            builder.setContentText("Today at "+reminder.getTime())
                     .setStyle(new NotificationCompat.BigTextStyle()
                             .bigText(reminder.getDescription()))
                     .setPriority(reminder.getImportance()==0 ? NotificationCompat.PRIORITY_DEFAULT : NotificationCompat.PRIORITY_HIGH)
@@ -112,7 +117,7 @@ public class NotificationReceiver extends BroadcastReceiver {
     }
 
 
-    void sendNotificationMessage(int id, String message) {
+    void sendNotificationMessage(int id, String title, String message) {
         Intent intent = new Intent(context, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
@@ -120,7 +125,7 @@ public class NotificationReceiver extends BroadcastReceiver {
         Uri soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "1")
                 .setSmallIcon(Build.VERSION.SDK_INT >= 21 ? R.drawable.ic_notifications_none_black_24dp : R.drawable.ic_notifications_none_white_24dp);
-        builder.setContentTitle("New Message:");
+        builder.setContentTitle(title);
         builder.setContentText(message)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setContentIntent(pendingIntent)

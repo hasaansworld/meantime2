@@ -61,8 +61,8 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
     int mode = 0;
     int filter = -1;
     boolean isSearching = false;
-    UnifiedNativeAd ad;
-    int adPostion = -1;
+    //UnifiedNativeAd ad;
+    //int adPostion = -1;
 
     public AdapterReminders(Context context, int mode){
         this.context = context;
@@ -185,7 +185,7 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
         }
     }
 
-    public class ViewHolderAds extends RecyclerView.ViewHolder{
+    /*public class ViewHolderAds extends RecyclerView.ViewHolder{
         View v;
         UnifiedNativeAdView adView;
         ImageView appIcon;
@@ -216,7 +216,7 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
             adView.setCallToActionView(adCallToAction);
             //adView.setMediaView(adMediaView);
         }
-    }
+    }*/
 
     @NonNull
     @Override
@@ -229,10 +229,10 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
             View v = LayoutInflater.from(context).inflate(R.layout.item_reminder, parent, false);
             return new ViewHolderReminder(v);
         }
-        else if(viewType == 3){
+        /*else if(viewType == 3){
             View v = LayoutInflater.from(context).inflate(R.layout.item_ads, parent, false);
             return new ViewHolderAds(v);
-        }
+        }*/
         else{
             View v = LayoutInflater.from(context).inflate(R.layout.item_reminder_none, parent, false);
             return new ViewHolderNone(v);
@@ -294,7 +294,7 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
             if(!reminder.getRepeat().equals("No repeat"))
                 holderReminder.repeat.setText(getRepeatTitle(reminder.getRepeat()));
         }
-        else if(holder instanceof ViewHolderAds){
+        /*else if(holder instanceof ViewHolderAds){
             ViewHolderAds holderAds = (ViewHolderAds)holder;
             holderAds.v.setVisibility(ad != null ? View.VISIBLE : View.GONE);
             if(ad != null) {
@@ -328,7 +328,7 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
                 holderAds.adCallToAction.setText(ad.getCallToAction());
                 //holderAds.adView.setNativeAd(ad);
             }
-        }
+        }*/
     }
 
     private void removeOldReminders(){
@@ -441,8 +441,8 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
             return 2;
         else if(object instanceof DataReminderDate)
             return 0;
-        else if(object instanceof DataAds)
-            return 3;
+        //else if(object instanceof DataAds)
+            //return 3;
         else
             return 1;
     }
@@ -485,7 +485,7 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
         notifyDataSetChanged();
     }
 
-    public void showAd(UnifiedNativeAd ad){
+    /*public void showAd(UnifiedNativeAd ad){
         this.ad = ad;
         if(ad != null) {
             if (!titles.contains("Ad") && mode == 0 && !isSearching) {
@@ -501,7 +501,7 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
         }
         //if(adPostion != -1)
             //notifyItemChanged(adPostion);
-    }
+    }*/
 
     private String getRepeatTitle(String repeat){
         if(repeat.equals("Repeat every day")){

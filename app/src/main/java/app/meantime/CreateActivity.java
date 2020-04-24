@@ -238,9 +238,9 @@ public class CreateActivity extends AppCompatActivity {
                     //DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
                     //ref.child("reminders").child(reminderId).setValue(dataReminder);
                 }
-                else if(!isEditing && !shouldSchedule() || isEditing && isTimeDifferent && !shouldSchedule()){
-                    sendNotification(1191, "Should schedule returns false!", "Should schedule returns false!");
-                }
+                //else if(!isEditing && !shouldSchedule() || isEditing && isTimeDifferent && !shouldSchedule()){
+                    //sendNotification(1191, "Should schedule returns false!", "Should schedule returns false!");
+                //}
 
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putBoolean("updateMainList", true);
@@ -335,7 +335,7 @@ public class CreateActivity extends AppCompatActivity {
 
             return differenceInMinutes <= 40;
         } catch (ParseException e) {
-            sendNotification(959, "Parse Exception occurred!", e.toString());
+            //sendNotification(959, "Parse Exception occurred!", e.toString());
             e.printStackTrace();
         }
         return false;
@@ -379,7 +379,7 @@ public class CreateActivity extends AppCompatActivity {
         else
             alarmManager.set(AlarmManager.RTC, timeInMillis, pendingIntent);
 
-        sendNotification(1190, "Scheduled reminder with Id: "+reminder.getReminderId(), "Scheduled reminder with Id: "+reminder.getReminderId());
+        //sendNotification(1190, "Scheduled reminder with Id: "+reminder.getReminderId(), "Scheduled reminder with Id: "+reminder.getReminderId());
 
         realm.beginTransaction();
         if(reminder != null)
@@ -426,7 +426,7 @@ public class CreateActivity extends AppCompatActivity {
     }
 
 
-    void sendNotification(int id, String message, String extra) {
+    /*void sendNotification(int id, String message, String extra) {
         Intent intent = new Intent(this, TestActivity.class);
         intent.putExtra("message", extra);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
@@ -443,6 +443,6 @@ public class CreateActivity extends AppCompatActivity {
                 .setAutoCancel(true);
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
         notificationManager.notify(id, builder.build());
-    }
+    }*/
 
 }

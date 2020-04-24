@@ -92,7 +92,7 @@ public class BackgroundWorker extends Worker {
     @NonNull
     @Override
     public Result doWork() {
-        sendNotification(1100, "Background Worker is running. It will schedule your reminders.");
+        //sendNotification(1100, "Background Worker is running. It will schedule your reminders.");
         /*FirebaseDatabase fdb = FirebaseDatabase.getInstance();
         fdb.getReference("messages").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
