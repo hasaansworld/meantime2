@@ -2,14 +2,17 @@
 <font-family xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <font
-        app:fontWeight="300"
-        app:fontStyle="italic"
-        app:font="@font/montserrat_light_italic" />
-
-    <font
-        app:fontWeight="300"
-        app:fontStyle="normal"
-        app:font="@font/montserrat_light" />
+  <font
+      app:fontWeight="400"
+      app:fontStyle="normal"
+      app:font="@font/opensans_regular" />
+  <font
+      app:fontWeight="700"
+      app:fontStyle="normal"
+      app:font="@font/opensans_semi_bold" />
+  <font
+      app:fontWeight="900"
+      app:fontStyle="normal"
+      app:font="@font/opensans_bold" />
 
 </font-family>

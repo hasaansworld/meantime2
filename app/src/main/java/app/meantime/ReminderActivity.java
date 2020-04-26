@@ -17,6 +17,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -30,6 +31,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.android.material.appbar.AppBarLayout;
 import com.nguyenhoanglam.imagepicker.model.Config;
 import com.nguyenhoanglam.imagepicker.model.Image;
@@ -71,6 +77,7 @@ public class ReminderActivity extends AppCompatActivity {
     boolean isDeleted;
     long timeInMillis = 0;
     boolean update = false;
+    AdView adView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -175,6 +182,18 @@ public class ReminderActivity extends AppCompatActivity {
             });
         }
 
+        showAd();
+
+    }
+
+    private void showAd(){
+        new Handler().postDelayed(() -> {
+            MobileAds.initialize(ReminderActivity.this, initializationStatus -> {
+            });
+            adView = findViewById(R.id.adView);
+            AdRequest adRequest = new AdRequest.Builder().build();
+            adView.loadAd(adRequest);
+        }, 1500);
     }
 
 

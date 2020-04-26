@@ -1,7 +1,7 @@
 package com.nguyenhoanglam.imagepicker.model;
 
 import java.util.ArrayList;
-
+import com.nguyenhoanglam.imagepicker.model.Image;
 /**
  * Created by boss1088 on 8/22/16.
  */

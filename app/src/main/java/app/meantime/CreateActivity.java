@@ -297,6 +297,7 @@ public class CreateActivity extends AppCompatActivity {
                 day = calendar.get(Calendar.DATE);
                 month = calendar.get(Calendar.MONTH);
                 year = calendar.get(Calendar.YEAR);
+                dayOfWeek = days[calendar.get(Calendar.DAY_OF_WEEK)-1];
             } catch (ParseException e) {
                 e.printStackTrace();
             }

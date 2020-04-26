@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="com.android.vending.BILLING" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
     <application
         android:name=".MyApplication"
@@ -47,9 +48,9 @@
         <activity
             android:name=".ProfileEditActivity"
             android:windowSoftInputMode="stateHidden" />
-        <activity
+        <!--<activity
             android:name="com.yalantis.ucrop.UCropActivity"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/AppTheme" /> !-->
 
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"

@@ -2,6 +2,7 @@ package com.nguyenhoanglam.imagepicker.model;
 
 import android.graphics.Color;
 import android.os.Parcel;
+import com.nguyenhoanglam.imagepicker.model.Image;
 import android.os.Parcelable;
 import android.text.TextUtils;
 

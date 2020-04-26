@@ -89,6 +89,11 @@ public class NotificationReceiver extends BroadcastReceiver {
                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(i);
         }
+        else if(importance == 1 && Build.VERSION.SDK_INT < 21){
+            Intent intent = new Intent(context, OverlayService.class);
+            intent.putExtra("reminderId", reminder.getReminderId());
+            context.startService(intent);
+        }
         else {
             Intent intent = new Intent(context, FullScreenReminderActivity.class);
             intent.putExtra("id", reminder.getReminderId());
