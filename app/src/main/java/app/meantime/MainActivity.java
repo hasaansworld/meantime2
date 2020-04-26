@@ -137,6 +137,9 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+        if(Build.VERSION.SDK_INT < 21){
+            fabAdd.setRippleColor(Color.parseColor("#1976D2"));
+        }
 
         groupAdd = findViewById(R.id.group_add);
 

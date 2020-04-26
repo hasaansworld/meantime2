@@ -78,6 +78,12 @@
                 <action android:name="app.meantime.ACTION_NOTIFICATION" />
             </intent-filter>
         </receiver>
+
+        <service
+            android:name=".OverlayService"
+            android:enabled="true"
+            android:exported="false" />
+
     </application>
 
 </manifest>
