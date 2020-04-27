@@ -12,6 +12,7 @@ public class DataReminder extends RealmObject implements Comparable<DataReminder
     int importance;
     boolean deleted = false;
     int status = STATUS_CREATED;
+    int alarmTone = 0;
 
     public static final int STATUS_CREATED = 0;
     public static final int STATUS_SCHEDULED = 1;
@@ -19,7 +20,7 @@ public class DataReminder extends RealmObject implements Comparable<DataReminder
 
     public DataReminder(){}
 
-    public DataReminder(int reminderNumber, String reminderId, String title, String day, String date, String time, String alarmtime, int importance, String repeat, String owner) {
+    public DataReminder(int reminderNumber, String reminderId, String title, String day, String date, String time, String alarmtime, int importance, int alarmTone, String repeat, String owner) {
         this.reminderNumber = reminderNumber;
         this.reminderId = reminderId;
         this.title = title;
@@ -28,6 +29,7 @@ public class DataReminder extends RealmObject implements Comparable<DataReminder
         this.time = time;
         this.alarmtime = alarmtime;
         this.importance = importance;
+        this.alarmTone = alarmTone;
         this.repeat = repeat;
         this.owner = owner;
     }
@@ -181,6 +183,14 @@ public class DataReminder extends RealmObject implements Comparable<DataReminder
 
     public void setStatus(int status) {
         this.status = status;
+    }
+
+    public int getAlarmTone() {
+        return alarmTone;
+    }
+
+    public void setAlarmTone(int alarmTone) {
+        this.alarmTone = alarmTone;
     }
 
 }

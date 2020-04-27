@@ -1,5 +1,6 @@
 package app.meantime;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.Toolbar;
@@ -15,14 +16,20 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -52,8 +59,8 @@ public class CreateActivity extends AppCompatActivity {
     ImageView emojiTitle, emojiDescription;
     LinearLayout alarmTime, layoutRepeat;
     TextView textAlarmTime, textRepeat;
-    LinearLayout lowImportance, mediumImportance, highImportance, importanceLayout;
-    TextView textDate, textTime, textError;
+    LinearLayout lowImportance, mediumImportance, highImportance, importanceLayout, alarmToneLayout;
+    TextView textDate, textTime, textError, hintAlarmTone, textAlarmTone;
     EmojiEditText title, description;
     MaterialButton saveButton;
     int importance=1;
@@ -67,6 +74,9 @@ public class CreateActivity extends AppCompatActivity {
     String reminderId;
     DataReminder oldReminder;
     SharedPreferences sharedPreferences;
+    int alarmTone = 0;
+    int alarmRadio = 0;
+    MediaPlayer mediaPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,6 +104,9 @@ public class CreateActivity extends AppCompatActivity {
         importanceLayout = mediumImportance;
         textDate = findViewById(R.id.text_date);
         textTime = findViewById(R.id.text_time);
+        alarmToneLayout = findViewById(R.id.layout_alarm_tone);
+        hintAlarmTone = findViewById(R.id.hint_alarm_tone);
+        textAlarmTone = findViewById(R.id.text_alarm_tone);
         layoutRepeat = findViewById(R.id.layout_repeat);
         textRepeat = findViewById(R.id.text_repeat);
         textError = findViewById(R.id.textError);
@@ -171,10 +184,74 @@ public class CreateActivity extends AppCompatActivity {
             else
                 importance = 2;
             importanceLayout = (LinearLayout) v;
+            if(importance == 2){
+                alarmToneLayout.setVisibility(View.VISIBLE);
+                hintAlarmTone.setVisibility(View.VISIBLE);
+            }
+            else{
+                alarmToneLayout.setVisibility(View.GONE);
+                hintAlarmTone.setVisibility(View.GONE);
+            }
         };
         lowImportance.setOnClickListener(importanceListener);
         mediumImportance.setOnClickListener(importanceListener);
         highImportance.setOnClickListener(importanceListener);
+
+        alarmToneLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v2) {
+                View v = LayoutInflater.from(CreateActivity.this).inflate(R.layout.dialog_tone_picker, null, false);
+                RadioGroup toneGroup = v.findViewById(R.id.tone_group);
+                String[] titles = {"New Message (Default)", "Alarm Sound", "Awesome Tune", "Business Tone", "Cute Melody",
+                        "Door Bell", "Great Tone", "Office Phone", "Positive Vibes", "Relaxing", "Ringtone Pro", "Romantic",
+                        "Wake Up Sound", "White Noise"};
+                int[] tones = {R.raw.you_have_new_message, R.raw.alarm_sound, R.raw.awesome_tune,
+                        R.raw.business_tone, R.raw.cute_melody, R.raw.door_bell, R.raw.great_tone,
+                        R.raw.office_phone, R.raw.positive_vibes, R.raw.relaxing, R.raw.ringtone_pro,
+                        R.raw.romantic, R.raw.wake_up_sound, R.raw.white_noise};
+                for(int i = 0; i < tones.length; i++) {
+                    RadioButton radioButton = new RadioButton(CreateActivity.this);
+                    RadioGroup.LayoutParams layoutParams = new RadioGroup.LayoutParams(RadioGroup.LayoutParams.MATCH_PARENT, RadioGroup.LayoutParams.WRAP_CONTENT);
+                    int paddingHorizontal = Math.round(dpToPixel(10, CreateActivity.this));
+                    int paddingVertical = Math.round(dpToPixel(8, CreateActivity.this));
+                    radioButton.setPadding(paddingHorizontal, paddingVertical, paddingHorizontal, paddingVertical);
+                    toneGroup.addView(radioButton, layoutParams);
+                    final int buttonPosition = i;
+                    radioButton.setText(titles[buttonPosition]);
+                    radioButton.setTextSize(16);
+                    radioButton.setTextColor(Color.BLACK);
+                    if(alarmTone == buttonPosition)
+                        radioButton.setChecked(true);
+                    View.OnClickListener onClickListener = v1 -> {
+                        int tone = tones[buttonPosition];
+                        alarmRadio = buttonPosition;
+                        if (mediaPlayer != null)
+                            mediaPlayer.release();
+                        mediaPlayer = MediaPlayer.create(CreateActivity.this, tone);
+                        mediaPlayer.start();
+                        mediaPlayer.setOnCompletionListener(MediaPlayer::release);
+                    };
+                    radioButton.setOnClickListener(onClickListener);
+                }
+
+                AlertDialog d = new AlertDialog.Builder(CreateActivity.this)
+                        .setTitle("Alarm Tones")
+                        .setView(v)
+                        .setPositiveButton("Select", (dialog, which) -> {
+                            textAlarmTone.setText(titles[alarmRadio]);
+                            alarmTone = alarmRadio;
+                            if(mediaPlayer != null)
+                                mediaPlayer.release();
+                        })
+                        .show();
+                int colorAccent = getResources().getColor(R.color.colorAccent);
+                d.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(colorAccent);
+                d.setOnCancelListener(dialog -> {
+                    if(mediaPlayer != null)
+                        mediaPlayer.release();
+                });
+            }
+        });
 
         layoutRepeat.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -207,6 +284,7 @@ public class CreateActivity extends AppCompatActivity {
                     textTime.getText().toString(),
                     textAlarmTime.getText().toString(),
                     importance,
+                    alarmTone,
                     textRepeat.getText().toString(),
                     "You"
                 );
@@ -445,5 +523,9 @@ public class CreateActivity extends AppCompatActivity {
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
         notificationManager.notify(id, builder.build());
     }*/
+
+    public static float dpToPixel(float dp, Context context){
+        return dp * ((float) context.getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+    }
 
 }

@@ -16,6 +16,8 @@ public class MyMigration implements RealmMigration {
     @Override
     public void migrate(DynamicRealm realm, long oldVersion, long newVersion) {
         RealmSchema schema = realm.getSchema();
+        if(oldVersion < 2)
+            schema.get("DataReminder").addField("alarmTone", int.class);
         /*if(oldVersion <= 6)
             schema.create("DataReminder")
                     .addField("reminderId", String.class)

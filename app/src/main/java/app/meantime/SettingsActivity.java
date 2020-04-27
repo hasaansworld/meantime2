@@ -28,8 +28,8 @@ public class SettingsActivity extends AppCompatActivity {
     LinearLayout feedback, support, rate, removeAds, licences;
     ImageView facebook, twitter;
     ImageView checkNoAds, checkSupportUs;
-    TextView alarmTone;
-    MediaPlayer mediaPlayer;
+//    TextView alarmTone;
+//    MediaPlayer mediaPlayer;
     SharedPreferences sharedPreferences;
 
     @Override
@@ -44,10 +44,10 @@ public class SettingsActivity extends AppCompatActivity {
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_arrow_back_black_24dp);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        alarmTone = findViewById(R.id.alarm_tone);
-        String toneName = sharedPreferences.getString("toneName", "You have new message");
-        alarmTone.setText("Alarm Tone: \""+toneName+"\"");
-        alarmTone.setOnClickListener(v -> showAlarmTonePicker());
+//        alarmTone = findViewById(R.id.alarm_tone);
+//        String toneName = sharedPreferences.getString("toneName", "You have new message");
+//        alarmTone.setText("Alarm Tone: \""+toneName+"\"");
+//        alarmTone.setOnClickListener(v -> showAlarmTonePicker());
 
         feedback = findViewById(R.id.feedback);
         feedback.setOnClickListener(v -> composeEmail(new String[]{"jinnahinc.pk@gmail.com"}, "Meantime: Feedback"));
@@ -92,7 +92,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     }
 
-    private void showAlarmTonePicker() {
+    /*private void showAlarmTonePicker() {
         View v = LayoutInflater.from(this).inflate(R.layout.dialog_tone_picker, null, false);
         RadioGroup toneGroup = v.findViewById(R.id.tone_group);
         RadioButton newMessage = v.findViewById(R.id.new_message);
@@ -159,7 +159,7 @@ public class SettingsActivity extends AppCompatActivity {
             if(mediaPlayer != null)
                 mediaPlayer.release();
         });
-    }
+    }*/
 
     @Override
     protected void onResume() {

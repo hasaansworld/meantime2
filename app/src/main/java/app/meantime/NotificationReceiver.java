@@ -175,6 +175,7 @@ public class NotificationReceiver extends BroadcastReceiver {
                     reminder.getTime(),
                     reminder.getAlarmtime(),
                     reminder.getImportance(),
+                    reminder.getAlarmTone(),
                     reminder.getRepeat(),
                     "You"
             );

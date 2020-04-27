@@ -101,16 +101,16 @@ public class FullScreenReminderActivity extends AppCompatActivity {
 
             if(reminder.getImportance() == 2) {
                 int tone = R.raw.you_have_new_message;
-                String tonePref = sharedPreferences.getString("tone", "new_message");
-                if(tonePref != null && tonePref.equals("happy_life")){
-                    tone = R.raw.happy_life;
-                }
-                else if(tonePref != null && tonePref.equals("ringing_bells")){
-                    tone = R.raw.slow_guitar;
-                }
-                else if(tonePref != null && tonePref.equals("get_it_done")){
-                    tone = R.raw.quick_piano;
-                }
+//                String tonePref = sharedPreferences.getString("tone", "new_message");
+//                if(tonePref != null && tonePref.equals("happy_life")){
+//                    tone = R.raw.happy_life;
+//                }
+//                else if(tonePref != null && tonePref.equals("ringing_bells")){
+//                    tone = R.raw.slow_guitar;
+//                }
+//                else if(tonePref != null && tonePref.equals("get_it_done")){
+//                    tone = R.raw.quick_piano;
+//                }
                 mediaPlayer = MediaPlayer.create(this, tone);
                 mediaPlayer.start();
 
