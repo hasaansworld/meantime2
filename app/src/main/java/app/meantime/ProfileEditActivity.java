@@ -33,8 +33,8 @@ import com.google.firebase.storage.UploadTask;
 import com.nguyenhoanglam.imagepicker.model.Config;
 import com.nguyenhoanglam.imagepicker.model.Image;
 import com.nguyenhoanglam.imagepicker.ui.imagepicker.ImagePicker;
-import com.yalantis.ucrop.UCrop;
-import com.yalantis.ucrop.UCropActivity;
+//import com.yalantis.ucrop.UCrop;
+//import com.yalantis.ucrop.UCropActivity;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -207,21 +207,21 @@ public class ProfileEditActivity extends AppCompatActivity {
 
       path = Environment.getExternalStorageDirectory() + "/"+appName+"/Profile Pictures/profile picture "+System.currentTimeMillis()+".png";
       Uri uriDestination = Uri.fromFile(new File(path));
-      UCrop.Options options = new UCrop.Options();
-      options.setHideBottomControls(true);
-      options.setToolbarTitle("Crop Photo");
-      options.setCompressionFormat(Bitmap.CompressFormat.PNG);
-      options.setAllowedGestures(UCropActivity.SCALE, UCropActivity.NONE, UCropActivity.NONE);
-      UCrop.of(uri, uriDestination)
-              .withOptions(options)
-              .withAspectRatio(1, 1)
-              .withMaxResultSize(800, 800)
-              .start(this);
+//      UCrop.Options options = new UCrop.Options();
+//      options.setHideBottomControls(true);
+//      options.setToolbarTitle("Crop Photo");
+//      options.setCompressionFormat(Bitmap.CompressFormat.PNG);
+//      options.setAllowedGestures(UCropActivity.SCALE, UCropActivity.NONE, UCropActivity.NONE);
+//      UCrop.of(uri, uriDestination)
+//              .withOptions(options)
+//              .withAspectRatio(1, 1)
+//              .withMaxResultSize(800, 800)
+//              .start(this);
 
     }
-    if (requestCode == UCrop.REQUEST_CROP && resultCode == RESULT_OK) {
-      Glide.with(this).asBitmap().load(path).placeholder(R.drawable.profile_picture).into(profilePicture);
-    }
+//    if (requestCode == UCrop.REQUEST_CROP && resultCode == RESULT_OK) {
+//      Glide.with(this).asBitmap().load(path).placeholder(R.drawable.profile_picture).into(profilePicture);
+//    }
   }
 
   @Override

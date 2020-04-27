@@ -8,8 +8,8 @@ android {
         applicationId "app.meantime"
         minSdkVersion 16
         targetSdkVersion 28
-        versionCode 9
-        versionName "0.017"
+        versionCode 10
+        versionName "0.018"
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -43,10 +43,10 @@ dependencies {
     implementation 'com.github.siyamed:android-shape-imageview:0.9.3@aar'
     implementation project(':imagepicker')
     implementation 'com.github.bumptech.glide:glide:4.9.0'
-    implementation 'com.github.yalantis:ucrop:2.2.3'
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'com.github.Jagerfield:Mobile-Contacts-Library:v1.7'
-    implementation 'id.zelory:compressor:2.1.0'
+    //implementation 'com.github.yalantis:ucrop:2.2.3'
+    //implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    //implementation 'com.github.Jagerfield:Mobile-Contacts-Library:v1.7'
+    //implementation 'id.zelory:compressor:2.1.0'
     implementation 'com.android.support:multidex:1.0.3'
     implementation 'com.wdullaer:materialdatetimepicker:4.2.3'
     implementation 'com.google.android.gms:play-services-ads:19.0.1'

@@ -294,7 +294,7 @@ public class CreateActivity extends AppCompatActivity {
                 calendar.setTime(reminderDate);
                 hour = calendar.get(Calendar.HOUR_OF_DAY);
                 minute = calendar.get(Calendar.MINUTE);
-                day = calendar.get(Calendar.DATE);
+                day = calendar.get(Calendar.DAY_OF_MONTH);
                 month = calendar.get(Calendar.MONTH);
                 year = calendar.get(Calendar.YEAR);
                 dayOfWeek = days[calendar.get(Calendar.DAY_OF_WEEK)-1];

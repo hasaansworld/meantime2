@@ -20,16 +20,16 @@ import java.util.Collections;
 import java.util.List;
 
 import io.realm.Realm;
-import jagerfield.mobilecontactslibrary.Contact.Contact;
-import jagerfield.mobilecontactslibrary.ImportContacts;
+//import jagerfield.mobilecontactslibrary.Contact.Contact;
+//import jagerfield.mobilecontactslibrary.ImportContacts;
 
 public class AdapterContacts extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     Context context;
     Realm realm;
     ProgressBar progressBar;
 
-    ImportContacts importContacts;
-    List<Contact> allContacts;
+//    ImportContacts importContacts;
+//    List<Contact> allContacts;
     List<DataContact> contactsFound = new ArrayList<>();
     List<String> existingNumbers = new ArrayList<>();
     String appName, thumbnailPath;

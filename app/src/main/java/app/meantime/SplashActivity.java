@@ -63,7 +63,7 @@ public class SplashActivity extends AppCompatActivity {
                     finish();
                     overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                 }
-                else {
+                /*else {
                     FirebaseAuth auth = FirebaseAuth.getInstance();
                     if (auth.getCurrentUser() != null) {
                         // already signed in
@@ -74,12 +74,12 @@ public class SplashActivity extends AppCompatActivity {
                         // not signed in
                         signIn();
                     }
-                }
+                }*/
             }
         }, 1000);
     }
 
-    private void profileSetup() {
+    /*private void profileSetup() {
         setupStarted = true;
         layoutSetup.setVisibility(View.VISIBLE);
         String phoneNumber = FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber();
@@ -256,5 +256,5 @@ public class SplashActivity extends AppCompatActivity {
         if(!isProfileSetup && permissionGranted && !setupStarted){
             profileSetup();
         }
-    }
+    }*/
 }

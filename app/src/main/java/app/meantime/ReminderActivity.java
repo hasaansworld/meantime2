@@ -249,6 +249,9 @@ public class ReminderActivity extends AppCompatActivity {
             repeatLayout.setVisibility(View.VISIBLE);
             repeat.setText(reminder.getRepeat());
         }
+        else{
+            repeatLayout.setVisibility(View.GONE);
+        }
         Drawable d = getResources().getDrawable(R.drawable.circle_white);
         d.setColorFilter(Color.parseColor(colors[reminder.getImportance()]), PorterDuff.Mode.SRC_ATOP);
         circle.setBackground(d);

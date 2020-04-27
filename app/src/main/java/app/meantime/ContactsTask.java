@@ -25,16 +25,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import id.zelory.compressor.Compressor;
 import io.realm.Realm;
-import jagerfield.mobilecontactslibrary.Contact.Contact;
-import jagerfield.mobilecontactslibrary.ElementContainers.NumberContainer;
-import jagerfield.mobilecontactslibrary.ImportContacts;
+
+//import id.zelory.compressor.Compressor;
+//import io.realm.Realm;
+//import jagerfield.mobilecontactslibrary.Contact.Contact;
+//import jagerfield.mobilecontactslibrary.ElementContainers.NumberContainer;
+//import jagerfield.mobilecontactslibrary.ImportContacts;
 
 public class ContactsTask extends AsyncTask<Void, Integer, Void> {
     private Context context;
-    ImportContacts importContacts;
-    List<Contact> allContacts;
+//    ImportContacts importContacts;
+//    List<Contact> allContacts;
     List<String> allNumbers = new ArrayList<>();
     List<String> allNames = new ArrayList<>();
     List<DataContact> contactsFound = new ArrayList<>();
@@ -53,18 +55,18 @@ public class ContactsTask extends AsyncTask<Void, Integer, Void> {
     @Override
     protected Void doInBackground(Void... args) {
         realm = RealmUtils.getRealm();
-        importContacts = new ImportContacts((Activity) context);
-        allContacts = importContacts.getContacts();
-
-        for (Contact contact : allContacts) {
-            for (NumberContainer container : contact.getNumbers()) {
-                String number = container.getNormalizedNumber();
-                if (!allNumbers.contains(number) && number.length() > 6) {
-                    allNumbers.add(number);
-                    allNames.add(contact.getDisplaydName());
-                }
-            }
-        }
+//        importContacts = new ImportContacts((Activity) context);
+//        allContacts = importContacts.getContacts();
+//
+//        for (Contact contact : allContacts) {
+//            for (NumberContainer container : contact.getNumbers()) {
+//                String number = container.getNormalizedNumber();
+//                if (!allNumbers.contains(number) && number.length() > 6) {
+//                    allNumbers.add(number);
+//                    allNames.add(contact.getDisplaydName());
+//                }
+//            }
+//        }
 
         for (int i = 0; i < allNumbers.size(); i++) {
             final String number = allNumbers.get(i);
@@ -133,13 +135,13 @@ public class ContactsTask extends AsyncTask<Void, Integer, Void> {
                             contact.setProfilePic(file.getAbsolutePath());
                             int dp50 = dpToPixel(50, context);
                             try {
-                                new Compressor(context)
-                                        .setMaxWidth(dp50)
-                                        .setMaxHeight(dp50)
-                                        .setQuality(75)
-                                        .setCompressFormat(Bitmap.CompressFormat.WEBP)
-                                        .setDestinationDirectoryPath(dirPath2)
-                                        .compressToFile(file);
+//                                new Compressor(context)
+//                                        .setMaxWidth(dp50)
+//                                        .setMaxHeight(dp50)
+//                                        .setQuality(75)
+//                                        .setCompressFormat(Bitmap.CompressFormat.WEBP)
+//                                        .setDestinationDirectoryPath(dirPath2)
+//                                        .compressToFile(file);
                                 publishProgress(1, position);
                             } catch (Exception e) {
 
