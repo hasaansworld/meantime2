@@ -65,4 +65,31 @@
         <item name="android:textAllCaps">false</item>
     </style>
 
+    <style name="AppTheme.Dialog" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="fontFamily">@font/opensans</item>
+        <item name="android:windowTitleStyle">@style/AlertDialogTitle</item>
+        <item name="buttonStyle">@style/AlertDialogButtons</item>
+    </style>
+
+    <style name="AlertDialogTitle">
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="AlertDialogButtons">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="TextLabel" parent="TextAppearance.Design.Hint">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="NotificationTitle" parent="@style/TextAppearance.Compat.Notification.Title">
+        <item name="android:textStyle">normal</item>
+        <item name="android:textSize">17sp</item>
+    </style>
+
 </resources>

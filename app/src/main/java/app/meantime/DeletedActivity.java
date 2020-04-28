@@ -257,7 +257,7 @@ public class DeletedActivity extends AppCompatActivity {
         else if(item.getItemId() == R.id.search)
             showSearch();
         else if(item.getItemId() == R.id.delete_all){
-            AlertDialog d = new AlertDialog.Builder(DeletedActivity.this)
+            AlertDialog d = new AlertDialog.Builder(DeletedActivity.this, R.style.AppTheme_Dialog)
                     .setTitle("Clear")
                     .setMessage("All deleted reminders will be lost. Do you want to continue?")
                     .setPositiveButton("Clear", (dialog, which) -> {

@@ -251,7 +251,7 @@ public class HistoryActivity extends AppCompatActivity {
             showSearch();
         }
         else if(item.getItemId() == R.id.delete_all){
-            AlertDialog d = new AlertDialog.Builder(HistoryActivity.this)
+            AlertDialog d = new AlertDialog.Builder(HistoryActivity.this, R.style.AppTheme_Dialog)
                     .setTitle("Clear")
                     .setMessage("All reminders in \"History\" will be lost. Do you want to continue?")
                     .setPositiveButton("Clear", (dialog, which) -> {

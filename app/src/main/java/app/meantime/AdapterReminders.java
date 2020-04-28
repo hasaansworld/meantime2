@@ -441,7 +441,7 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
             return 2;
         else if(object instanceof DataReminderDate)
             return 0;
-        //else if(object instanceof DataAds)
+            //else if(object instanceof DataAds)
             //return 3;
         else
             return 1;
@@ -461,11 +461,11 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
         for(int i = 0; i < allReminders.size(); i++){
             DataReminder reminder = allReminders.get(i);
             if(reminder.getTitle().toLowerCase().contains(query)
-            || reminder.getDescription() != null && reminder.getDescription().toLowerCase().contains(query)
-            || reminder.getDate().toLowerCase().contains(query)
-            || getFullMonth(reminder.getDate()).toLowerCase().contains(query)
-            || reminder.getTime().toLowerCase().contains(query)
-            || getTitleFromDate(reminder.getDate()).toLowerCase().contains(query))
+                    || reminder.getDescription() != null && reminder.getDescription().toLowerCase().contains(query)
+                    || reminder.getDate().toLowerCase().contains(query)
+                    || getFullMonth(reminder.getDate()).toLowerCase().contains(query)
+                    || reminder.getTime().toLowerCase().contains(query)
+                    || getTitleFromDate(reminder.getDate()).toLowerCase().contains(query))
                 displayReminders.add(reminder);
         }
         int prevMode = mode;
@@ -522,9 +522,9 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     String[] short_months = {"Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                            "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+            "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
     String[] full_months = {"January", "February", "March", "April", "May", "June",
-                            "July", "August", "September", "October", "November", "December"};
+            "July", "August", "September", "October", "November", "December"};
     private String getFullMonth(String date){
         String updatedDate = date;
         for(int i = 0; i < 12; i++){

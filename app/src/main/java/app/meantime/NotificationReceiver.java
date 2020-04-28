@@ -13,6 +13,7 @@ import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
+import android.widget.RemoteViews;
 import android.widget.Toast;
 
 import androidx.core.app.NotificationCompat;
@@ -89,36 +90,91 @@ public class NotificationReceiver extends BroadcastReceiver {
                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(i);
         }
-        else if(importance == 1 && Build.VERSION.SDK_INT < 21){
+        else if(importance == 1 && Build.VERSION.SDK_INT < 23){
+            //if() {
             Intent intent = new Intent(context, OverlayService.class);
             intent.putExtra("reminderId", reminder.getReminderId());
             context.startService(intent);
         }
-        else {
+        else if(Build.VERSION.SDK_INT < 25){
             Intent intent = new Intent(context, FullScreenReminderActivity.class);
             intent.putExtra("id", reminder.getReminderId());
             PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
-            createNotificationChannel(importance);
             Uri soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-            //Uri path = Uri.parse("android.resource://"+context.getPackageName()+"/raw/quite_impressed");
             NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "1")
                     .setSmallIcon(Build.VERSION.SDK_INT >= 21 ? R.drawable.ic_notifications_none_black_24dp : R.drawable.ic_notifications_none_white_24dp);
             builder.setContentTitle("Reminder: \"" + reminder.getTitle() + "\"");
             builder.setContentText("Today at "+reminder.getTime())
-                    .setStyle(new NotificationCompat.BigTextStyle()
-                            .bigText(reminder.getDescription()))
                     .setPriority(reminder.getImportance()==0 ? NotificationCompat.PRIORITY_DEFAULT : NotificationCompat.PRIORITY_HIGH)
                     .setContentIntent(pendingIntent)
+                    .setSound(soundUri)
                     .setVibrate(new long[]{100, 200, 300})
                     .setChannelId(Integer.toString(reminder.getImportance()+1))
                     .setAutoCancel(true);
 
             NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
             notificationManager.notify(notificationId, builder.build());
+            notificationId++;
+        }
+        else{
+            Intent intent = new Intent(context, FullScreenReminderActivity.class);
+            intent.putExtra("id", reminder.getReminderId());
+            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+
+            createNotificationChannel(importance);
+            Uri soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
+            RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.notification_medium_layout);
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "1")
+                    .setSmallIcon(R.drawable.ic_notifications_none_black_24dp)
+                    .setPriority(reminder.getImportance()==0 ? NotificationCompat.PRIORITY_DEFAULT : NotificationCompat.PRIORITY_HIGH)
+                    .setContentIntent(pendingIntent)
+                    .setContent(remoteViews)
+                    .setSound(soundUri)
+                    .setVibrate(new long[]{100, 200, 300})
+                    .setChannelId(Integer.toString(reminder.getImportance()+1))
+                    .setAutoCancel(true);
+
+            remoteViews.setTextViewText(R.id.time, reminder.getTime());
+            remoteViews.setTextViewText(R.id.title, "Reminder: \""+reminder.getTitle() + "\"");
+            if(reminder.getDescription() != null && !reminder.getDescription().equals(""))
+                remoteViews.setTextViewText(R.id.description, reminder.getDescription());
+            else
+                remoteViews.setTextViewText(R.id.description, "No description.");
+            remoteViews.setImageViewResource(R.id.circle, reminder.getImportance() == 1 ? R.drawable.circle_orange : R.drawable.circle_yellow);
+            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
+            notificationManager.notify(notificationId, builder.build());
             //playSound();
             notificationId++;
         }
+        //}
+//        else {
+//            Intent intent = new Intent(context, FullScreenReminderActivity.class);
+//            intent.putExtra("id", reminder.getReminderId());
+//            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+//
+//            createNotificationChannel(importance);
+//            Uri soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+//            //Uri path = Uri.parse("android.resource://"+context.getPackageName()+"/raw/quite_impressed");
+//            NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "1")
+//                    .setSmallIcon(Build.VERSION.SDK_INT >= 21 ? R.drawable.ic_notifications_none_black_24dp : R.drawable.ic_notifications_none_white_24dp);
+//            builder.setContentTitle("Reminder: \"" + reminder.getTitle() + "\"");
+//            builder.setContentText("Today at "+reminder.getTime())
+//                    .setStyle(new NotificationCompat.BigTextStyle()
+//                            .bigText(reminder.getDescription()))
+//                    .setPriority(reminder.getImportance()==0 ? NotificationCompat.PRIORITY_DEFAULT : NotificationCompat.PRIORITY_HIGH)
+//                    .setContentIntent(pendingIntent)
+//                    .setSound(soundUri)
+//                    .setVibrate(new long[]{100, 200, 300})
+//                    .setChannelId(Integer.toString(reminder.getImportance()+1))
+//                    .setAutoCancel(true);
+//
+//            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
+//            notificationManager.notify(notificationId, builder.build());
+//            //playSound();
+//            notificationId++;
+//        }
     }
 
 

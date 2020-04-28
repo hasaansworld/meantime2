@@ -290,7 +290,7 @@ public class ReminderActivity extends AppCompatActivity {
         if(item.getItemId() == android.R.id.home)
             finish();
         else if(item.getItemId() == R.id.delete){
-            AlertDialog d = new AlertDialog.Builder(ReminderActivity.this)
+            AlertDialog d = new AlertDialog.Builder(ReminderActivity.this, R.style.AppTheme_Dialog)
                     .setTitle("Delete")
                     .setMessage(isHistory ? "This reminder will be deleted permanently. Do you want to continue?":"This reminder will be moved to the \"Deleted\" section. Do you want to continue?")
                     .setPositiveButton("Delete", (dialog, which) -> {
@@ -348,7 +348,7 @@ public class ReminderActivity extends AppCompatActivity {
             startActivity(i);
         }
         else if(item.getItemId() == R.id.delete_permanently){
-            AlertDialog d = new AlertDialog.Builder(ReminderActivity.this)
+            AlertDialog d = new AlertDialog.Builder(ReminderActivity.this, R.style.AppTheme_Dialog)
                     .setTitle("Delete")
                     .setMessage("This reminder will be deleted permanently. Do you want to continue?")
                     .setPositiveButton("Delete", (dialog, which) -> {
@@ -375,7 +375,7 @@ public class ReminderActivity extends AppCompatActivity {
             d.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(colorAccent);
         }
         else if(item.getItemId() == R.id.restore){
-            AlertDialog d = new AlertDialog.Builder(ReminderActivity.this)
+            AlertDialog d = new AlertDialog.Builder(ReminderActivity.this, R.style.AppTheme_Dialog)
                     .setTitle("Restore")
                     .setMessage("This reminder will be restored and rescheduled. Do you want to continue?")
                     .setPositiveButton("Restore", (dialog, which) -> {

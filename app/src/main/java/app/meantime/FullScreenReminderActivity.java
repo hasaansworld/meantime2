@@ -27,6 +27,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 import io.realm.Realm;
 
@@ -100,31 +101,27 @@ public class FullScreenReminderActivity extends AppCompatActivity {
             }
 
             if(reminder.getImportance() == 2) {
+                int[] tones = {R.raw.you_have_new_message, R.raw.alarm_sound, R.raw.awesome_tune,
+                        R.raw.business_tone, R.raw.cute_melody, R.raw.door_bell, R.raw.great_tone,
+                        R.raw.office_phone, R.raw.positive_vibes, R.raw.relaxing, R.raw.ringtone_pro,
+                        R.raw.romantic, R.raw.wake_up_sound, R.raw.white_noise};
                 int tone = R.raw.you_have_new_message;
-//                String tonePref = sharedPreferences.getString("tone", "new_message");
-//                if(tonePref != null && tonePref.equals("happy_life")){
-//                    tone = R.raw.happy_life;
-//                }
-//                else if(tonePref != null && tonePref.equals("ringing_bells")){
-//                    tone = R.raw.slow_guitar;
-//                }
-//                else if(tonePref != null && tonePref.equals("get_it_done")){
-//                    tone = R.raw.quick_piano;
-//                }
+                if(reminder.getAlarmTone() >= 0 && reminder.getAlarmTone() < tones.length)
+                    tone = tones[reminder.getAlarmTone()];
                 mediaPlayer = MediaPlayer.create(this, tone);
                 mediaPlayer.start();
 
                 Vibrator vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
                 if(vibrator != null && vibrator.hasVibrator()){
                     if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        long[] mVibratePattern = new long[]{0, 400, 1000, 600, 1000, 800, 1000, 1000};
+                        long[] mVibratePattern = new long[]{0, 400, 600, 400, 600, 200};
                         // -1 : Play exactly once
                         VibrationEffect effect = VibrationEffect.createWaveform(mVibratePattern, -1);
                         vibrator.vibrate(effect);
                     }
                     else{
                         // -1 : Play exactly once
-                        vibrator.vibrate(new long[]{0, 400, 1000, 600, 1000, 800, 1000, 1000}, -1);
+                        vibrator.vibrate(new long[]{0, 400, 600, 400, 600, 200}, -1);
                     }
                 }
             }
@@ -132,7 +129,7 @@ public class FullScreenReminderActivity extends AppCompatActivity {
             if(!reminder.getRepeat().equals("No repeat")){
                 Calendar now = Calendar.getInstance();
                 Date d1 = now.getTime();
-                SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy");
+                SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy", Locale.ENGLISH);
                 String today = sdf.format(d1);
                 if(!reminder.getDate().equals(today)) {
                     try {
@@ -157,7 +154,7 @@ public class FullScreenReminderActivity extends AppCompatActivity {
                         String[] days = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
                         day.setText(days[now.get(Calendar.DAY_OF_WEEK)-1]);
                     } catch (ParseException e) {
-
+                        e.printStackTrace();
                     }
                 }
             }

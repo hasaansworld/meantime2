@@ -234,7 +234,7 @@ public class CreateActivity extends AppCompatActivity {
                     radioButton.setOnClickListener(onClickListener);
                 }
 
-                AlertDialog d = new AlertDialog.Builder(CreateActivity.this)
+                AlertDialog d = new AlertDialog.Builder(CreateActivity.this, R.style.AppTheme_Dialog)
                         .setTitle("Alarm Tones")
                         .setView(v)
                         .setPositiveButton("Select", (dialog, which) -> {
@@ -243,9 +243,15 @@ public class CreateActivity extends AppCompatActivity {
                             if(mediaPlayer != null)
                                 mediaPlayer.release();
                         })
+                        .setNegativeButton("Cancel", ((dialog, which) -> {
+                            dialog.cancel();
+                            if(mediaPlayer != null)
+                                mediaPlayer.release();
+                        }))
                         .show();
                 int colorAccent = getResources().getColor(R.color.colorAccent);
                 d.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(colorAccent);
+                d.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(colorAccent);
                 d.setOnCancelListener(dialog -> {
                     if(mediaPlayer != null)
                         mediaPlayer.release();
