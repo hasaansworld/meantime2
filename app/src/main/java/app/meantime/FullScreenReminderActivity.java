@@ -114,14 +114,14 @@ public class FullScreenReminderActivity extends AppCompatActivity {
                 Vibrator vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
                 if(vibrator != null && vibrator.hasVibrator()){
                     if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        long[] mVibratePattern = new long[]{0, 400, 600, 400, 600, 200};
+                        long[] mVibratePattern = new long[]{0, 200, 400, 800, 0, 200, 400, 800};
                         // -1 : Play exactly once
                         VibrationEffect effect = VibrationEffect.createWaveform(mVibratePattern, -1);
                         vibrator.vibrate(effect);
                     }
                     else{
                         // -1 : Play exactly once
-                        vibrator.vibrate(new long[]{0, 400, 600, 400, 600, 200}, -1);
+                        vibrator.vibrate(new long[]{0, 200, 400, 800, 0, 200, 400, 800}, -1);
                     }
                 }
             }

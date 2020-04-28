@@ -8,8 +8,8 @@ android {
         applicationId "app.meantime"
         minSdkVersion 16
         targetSdkVersion 28
-        versionCode 10
-        versionName "0.018"
+        versionCode 11
+        versionName "0.019"
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

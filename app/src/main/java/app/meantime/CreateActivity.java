@@ -66,6 +66,13 @@ public class CreateActivity extends AppCompatActivity {
     int importance=1;
     String[] months = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
     String[] days = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
+    String[] titles = {"New Message (Default)", "Alarm Sound", "Awesome Tune", "Business Tone", "Cute Melody",
+            "Door Bell", "Great Tone", "Office Phone", "Positive Vibes", "Relaxing", "Ringtone Pro", "Romantic",
+            "Wake Up Sound", "White Noise"};
+    int[] tones = {R.raw.you_have_new_message, R.raw.alarm_sound, R.raw.awesome_tune,
+            R.raw.business_tone, R.raw.cute_melody, R.raw.door_bell, R.raw.great_tone,
+            R.raw.office_phone, R.raw.positive_vibes, R.raw.relaxing, R.raw.ringtone_pro,
+            R.raw.romantic, R.raw.wake_up_sound, R.raw.white_noise};
     int day, month, year, hour = 0, minute = 0;
     String dayOfWeek;
     long timeInMillis = -1;
@@ -202,13 +209,7 @@ public class CreateActivity extends AppCompatActivity {
             public void onClick(View v2) {
                 View v = LayoutInflater.from(CreateActivity.this).inflate(R.layout.dialog_tone_picker, null, false);
                 RadioGroup toneGroup = v.findViewById(R.id.tone_group);
-                String[] titles = {"New Message (Default)", "Alarm Sound", "Awesome Tune", "Business Tone", "Cute Melody",
-                        "Door Bell", "Great Tone", "Office Phone", "Positive Vibes", "Relaxing", "Ringtone Pro", "Romantic",
-                        "Wake Up Sound", "White Noise"};
-                int[] tones = {R.raw.you_have_new_message, R.raw.alarm_sound, R.raw.awesome_tune,
-                        R.raw.business_tone, R.raw.cute_melody, R.raw.door_bell, R.raw.great_tone,
-                        R.raw.office_phone, R.raw.positive_vibes, R.raw.relaxing, R.raw.ringtone_pro,
-                        R.raw.romantic, R.raw.wake_up_sound, R.raw.white_noise};
+
                 for(int i = 0; i < tones.length; i++) {
                     RadioButton radioButton = new RadioButton(CreateActivity.this);
                     RadioGroup.LayoutParams layoutParams = new RadioGroup.LayoutParams(RadioGroup.LayoutParams.MATCH_PARENT, RadioGroup.LayoutParams.WRAP_CONTENT);
@@ -368,6 +369,11 @@ public class CreateActivity extends AppCompatActivity {
                 mediumImportance.setBackgroundResource(R.drawable.button_date);
                 highImportance.setBackgroundResource(R.drawable.button_importance_selected);
                 importanceLayout = highImportance;
+                hintAlarmTone.setVisibility(View.VISIBLE);
+                alarmToneLayout.setVisibility(View.VISIBLE);
+                alarmTone = reminder.getAlarmTone();
+                alarmRadio = reminder.getAlarmTone();
+                textAlarmTone.setText(titles[alarmTone]);
             }
             oldReminder = reminder;
 
