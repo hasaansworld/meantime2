@@ -38,6 +38,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -332,7 +333,7 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     private void removeOldReminders(){
-        SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy");
+        SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy", Locale.ENGLISH);
         int todayIndex = -1;
         for(int i = 0; i < allReminders.size(); i++){
             DataReminder reminder = allReminders.get(i);
@@ -355,7 +356,7 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     private void removeNewReminders(){
-        SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy");
+        SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy", Locale.ENGLISH);
         int todayIndex = -1;
         for(int i = 0; i < allReminders.size(); i++){
             DataReminder reminder = allReminders.get(i);
@@ -380,7 +381,7 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
     private void getTodayAndTomorrow(){
         Calendar now = Calendar.getInstance();
         Date d = now.getTime();
-        SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy");
+        SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy", Locale.ENGLISH);
         today = sdf.format(d);
         day = days[now.get(Calendar.DAY_OF_WEEK)-1];
         now.add(Calendar.DATE, 1);
@@ -399,7 +400,7 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
         else if(date.equals(yesterday))
             return "Yesterday";
         else {
-            SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy");
+            SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy", Locale.ENGLISH);
             Calendar now = Calendar.getInstance();
             try {
                 Date d = sdf.parse(date);

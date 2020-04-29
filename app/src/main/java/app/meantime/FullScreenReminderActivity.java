@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.view.MenuItem;
@@ -51,7 +52,10 @@ public class FullScreenReminderActivity extends AppCompatActivity {
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
                             |WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
-                            |WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+                            |WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
+                            |WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        new Handler().postDelayed(() -> getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON), 6000);
 
         realm = Realm.getDefaultInstance();
         reminder = realm.where(DataReminder.class).equalTo("reminderId", getIntent().getStringExtra("id")).findFirst();

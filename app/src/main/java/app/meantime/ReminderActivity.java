@@ -53,6 +53,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import io.realm.Realm;
@@ -487,22 +488,9 @@ public class ReminderActivity extends AppCompatActivity {
         outStream.close();
     }
 
-    public int getRequestCode(DataReminder reminder){
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd MMM yyyy hh:mm a");
-        try {
-            Date reminderDate = simpleDateFormat.parse(reminder.getDate() + " " + reminder.getTime());
-            Date now = Calendar.getInstance().getTime();
-            long timeInMillis = reminderDate.getTime();
-            return (int)timeInMillis/10000;
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return 0;
-    }
-
 
     public boolean shouldSchedule(DataReminder reminder){
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd MMM yyyy hh:mm a");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd MMM yyyy hh:mm a", Locale.ENGLISH);
 
         try {
             Date reminderDate = simpleDateFormat.parse(reminder.getDate() + " " + reminder.getTime());

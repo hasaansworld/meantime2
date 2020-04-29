@@ -26,6 +26,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Random;
 
 import io.realm.Realm;
@@ -198,7 +199,7 @@ public class NotificationReceiver extends BroadcastReceiver {
 
 
     private void repeatReminder(DataReminder reminder, Realm realm){
-        SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy");
+        SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy", Locale.ENGLISH);
         try {
             Date d = sdf.parse(reminder.getDate());
             Calendar now = Calendar.getInstance();

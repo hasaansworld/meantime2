@@ -36,6 +36,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -291,7 +292,7 @@ public class HistoryActivity extends AppCompatActivity {
     private List<DataReminder> removeNewReminders(List<DataReminder> allReminders){
         Calendar now = Calendar.getInstance();
         Date dT = now.getTime();
-        SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy");
+        SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy", Locale.ENGLISH);
         String today = sdf.format(dT);
         int todayIndex = -1;
         for(int i = 0; i < allReminders.size(); i++){
