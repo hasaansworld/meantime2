@@ -162,7 +162,7 @@ public class CreateActivity extends AppCompatActivity {
                 String time = String.format("%02d", hour)+":"+String.format("%02d", minute)+" "+am;
                 textTime.setText(time);
             }, this.hour, this.minute, false);
-            if(textDate.getText().toString().equals(getCurrentDate())){
+            if(textDate.getText().toString().equals(getToday())){
                 Calendar calendar = Calendar.getInstance();
                 int min_hour = calendar.get(Calendar.HOUR_OF_DAY);
                 int min_minute = calendar.get(Calendar.MINUTE);
@@ -398,12 +398,18 @@ public class CreateActivity extends AppCompatActivity {
     public String getCurrentDate(){
         Calendar now = Calendar.getInstance();
         day = now.get(Calendar.DAY_OF_MONTH);
-        dayOfWeek = days[now.get(Calendar.DAY_OF_WEEK)-1];
+        dayOfWeek = days[now.get(Calendar.DAY_OF_WEEK) - 1];
         month = now.get(Calendar.MONTH);
         year = now.get(Calendar.YEAR);
         hour = now.get(Calendar.HOUR_OF_DAY);
         minute = now.get(Calendar.MINUTE);
         return String.format(Locale.ENGLISH, "%02d", day) + " " + months[month] + " " + year;
+    }
+
+    public String getToday(){
+        Calendar now = Calendar.getInstance();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd MMM yyyy", Locale.ENGLISH);
+        return simpleDateFormat.format(now.getTime());
     }
 
     public String getCurrentTime(){
