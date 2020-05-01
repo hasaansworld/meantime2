@@ -169,10 +169,12 @@ public class BackgroundWorker extends Worker {
                 int requestCode = reminder.getReminderNumber();
                 PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), requestCode, intent1,
                         0);
-                if (Build.VERSION.SDK_INT >= 19)
-                    alarmManager.setExact(AlarmManager.RTC, timeInMillis, pendingIntent);
+                if (Build.VERSION.SDK_INT >= 23)
+                    alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent);
+                else if (Build.VERSION.SDK_INT >= 19)
+                    alarmManager.setExact(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent);
                 else
-                    alarmManager.set(AlarmManager.RTC, timeInMillis, pendingIntent);
+                    alarmManager.set(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent);
                 realm.beginTransaction();
                 reminder.setStatus(DataReminder.STATUS_SCHEDULED);
                 realm.copyToRealmOrUpdate(reminder);
