@@ -33,6 +33,7 @@ public class LicencesActivity extends AppCompatActivity {
         addLicense("license_wdullaer_material_date_time_picker.txt");
         addLicense("license_nguyenhoanglam_image_picker.txt");
         addLicense("license_yalantis_ucrop.txt");
+        addLicense("license_view_tooltip.txt");
         addLicense("license_crash_reporter.txt");
         addLicense("license_zetbaitsu_compressor.txt");
     }
