@@ -40,11 +40,11 @@
             android:orientation="vertical">
 
             <ImageView
-                android:layout_width="150dp"
-                android:layout_height="150dp"
+                android:layout_width="180dp"
+                android:layout_height="wrap_content"
                 android:src="@drawable/no_ads"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="25dp"/>
+                android:layout_marginTop="15dp"/>
 
             <TextView
                 android:id="@+id/headline"

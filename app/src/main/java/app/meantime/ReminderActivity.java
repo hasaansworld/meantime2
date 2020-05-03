@@ -183,7 +183,8 @@ public class ReminderActivity extends AppCompatActivity {
             });
         }
 
-        showAd();
+        if(!sharedPreferences.getBoolean("noAds", false))
+            showAd();
 
     }
 

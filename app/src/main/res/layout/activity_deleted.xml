@@ -85,7 +85,9 @@
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior" />
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
+        android:paddingBottom="100dp"
+        android:clipToPadding="false" />
 
     <LinearLayout
         android:id="@+id/search_no_results"

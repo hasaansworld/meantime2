@@ -25,7 +25,7 @@ import android.widget.Toast;
 
 public class SettingsActivity extends AppCompatActivity {
     Toolbar toolbar;
-    LinearLayout feedback, support, rate, removeAds, licences;
+    LinearLayout feedback, support, rate, removeAds, licences, invite;
     ImageView facebook, twitter;
     ImageView checkNoAds, checkSupportUs;
 //    TextView alarmTone;
@@ -69,6 +69,15 @@ public class SettingsActivity extends AppCompatActivity {
 
         licences = findViewById(R.id.licences);
         licences.setOnClickListener(v -> startActivity(new Intent(SettingsActivity.this, LicencesActivity.class)));
+
+        invite = findViewById(R.id.invite);
+        invite.setOnClickListener(v -> {
+            Intent sendIntent = new Intent();
+            sendIntent.setAction(Intent.ACTION_SEND);
+            sendIntent.putExtra(Intent.EXTRA_TEXT, "I use Meantime app to create reminders so I don't forget stuff. You can too, it's very easy. Download here: https://play.google.com/store/apps/details?id=app.meantime");
+            sendIntent.setType("text/plain");
+            startActivity(Intent.createChooser(sendIntent, "Invite Friends"));
+        });
 
         checkNoAds = findViewById(R.id.check_no_ads);
         checkSupportUs = findViewById(R.id.check_support_us);

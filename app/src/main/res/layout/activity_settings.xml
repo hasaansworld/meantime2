@@ -148,8 +148,7 @@
                 android:paddingBottom="15dp"
                 android:gravity="center_vertical"
                 android:background="?attr/selectableItemBackground"
-                android:clickable="true"
-                android:visibility="gone">
+                android:clickable="true">
 
                 <ImageView
                     android:layout_width="24dp"
@@ -265,6 +264,34 @@
                     android:textColor="@android:color/black"
                     android:textSize="16sp"
                     android:text="Licenses" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/invite"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingLeft="30dp"
+                android:paddingRight="30dp"
+                android:paddingTop="15dp"
+                android:paddingBottom="15dp"
+                android:gravity="center_vertical"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/outline_people_alt_black_24" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:textColor="@android:color/black"
+                    android:textSize="16sp"
+                    android:text="Invite Friends" />
 
             </LinearLayout>
 
