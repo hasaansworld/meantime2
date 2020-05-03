@@ -13,6 +13,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.viewpager.widget.ViewPager;
 import androidx.work.Constraints;
@@ -58,6 +60,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.github.florent37.viewtooltip.ViewTooltip;
 import com.google.android.gms.ads.AdLoader;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.MobileAds;
@@ -197,6 +200,25 @@ public class MainActivity extends AppCompatActivity {
             remindersFragment.search(search.getText().toString());
             return true;
         });
+
+        int tooltipTimes = sharedPreferences.getInt("tooltipFab", 0);
+        if(tooltipTimes < 10) {
+            ViewTooltip
+                    .on(this, fabAdd)
+                    .autoHide(true, 8000)
+                    .corner(30)
+                    .position(ViewTooltip.Position.LEFT)
+                    .text("Create a reminder")
+                    .color(ContextCompat.getColor(this, R.color.colorAccent))
+                    .textColor(Color.WHITE)
+                    .withShadow(false)
+                    .arrowWidth(10)
+                    .arrowHeight(10)
+                    .show();
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putInt("tooltipFab", tooltipTimes+1);
+            editor.apply();
+        }
 
         /*toolbarTitle.setOnClickListener(new View.OnClickListener() {
             @Override

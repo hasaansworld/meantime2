@@ -5,6 +5,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -31,6 +32,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.github.florent37.viewtooltip.ViewTooltip;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
@@ -459,6 +461,25 @@ public class ReminderActivity extends AppCompatActivity {
                 addImage.setVisibility(View.GONE);
                 imageLayout.setVisibility(View.VISIBLE);
                 Glide.with(this).asBitmap().load(path).into(image);
+
+                int tooltipTimes = sharedPreferences.getInt("tooltipImage", 0);
+                if(tooltipTimes < 10) {
+                    ViewTooltip
+                            .on(this, image)
+                            .autoHide(true, 8000)
+                            .corner(30)
+                            .position(ViewTooltip.Position.TOP)
+                            .text("Tap to change or remove")
+                            .color(ContextCompat.getColor(this, R.color.colorAccent))
+                            .textColor(Color.WHITE)
+                            .withShadow(false)
+                            .arrowWidth(10)
+                            .arrowHeight(10)
+                            .show();
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putInt("tooltipImage", tooltipTimes+1);
+                    editor.apply();
+                }
             }
             catch (IOException e){
                 Toast.makeText(this, "Could not copy image :(", Toast.LENGTH_SHORT).show();
@@ -471,6 +492,24 @@ public class ReminderActivity extends AppCompatActivity {
                 addDescription.setVisibility(View.GONE);
                 description.setVisibility(View.VISIBLE);
                 description.setText(descriptionS);
+                int tooltipTimes = sharedPreferences.getInt("tooltipDescription", 0);
+                if(tooltipTimes < 10) {
+                    ViewTooltip
+                            .on(this, description)
+                            .autoHide(true, 8000)
+                            .corner(30)
+                            .position(ViewTooltip.Position.BOTTOM)
+                            .text("Tap to edit or remove")
+                            .color(ContextCompat.getColor(this, R.color.colorAccent))
+                            .textColor(Color.WHITE)
+                            .withShadow(false)
+                            .arrowWidth(10)
+                            .arrowHeight(10)
+                            .show();
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putInt("tooltipDescription", tooltipTimes+1);
+                    editor.apply();
+                }
             }
             else{
                 addDescription.setVisibility(View.VISIBLE);
