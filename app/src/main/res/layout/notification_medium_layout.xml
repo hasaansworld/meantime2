@@ -4,7 +4,10 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="15dp">
+    android:paddingTop="15dp"
+    android:paddingLeft="15dp"
+    android:paddingRight="15dp"
+    android:paddingBottom="5dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -38,13 +41,40 @@
         android:maxLines="2"
         android:ellipsize="end"/>
 
-    <TextView
-        android:id="@+id/description"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="14sp"
-        android:textColor="#999999"
-        android:maxLines="1"
-        android:ellipsize="end"/>
+        android:orientation="horizontal"
+        android:gravity="top">
+
+        <TextView
+            android:id="@+id/description"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="14sp"
+            android:textColor="#999999"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:gravity="top"/>
+
+        <TextView
+            android:id="@+id/snooze"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:textColor="@color/colorAccent"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:text="Snooze"
+            android:textAllCaps="true"
+            android:background="@drawable/button_action_notification"
+            android:clickable="true" />
+
+    </LinearLayout>
 
 </LinearLayout>

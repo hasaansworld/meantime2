@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,6 +29,7 @@ public class SettingsActivity extends AppCompatActivity {
     LinearLayout feedback, support, rate, removeAds, licences, invite;
     ImageView facebook, twitter;
     ImageView checkNoAds, checkSupportUs;
+    Switch temporaryDisable;
 //    TextView alarmTone;
 //    MediaPlayer mediaPlayer;
     SharedPreferences sharedPreferences;
@@ -97,6 +99,15 @@ public class SettingsActivity extends AppCompatActivity {
             Intent i = new Intent(Intent.ACTION_VIEW);
             i.setData(Uri.parse(url));
             startActivity(i);
+        });
+
+        temporaryDisable = findViewById(R.id.switch_disable);
+        boolean isDisabled = sharedPreferences.getBoolean("isDisabled", false);
+        temporaryDisable.setChecked(isDisabled);
+        temporaryDisable.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putBoolean("isDisabled", isChecked);
+            editor.apply();
         });
 
     }

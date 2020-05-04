@@ -191,13 +191,14 @@ public class ReminderActivity extends AppCompatActivity {
     }
 
     private void showAd(){
+        Toast.makeText(this, "should show ads", Toast.LENGTH_SHORT).show();
         new Handler().postDelayed(() -> {
             MobileAds.initialize(ReminderActivity.this, initializationStatus -> {
             });
             adView = findViewById(R.id.adView);
             AdRequest adRequest = new AdRequest.Builder().build();
             adView.loadAd(adRequest);
-        }, 1500);
+        }, 1000);
     }
 
 

@@ -34,30 +34,33 @@ import io.realm.Realm;
 public class NotificationReceiver extends BroadcastReceiver {
     public static final String ACTION_NOTIFICATION = "app.meantime.ACTION_NOTIFICATION";
     Context context;
+    SharedPreferences sharedPreferences;
     int notificationId = 1300;
     String[] days = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
 
     @Override
     public void onReceive(Context context, Intent intent) {
         this.context = context;
-        Realm.init(context);
-        Realm realm = Realm.getDefaultInstance();
-        String id = intent.getStringExtra("id");
-        //sendNotificationMessage(119, "Received Reminder with Id: "+id);
-        DataReminder reminder = realm.where(DataReminder.class).equalTo("reminderId", id).findFirst();
-        if(reminder != null) {
-            notificationId = reminder.getReminderNumber();
-            sendNotification(reminder);
-            realm.beginTransaction();
-            reminder.setStatus(DataReminder.STATUS_COMPLETED);
-            realm.commitTransaction();
-            if (!reminder.getRepeat().equals("No repeat"))
-                repeatReminder(reminder, realm);
+        sharedPreferences = context.getSharedPreferences("data", Context.MODE_PRIVATE);
+        if(!sharedPreferences.getBoolean("isDisabled", false)) {
+            Realm.init(context);
+            Realm realm = Realm.getDefaultInstance();
+            String id = intent.getStringExtra("id");
+            //sendNotificationMessage(119, "Received Reminder with Id: "+id);
+            DataReminder reminder = realm.where(DataReminder.class).equalTo("reminderId", id).findFirst();
+            if (reminder != null) {
+                notificationId = reminder.getReminderNumber();
+                sendNotification(reminder);
+                realm.beginTransaction();
+                reminder.setStatus(DataReminder.STATUS_COMPLETED);
+                realm.commitTransaction();
+                if (!reminder.getRepeat().equals("No repeat"))
+                    repeatReminder(reminder, realm);
+            } else {
+                sendNotificationMessage(767, "You may have pending reminders", "Tap to see.");
+            }
+            realm.close();
         }
-        else{
-            sendNotificationMessage(767, "You may have pending reminders", "Tap to see.");
-        }
-        realm.close();
     }
 
 
@@ -123,6 +126,12 @@ public class NotificationReceiver extends BroadcastReceiver {
             intent.putExtra("id", reminder.getReminderId());
             PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
+            Intent snoozeIntent = new Intent(context, SnoozeReceiver.class);
+            snoozeIntent.setAction(SnoozeReceiver.ACTION_SNOOZE);
+            snoozeIntent.putExtra("reminderId", reminder.getReminderId());
+            snoozeIntent.putExtra("notificationId", reminder.getReminderNumber());
+            PendingIntent snoozePendingIntent = PendingIntent.getBroadcast(context, notificationId, snoozeIntent, 0);
+
             createNotificationChannel(importance);
             Uri soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
@@ -144,8 +153,9 @@ public class NotificationReceiver extends BroadcastReceiver {
             else
                 remoteViews.setTextViewText(R.id.description, "No description.");
             remoteViews.setImageViewResource(R.id.circle, reminder.getImportance() == 1 ? R.drawable.circle_orange : R.drawable.circle_yellow);
+            remoteViews.setOnClickPendingIntent(R.id.snooze, snoozePendingIntent);
             NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
-            notificationManager.notify(notificationId, builder.build());
+            notificationManager.notify(1300+reminder.getReminderNumber(), builder.build());
             //playSound();
             notificationId++;
         }
