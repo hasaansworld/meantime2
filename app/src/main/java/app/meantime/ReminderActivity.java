@@ -191,7 +191,6 @@ public class ReminderActivity extends AppCompatActivity {
     }
 
     private void showAd(){
-        Toast.makeText(this, "should show ads", Toast.LENGTH_SHORT).show();
         new Handler().postDelayed(() -> {
             MobileAds.initialize(ReminderActivity.this, initializationStatus -> {
             });

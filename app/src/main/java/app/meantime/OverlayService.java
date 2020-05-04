@@ -99,6 +99,7 @@ public class OverlayService extends Service {
     TextView title = notificationView.findViewById(R.id.title);
     TextView description = notificationView.findViewById(R.id.description);
     ImageView circle = notificationView.findViewById(R.id.circle);
+    TextView snooze = notificationView.findViewById(R.id.snooze);
     if(reminder != null){
       time.setText(reminder.getTime());
       title.setText("Reminder: \""+reminder.getTitle()+"\"");
@@ -130,6 +131,17 @@ public class OverlayService extends Service {
           }
         }, 400);
       }
+    });
+    snooze.setOnClickListener(v -> {
+        hideAnimation(notificationView);
+        notificationView.setClickable(false);
+        remindersList.remove(remindersList.size()-1);
+
+        Intent snoozeIntent = new Intent(this, SnoozeReceiver.class);
+        snoozeIntent.setAction(SnoozeReceiver.ACTION_SNOOZE);
+        snoozeIntent.putExtra("reminderId", reminderId);
+        snoozeIntent.putExtra("notificationId", -1);
+        sendBroadcast(snoozeIntent);
     });
 
     notificationView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -298,6 +310,12 @@ public class OverlayService extends Service {
     intent.putExtra("id", reminder.getReminderId());
     PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
+    Intent snoozeIntent = new Intent(getApplicationContext(), SnoozeReceiver.class);
+    snoozeIntent.setAction(SnoozeReceiver.ACTION_SNOOZE);
+    snoozeIntent.putExtra("reminderId", reminder.getReminderId());
+    snoozeIntent.putExtra("notificationId", reminder.getReminderNumber());
+    PendingIntent snoozePendingIntent = PendingIntent.getBroadcast(this, 119+reminder.getReminderNumber(), snoozeIntent, 0);
+
     createNotificationChannel();
     NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "1")
             .setSmallIcon(Build.VERSION.SDK_INT >= 21 ? R.drawable.ic_notifications_none_black_24dp : R.drawable.ic_notifications_none_white_24dp);
@@ -307,10 +325,11 @@ public class OverlayService extends Service {
             .setContentIntent(pendingIntent)
             .setVibrate(new long[]{100, 200, 300})
             .setChannelId("1")
+            .addAction(Build.VERSION.SDK_INT >= 21 ? R.drawable.outline_snooze_black_24 : R.drawable.outline_snooze_white_24, "Snooze", snoozePendingIntent)
             .setAutoCancel(true);
 
     NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-    notificationManager.notify(notificationId, builder.build());
+    notificationManager.notify(1300+reminder.getReminderNumber(), builder.build());
     notificationId++;
   }
 

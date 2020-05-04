@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.ContextCompat;
 
 
 import com.google.firebase.database.FirebaseDatabase;
@@ -84,6 +85,13 @@ public class NotificationReceiver extends BroadcastReceiver {
 
     void sendNotification(DataReminder reminder){
         int importance = reminder.getImportance();
+
+        Intent snoozeIntent = new Intent(context, SnoozeReceiver.class);
+        snoozeIntent.setAction(SnoozeReceiver.ACTION_SNOOZE);
+        snoozeIntent.putExtra("reminderId", reminder.getReminderId());
+        snoozeIntent.putExtra("notificationId", reminder.getReminderNumber());
+        PendingIntent snoozePendingIntent = PendingIntent.getBroadcast(context, 119+reminder.getReminderNumber(), snoozeIntent, 0);
+
         if(importance == 2){
             Intent i = new Intent(context, FullScreenReminderActivity.class);
             i.putExtra("id", reminder.getReminderId());
@@ -115,22 +123,18 @@ public class NotificationReceiver extends BroadcastReceiver {
                     .setSound(soundUri)
                     .setVibrate(new long[]{100, 200, 300})
                     .setChannelId(Integer.toString(reminder.getImportance()+1))
-                    .setAutoCancel(true);
+                    .setAutoCancel(true)
+                    .addAction(Build.VERSION.SDK_INT >= 21 ? R.drawable.outline_snooze_black_24 : R.drawable.outline_snooze_white_24, "Snooze", snoozePendingIntent)
+                    .setColor(ContextCompat.getColor(context, R.color.colorAccent));
 
             NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
-            notificationManager.notify(notificationId, builder.build());
+            notificationManager.notify(1300+reminder.getReminderNumber(), builder.build());
             notificationId++;
         }
         else{
             Intent intent = new Intent(context, FullScreenReminderActivity.class);
             intent.putExtra("id", reminder.getReminderId());
             PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-
-            Intent snoozeIntent = new Intent(context, SnoozeReceiver.class);
-            snoozeIntent.setAction(SnoozeReceiver.ACTION_SNOOZE);
-            snoozeIntent.putExtra("reminderId", reminder.getReminderId());
-            snoozeIntent.putExtra("notificationId", reminder.getReminderNumber());
-            PendingIntent snoozePendingIntent = PendingIntent.getBroadcast(context, notificationId, snoozeIntent, 0);
 
             createNotificationChannel(importance);
             Uri soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);

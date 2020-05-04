@@ -57,15 +57,31 @@
 
         <TextView
             android:id="@+id/description"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:layout_marginTop="3dp"
             android:ellipsize="end"
             android:maxLines="2"
             android:text="This is reminder description"
             android:textColor="#999999"
             android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/snooze"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right|end"
+            android:textColor="@color/colorAccent"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:text="Snooze"
+            android:textAllCaps="true"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true" />
 
     </LinearLayout>
 
