@@ -2,6 +2,7 @@ package app.meantime;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.Toolbar;
 
 import android.content.DialogInterface;
@@ -26,7 +27,8 @@ import android.widget.Toast;
 
 public class SettingsActivity extends AppCompatActivity {
     Toolbar toolbar;
-    LinearLayout feedback, support, rate, removeAds, licences, invite;
+    LinearLayout snoozeLayout, feedback, support, rate, removeAds, licences, invite;
+    TextView snoozeDuration;
     ImageView facebook, twitter;
     ImageView checkNoAds, checkSupportUs;
     Switch temporaryDisable;
@@ -108,6 +110,21 @@ public class SettingsActivity extends AppCompatActivity {
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putBoolean("isDisabled", isChecked);
             editor.apply();
+        });
+
+        snoozeLayout = findViewById(R.id.snooze_layout);
+        snoozeDuration = findViewById(R.id.snooze_duration);
+        snoozeLayout.setOnClickListener(v -> {
+            PopupMenu popup = new PopupMenu(SettingsActivity.this, snoozeDuration);
+            popup.setOnMenuItemClickListener(item -> {
+                snoozeDuration.setText(item.getTitle());
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString("snoozeDuration", item.getTitle().toString());
+                editor.apply();
+                return true;
+            });
+            popup.inflate(R.menu.options_snooze_time);
+            popup.show();
         });
 
     }
