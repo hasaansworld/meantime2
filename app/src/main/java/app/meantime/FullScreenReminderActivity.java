@@ -1,8 +1,13 @@
 package app.meantime;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.Toolbar;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -29,16 +34,18 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import io.realm.Realm;
 
 public class FullScreenReminderActivity extends AppCompatActivity {
     Realm realm;
     SharedPreferences sharedPreferences;
+    String reminderId;
     DataReminder reminder;
     Toolbar toolbar;
     TextView title, description;
-    TextView time, day, date, alarmTime, repeat;
+    TextView time, day, date, alarmTime, repeat, snooze;
     LinearLayout repeatLayout;
     ImageView image, alarmIcon;
     View circle;
@@ -58,7 +65,8 @@ public class FullScreenReminderActivity extends AppCompatActivity {
         new Handler().postDelayed(() -> getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON), 6000);
 
         realm = Realm.getDefaultInstance();
-        reminder = realm.where(DataReminder.class).equalTo("reminderId", getIntent().getStringExtra("id")).findFirst();
+        reminderId = getIntent().getStringExtra("id");
+        reminder = realm.where(DataReminder.class).equalTo("reminderId", reminderId).findFirst();
 
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -78,6 +86,7 @@ public class FullScreenReminderActivity extends AppCompatActivity {
         alarmIcon = findViewById(R.id.alarm_icon);
         repeat = findViewById(R.id.text_repeat);
         repeatLayout = findViewById(R.id.layout_repeat);
+        snooze = findViewById(R.id.snooze);
 
         if(reminder != null) {
             title.setText(reminder.getTitle());
@@ -174,8 +183,58 @@ public class FullScreenReminderActivity extends AppCompatActivity {
             alarmIcon.setVisibility(View.GONE);
             repeatLayout.setVisibility(View.GONE);
             image.setVisibility(View.GONE);
+            snooze.setVisibility(View.GONE);
         }
 
+        snooze.setOnClickListener(v -> {
+            PopupMenu popup = new PopupMenu(FullScreenReminderActivity.this, snooze);
+            popup.setOnMenuItemClickListener(item -> {
+                int minutes = 5;
+                String snoozeDuration = item.getTitle().toString();
+                if(snoozeDuration.equals("5 minutes")){
+                    minutes = 5;
+                }
+                else if(snoozeDuration.equals("10 minutes")){
+                    minutes = 10;
+                }
+                else if(snoozeDuration.equals("15 minutes")){
+                    minutes = 15;
+                }
+                else if(snoozeDuration.equals("30 minutes")){
+                    minutes = 30;
+                }
+                else if(snoozeDuration.equals("1 hour")){
+                    minutes = 60;
+                }
+                long timeInMillis = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(minutes);
+                snoozeReminder(reminderId, timeInMillis);
+                new Handler().postDelayed(() -> {
+                    Toast.makeText(FullScreenReminderActivity.this, "Reminder snoozed for "+snoozeDuration+":\n"+reminder.getTitle(), Toast.LENGTH_SHORT).show();
+                    finish();
+                }, 500);
+                return true;
+            });
+            popup.inflate(R.menu.options_snooze_time);
+            popup.show();
+        });
+    }
+
+
+    public void snoozeReminder(String id, long timeInMillis){
+        AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+        Intent intent1 = new Intent(getApplicationContext(), NotificationReceiver.class);
+        intent1.setAction(NotificationReceiver.ACTION_NOTIFICATION);
+        intent1.putExtra("id", id);
+
+        int requestCode = reminder.getReminderNumber();
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), requestCode, intent1,
+                0);
+        if (Build.VERSION.SDK_INT >= 23)
+            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent);
+        else if (Build.VERSION.SDK_INT >= 19)
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent);
+        else
+            alarmManager.set(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent);
     }
 
     @Override

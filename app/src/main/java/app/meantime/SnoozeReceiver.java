@@ -45,7 +45,7 @@ public class SnoozeReceiver extends BroadcastReceiver {
                 else if(snoozeDuration != null && snoozeDuration.equals("1 hour"))
                     minutes = 60;
                 long timeInMillis = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(minutes);
-                scheduleReminder(reminderId, timeInMillis);
+                snoozeReminder(reminderId, timeInMillis);
             }
             Toast.makeText(context, "Reminder snoozed for "+snoozeDuration+":\n"+dataReminder.getTitle(), Toast.LENGTH_SHORT).show();
         }
@@ -54,7 +54,7 @@ public class SnoozeReceiver extends BroadcastReceiver {
     }
 
 
-    public void scheduleReminder(String id, long timeInMillis){
+    public void snoozeReminder(String id, long timeInMillis){
         AlarmManager alarmManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
         Intent intent1 = new Intent(context.getApplicationContext(), NotificationReceiver.class);
         intent1.setAction(NotificationReceiver.ACTION_NOTIFICATION);
