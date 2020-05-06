@@ -45,7 +45,8 @@ public class FullScreenReminderActivity extends AppCompatActivity {
     DataReminder reminder;
     Toolbar toolbar;
     TextView title, description;
-    TextView time, day, date, alarmTime, repeat, snooze;
+    TextView time, day, date, alarmTime, repeat;
+    LinearLayout snooze;
     LinearLayout repeatLayout;
     ImageView image, alarmIcon;
     View circle;
@@ -189,7 +190,7 @@ public class FullScreenReminderActivity extends AppCompatActivity {
         snooze.setOnClickListener(v -> {
             PopupMenu popup = new PopupMenu(FullScreenReminderActivity.this, snooze);
             popup.setOnMenuItemClickListener(item -> {
-                int minutes = 5;
+                int minutes = 10;
                 String snoozeDuration = item.getTitle().toString();
                 if(snoozeDuration.equals("5 minutes")){
                     minutes = 5;

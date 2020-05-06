@@ -203,32 +203,32 @@ public class ReminderActivity extends AppCompatActivity {
             adView = findViewById(R.id.adView);
             AdRequest adRequest = new AdRequest.Builder().build();
             adView.loadAd(adRequest);
-            adView.setAdListener(new AdListener(){
-                @Override
-                public void onAdLoaded() {
-                    Toast.makeText(ReminderActivity.this, "Ad loaded!", Toast.LENGTH_SHORT).show();
-                }
-
-                @Override
-                public void onAdFailedToLoad(int i) {
-                    String error = "Unknown error";
-                    switch (i){
-                        case AdRequest.ERROR_CODE_INTERNAL_ERROR:
-                            error = "Internal error";
-                            break;
-                        case AdRequest.ERROR_CODE_INVALID_REQUEST:
-                            error = "Invalid request";
-                            break;
-                        case AdRequest.ERROR_CODE_NETWORK_ERROR:
-                            error = "Netwrok error";
-                            break;
-                        case AdRequest.ERROR_CODE_NO_FILL:
-                            error = "No fill";
-                            break;
-                    }
-                    Toast.makeText(ReminderActivity.this, "Ads Failed: "+error, Toast.LENGTH_SHORT).show();
-                }
-            });
+//            adView.setAdListener(new AdListener(){
+//                @Override
+//                public void onAdLoaded() {
+//                    Toast.makeText(ReminderActivity.this, "Ad loaded!", Toast.LENGTH_SHORT).show();
+//                }
+//
+//                @Override
+//                public void onAdFailedToLoad(int i) {
+//                    String error = "Unknown error";
+//                    switch (i){
+//                        case AdRequest.ERROR_CODE_INTERNAL_ERROR:
+//                            error = "Internal error";
+//                            break;
+//                        case AdRequest.ERROR_CODE_INVALID_REQUEST:
+//                            error = "Invalid request";
+//                            break;
+//                        case AdRequest.ERROR_CODE_NETWORK_ERROR:
+//                            error = "Netwrok error";
+//                            break;
+//                        case AdRequest.ERROR_CODE_NO_FILL:
+//                            error = "No fill";
+//                            break;
+//                    }
+//                    Toast.makeText(ReminderActivity.this, "Ads Failed: "+error, Toast.LENGTH_SHORT).show();
+//                }
+//            });
         }, 1000);
     }
 

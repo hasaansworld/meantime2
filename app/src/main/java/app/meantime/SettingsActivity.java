@@ -114,6 +114,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         snoozeLayout = findViewById(R.id.snooze_layout);
         snoozeDuration = findViewById(R.id.snooze_duration);
+        snoozeDuration.setText(sharedPreferences.getString("snoozeDuration", "10 minutes"));
         snoozeLayout.setOnClickListener(v -> {
             PopupMenu popup = new PopupMenu(SettingsActivity.this, snoozeDuration);
             popup.setOnMenuItemClickListener(item -> {

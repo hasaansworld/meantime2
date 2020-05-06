@@ -28,16 +28,16 @@ public class SnoozeReceiver extends BroadcastReceiver {
         realm = Realm.getDefaultInstance();
 
         String reminderId = intent.getStringExtra("reminderId");
-        String snoozeDuration = sharedPreferences.getString("snoozeDuration", "5 minutes");
+        String snoozeDuration = sharedPreferences.getString("snoozeDuration", "10 minutes");
         DataReminder dataReminder = realm.where(DataReminder.class).equalTo("reminderId", reminderId).findFirst();
         if(dataReminder != null){
             int reminderNumber = intent.getIntExtra("notificationId", 0);
             if(reminderNumber != -1) {
                 NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
                 notificationManager.cancel(1300 + reminderNumber);
-                int minutes = 5;
-                if(snoozeDuration != null && snoozeDuration.equals("10 minutes"))
-                    minutes = 10;
+                int minutes = 10;
+                if(snoozeDuration != null && snoozeDuration.equals("5 minutes"))
+                    minutes = 5;
                 else if(snoozeDuration != null && snoozeDuration.equals("15 minutes"))
                     minutes = 15;
                 else if(snoozeDuration != null && snoozeDuration.equals("30 minutes"))
