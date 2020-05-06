@@ -47,16 +47,16 @@
                     android:clickable="true">
 
                     <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/outline_snooze_black_24"
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:src="@drawable/outline_snooze_white_18"
                         android:tint="@color/colorAccent" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="5dp"
-                        android:textSize="16sp"
+                        android:textSize="14sp"
                         android:textStyle="bold"
                         android:textColor="@color/colorAccent"
                         android:textAllCaps="true"

@@ -336,6 +336,8 @@ public class CreateActivity extends AppCompatActivity {
                     i.putExtra("id", dataReminder.getReminderId());
                     startActivity(i);
                 }
+
+                ScheduleWidgetReceiver.refreshList(CreateActivity.this);
                 finish();
             }
         });

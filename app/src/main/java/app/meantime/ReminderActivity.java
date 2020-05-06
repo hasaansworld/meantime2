@@ -159,6 +159,7 @@ public class ReminderActivity extends AppCompatActivity {
                         realm.commitTransaction();
                         addDescription.setVisibility(View.VISIBLE);
                         description.setVisibility(View.GONE);
+                        ScheduleWidgetReceiver.refreshList(ReminderActivity.this);
                     }
                     updateLists("");
                     return true;
@@ -358,6 +359,7 @@ public class ReminderActivity extends AppCompatActivity {
                             editor.putString("message", "Reminder deleted!");
                             editor.apply();
                         }
+                        ScheduleWidgetReceiver.refreshList(ReminderActivity.this);
 
                         //.makeText(this, "Reminder deleted!", Toast.LENGTH_SHORT).show();
 
@@ -430,6 +432,7 @@ public class ReminderActivity extends AppCompatActivity {
                         if(reminder.getStatus() == DataReminder.STATUS_CREATED && shouldSchedule(reminder))
                             scheduleReminder(reminder.getReminderId());
 
+                        ScheduleWidgetReceiver.refreshList(ReminderActivity.this);
                         //Toast.makeText(this, "Reminder restored!", Toast.LENGTH_SHORT).show();
                         finish();
                     })
@@ -542,6 +545,7 @@ public class ReminderActivity extends AppCompatActivity {
                     editor.putInt("tooltipDescription", tooltipTimes+1);
                     editor.apply();
                 }
+                ScheduleWidgetReceiver.refreshList(ReminderActivity.this);
             }
             else{
                 addDescription.setVisibility(View.VISIBLE);
