@@ -3,6 +3,7 @@ package app.meantime;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.view.View;
 import android.widget.RemoteViews;
@@ -24,9 +25,13 @@ public class ScheduleWidgetListProvider implements RemoteViewsService.RemoteView
     Realm realm;
     String today, tomorrow;
     List<TemporaryReminder> reminders = new ArrayList<>();
+    int appWidgetId;
+    SharedPreferences sharedPreferences;
 
-    public ScheduleWidgetListProvider(Context context, Intent intent){
+    public ScheduleWidgetListProvider(Context context, int appWidgetId){
         this.context = context;
+        this.appWidgetId = appWidgetId;
+        sharedPreferences = context.getSharedPreferences("data", Context.MODE_PRIVATE);
     }
 
     @Override
@@ -40,13 +45,14 @@ public class ScheduleWidgetListProvider implements RemoteViewsService.RemoteView
     }
 
     private void fetchData(){
+        String widgetMode = sharedPreferences.getString("widgetMode"+appWidgetId, "today");
         realm = Realm.getDefaultInstance();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd MMM yyyy", Locale.ENGLISH);
         Calendar now = Calendar.getInstance();
         today = simpleDateFormat.format(now.getTime());
         now.add(Calendar.DATE, 1);
         tomorrow = simpleDateFormat.format(now.getTime());
-        List<DataReminder> listOne = realm.where(DataReminder.class).equalTo("date", today).findAll();
+        List<DataReminder> listOne = realm.where(DataReminder.class).equalTo("date", widgetMode != null && widgetMode.equals("today") ? today : tomorrow).findAll();
         for(DataReminder reminder: listOne){
             if(!reminder.isDeleted()) reminders.add(new TemporaryReminder(reminder));
         }
