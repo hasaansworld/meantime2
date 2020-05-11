@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.ActionMode;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
@@ -46,6 +47,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -103,6 +105,7 @@ public class MainActivity extends AppCompatActivity {
     String[] months = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
     boolean isPermissionGranted = false;
     RemindersFragment remindersFragment;
+    ActionMode actionMode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,6 +133,7 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.replace(R.id.content, remindersFragment);
         //fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
+
 
         fabAdd = findViewById(R.id.fabAdd);
         fabAdd.setOnClickListener(new View.OnClickListener() {
@@ -257,6 +261,8 @@ public class MainActivity extends AppCompatActivity {
         AdRequest adRequest = new AdRequest.Builder().build();
         loader.loadAd(adRequest);
     }*/
+
+
 
     private void showSearch(){
         appbarSearch.setTranslationY(0-appbarSearch.getHeight());

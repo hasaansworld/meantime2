@@ -180,8 +180,10 @@ public class DeletedActivity extends AppCompatActivity {
                 adapterReminders.setFilter(filter);
             if(isSearching)
                 adapterReminders.search(search.getText().toString());
-            if(adapterReminders.getItemCount() == 0)
+            if(adapterReminders.getItemCount() == 0 && !isSearching)
                 nothingHere.setVisibility(View.VISIBLE);
+            else if(adapterReminders.getItemCount() == 0 && isSearching)
+                searchNoResults.setVisibility(View.VISIBLE);
             else
                 nothingHere.setVisibility(View.GONE);
             String message = sharedPreferences.getString("message", "");

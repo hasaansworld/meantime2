@@ -3,15 +3,18 @@ package app.meantime;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -152,11 +155,13 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     public class ViewHolderReminder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        LinearLayout layout;
         TextView title, people, description, time, repeat;
         ImageView image;
         View circle;
         public ViewHolderReminder(View v){
             super(v);
+            layout = v.findViewById(R.id.layout);
             circle = v.findViewById(R.id.circle);
             time = v.findViewById(R.id.time);
             title = v.findViewById(R.id.title);
@@ -170,13 +175,14 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
         @Override
         public void onClick(View v) {
             Intent i = new Intent(context, ReminderActivity.class);
-            i.putExtra("id", ((DataReminder)allItems.get(getAdapterPosition())).getReminderId());
-            if(mode == 1)
+            i.putExtra("id", ((DataReminder) allItems.get(getAdapterPosition())).getReminderId());
+            if (mode == 1)
                 i.putExtra("isHistory", true);
-            else if(mode == 2)
+            else if (mode == 2)
                 i.putExtra("isDeleted", true);
             context.startActivity(i);
         }
+
     }
 
     public class ViewHolderNone extends RecyclerView.ViewHolder{
@@ -534,4 +540,23 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
         return updatedDate;
     }
 
+    public void removeItem(int position){
+        allItems.remove(position);
+        titles.remove(position);
+        notifyItemRemoved(position);
+        Object prevItem = allItems.get(position-1);
+        Object nextItem = null;
+        if(position != allItems.size())
+            nextItem = allItems.get(position);
+        if(mode == 0 && position == 1 && ((DataReminderDate)prevItem).getDate().equals(today)){
+            allItems.add(1, null);
+            titles.add("Today");
+            notifyItemInserted(1);
+        }
+        else if(position == 1 || position == getItemCount() && prevItem instanceof DataReminderDate || prevItem instanceof DataReminderDate && nextItem instanceof DataReminderDate) {
+            allItems.remove(position-1);
+            titles.remove(position-1);
+            notifyItemRemoved(position-1);
+        }
+    }
 }

@@ -4,4 +4,5 @@
     android:minHeight="180dp"
     android:updatePeriodMillis="1800000"
     android:initialLayout="@layout/schedule_widget"
-    android:resizeMode="vertical|horizontal"/>
+    android:resizeMode="vertical|horizontal"
+    android:previewImage="@drawable/widget"/>
