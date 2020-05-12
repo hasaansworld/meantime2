@@ -44,6 +44,7 @@ import io.realm.RealmResults;
 public class HistoryActivity extends AppCompatActivity {
     AppBarLayout appbar, appbarSearch;
     Toolbar toolbar, searchToolbar;
+    TextView toolbarTitle;
     CoordinatorLayout coordinatorLayout;
     SharedPreferences sharedPreferences;
     EditText search;
@@ -51,8 +52,9 @@ public class HistoryActivity extends AppCompatActivity {
     LinearLayout searchNoResults, nothingHere;
     RecyclerView recyclerView;
     AdapterReminders adapterReminders;
-    boolean isSearching = false;
+    boolean isSearching = false, isInSelectionMode = false;
     int filter = -1;
+    Menu menu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +70,7 @@ public class HistoryActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_arrow_back_black_24dp);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
+        toolbarTitle = findViewById(R.id.toolbarTitle);
 
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -106,6 +109,50 @@ public class HistoryActivity extends AppCompatActivity {
         nothingHere = findViewById(R.id.nothing_here);
         if(adapterReminders.getItemCount() == 0)
             nothingHere.setVisibility(View.VISIBLE);
+
+        adapterReminders.setOnItemSelectedListener(new AdapterReminders.OnItemSelectedListener() {
+            @Override
+            public void onStart() {
+                isInSelectionMode = true;
+                menu.clear();
+                toolbarTitle.setText("1 selected");
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_black_24dp);
+                getMenuInflater().inflate(R.menu.options_reminder_selected, menu);
+                disableToolbarScroll();
+            }
+            @Override
+            public void onEnd() {
+                clearSelectionMode();
+            }
+            @Override
+            public void onUpdate(int count) {
+                toolbarTitle.setText(count+" selected");
+            }
+        });
+    }
+
+
+
+    private void disableToolbarScroll(){
+        appbar.setExpanded(true);
+        AppBarLayout.LayoutParams p = (AppBarLayout.LayoutParams)toolbar.getLayoutParams();
+        p.setScrollFlags(0);
+    }
+
+    private void enableToolbarScroll(){
+        AppBarLayout.LayoutParams p = (AppBarLayout.LayoutParams)toolbar.getLayoutParams();
+        p.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL | AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP);
+        toolbar.setLayoutParams(p);
+    }
+
+    private void clearSelectionMode(){
+        isInSelectionMode = false;
+        toolbarTitle.setText("History");
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_arrow_back_black_24dp);
+        menu.clear();
+        getMenuInflater().inflate(R.menu.options_history, menu);
+        enableToolbarScroll();
     }
 
     private void search(){
@@ -209,14 +256,21 @@ public class HistoryActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        this.menu = menu;
         getMenuInflater().inflate(R.menu.options_history, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == android.R.id.home)
-            finish();
+        if(item.getItemId() == android.R.id.home) {
+            if(isInSelectionMode){
+                adapterReminders.clearSelections();
+                clearSelectionMode();
+            }
+            else
+                finish();
+        }
         else if(item.getItemId() == R.id.filter){
             PopupMenu popup = new PopupMenu(this, toolbar);
             popup.setGravity(Gravity.END);
@@ -287,6 +341,17 @@ public class HistoryActivity extends AppCompatActivity {
             d.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.parseColor("#F44336"));
             d.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(colorAccent);
         }
+        else if(item.getItemId() == R.id.selection_delete){
+            int count = Integer.parseInt(toolbarTitle.getText().toString().substring(0, 1));
+            clearSelectionMode();
+            adapterReminders.deleteSelections(1);
+            String half = count+" reminders ";
+            if(count == 1)
+                half = "1 reminder ";
+            showSnackbar(half + "deleted!");
+            if(adapterReminders.getItemCount() == 0)
+                nothingHere.setVisibility(View.VISIBLE);
+        }
         return true;
     }
 
@@ -318,4 +383,13 @@ public class HistoryActivity extends AppCompatActivity {
         return allReminders;
     }
 
+    @Override
+    public void onBackPressed() {
+        if(isInSelectionMode) {
+            adapterReminders.clearSelections();
+            clearSelectionMode();
+        }
+        else
+            super.onBackPressed();
+    }
 }

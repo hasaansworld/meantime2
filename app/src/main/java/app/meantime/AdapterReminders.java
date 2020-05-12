@@ -11,6 +11,7 @@ import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -50,6 +51,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Handler;
 
 import io.realm.Realm;
@@ -78,6 +80,7 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
     int selectCount = 0;
     int selectableItemBackground;
     OnItemSelectedListener listener;
+    long timeInMillis = 0;
     //UnifiedNativeAd ad;
     //int adPostion = -1;
 
@@ -630,11 +633,21 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
             if(selectedItems.get(i)){
                 DataReminder reminder = (DataReminder)allItems.get(i);
                 realm.beginTransaction();
-                if(mode == 0)
+                if(mode == 0) {
                     reminder.setDeleted(true);
+                    if(reminder.getStatus() == DataReminder.STATUS_SCHEDULED)
+                        reminder.setStatus(DataReminder.STATUS_CREATED);
+                }
+                else if(mode == 1 || mode == 2)
+                    reminder.deleteFromRealm();
+                else if(mode == 3)
+                    reminder.setDeleted(false);
                 realm.commitTransaction();
                 removeItem(i);
-                cancelScheduling(reminder);
+                if(mode == 0)
+                    cancelScheduling(reminder);
+                else if(mode == 3)
+                    reschedule(reminder);
             }
         }
         for (int i = allItems.size()-1; i >= 0; i--){
@@ -673,6 +686,76 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
         AlarmManager alarmManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
         alarmManager.cancel(pendingIntent);
     }
+
+    private void reschedule(DataReminder reminder){
+        if(reminder.getStatus() == DataReminder.STATUS_CREATED && shouldSchedule(reminder))
+            scheduleReminder(reminder);
+    }
+
+
+    public boolean shouldSchedule(DataReminder reminder){
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd MMM yyyy hh:mm a", Locale.ENGLISH);
+
+        try {
+            Date reminderDate = simpleDateFormat.parse(reminder.getDate() + " " + reminder.getTime());
+            reminderDate = getDisplayTime(reminderDate, reminder);
+            Date now = Calendar.getInstance().getTime();
+            timeInMillis = reminderDate.getTime();
+            long differenceInMillis = reminderDate.getTime() - now.getTime();
+            long differenceInMinutes = TimeUnit.MINUTES.convert(differenceInMillis, TimeUnit.MILLISECONDS);
+
+            return differenceInMinutes <= 40;
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public Date getDisplayTime(Date date, DataReminder reminder){
+        String displayTime = reminder.getAlarmtime();
+        if(displayTime.equals("Exact time")){
+            return date;
+        }
+        else if(displayTime.equals("5 minutes before")) {
+            return new Date(date.getTime() - TimeUnit.MINUTES.toMillis(5));
+        }
+        else if(displayTime.equals("10 minutes before")) {
+            return new Date(date.getTime() - TimeUnit.MINUTES.toMillis(10));
+        }
+        else if(displayTime.equals("15 minutes before")) {
+            return new Date(date.getTime() - TimeUnit.MINUTES.toMillis(15));
+        }
+        else if(displayTime.equals("30 minutes before")) {
+            return new Date(date.getTime() - TimeUnit.MINUTES.toMillis(30));
+        }
+        else if(displayTime.equals("1 hour before")) {
+            return new Date(date.getTime() - TimeUnit.HOURS.toMillis(1));
+        }
+        return date;
+    }
+
+    public void scheduleReminder(DataReminder reminder){
+        AlarmManager alarmManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+        Intent intent1 = new Intent(context.getApplicationContext(), NotificationReceiver.class);
+        intent1.setAction(NotificationReceiver.ACTION_NOTIFICATION);
+        intent1.putExtra("id", reminder.getReminderId());
+
+        int requestCode = reminder.getReminderNumber();
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context.getApplicationContext(), requestCode, intent1,
+                0);
+        if (Build.VERSION.SDK_INT >= 23)
+            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent);
+        else if (Build.VERSION.SDK_INT >= 19)
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent);
+        else
+            alarmManager.set(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent);
+
+        realm.beginTransaction();
+        reminder.setStatus(DataReminder.STATUS_SCHEDULED);
+        realm.copyToRealmOrUpdate(reminder);
+        realm.commitTransaction();
+    }
+
 
     public void setOnItemSelectedListener(OnItemSelectedListener listener){
         this.listener = listener;

@@ -365,11 +365,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == android.R.id.home && isInSelectionMode) {
             remindersFragment.getAdapter().clearSelections();
-            menu.clear();
-            getMenuInflater().inflate(R.menu.options_main_reminder, menu);
-            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-            toolbarTitle.setText(getResources().getString(R.string.app_name));
-            enableToolbarScroll();
+            clearSelectionMode();
         }
         else if(item.getItemId() == R.id.filter){
             PopupMenu popup = new PopupMenu(this, toolbar);
@@ -407,17 +403,13 @@ public class MainActivity extends AppCompatActivity {
         else if(item.getItemId() == R.id.more)
             startActivity(new Intent(this, SettingsActivity.class));
         else if(item.getItemId() == R.id.selection_delete){
-            isInSelectionMode = false;
-            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-            menu.clear();
-            getMenuInflater().inflate(R.menu.options_main_reminder, menu);
-            remindersFragment.getAdapter().deleteSelections(0);
             int count = Integer.parseInt(toolbarTitle.getText().toString().substring(0, 1));
+            clearSelectionMode();
+            remindersFragment.getAdapter().deleteSelections(0);
             String half = count+" reminders ";
             if(count == 1)
                 half = "1 reminder ";
             showSnackbar(half + "deleted!");
-            toolbarTitle.setText(getResources().getString(R.string.app_name));
             ScheduleWidgetReceiver.refreshList(MainActivity.this);
         }
         return true;
@@ -457,12 +449,7 @@ public class MainActivity extends AppCompatActivity {
             }
             @Override
             public void onEnd() {
-                isInSelectionMode = false;
-                toolbarTitle.setText(getResources().getString(R.string.app_name));
-                getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-                menu.clear();
-                getMenuInflater().inflate(R.menu.options_main_reminder, menu);
-                enableToolbarScroll();
+                clearSelectionMode();
             }
             @Override
             public void onUpdate(int count) {
@@ -483,6 +470,15 @@ public class MainActivity extends AppCompatActivity {
         toolbar.setLayoutParams(p);
     }
 
+    private void clearSelectionMode(){
+        isInSelectionMode = false;
+        toolbarTitle.setText(getResources().getString(R.string.app_name));
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        menu.clear();
+        getMenuInflater().inflate(R.menu.options_main_reminder, menu);
+        enableToolbarScroll();
+    }
+
     private void showSnackbar(String message){
         Snackbar snackbar = Snackbar
                 .make(coordinatorLayout, message, Snackbar.LENGTH_LONG);
@@ -491,6 +487,15 @@ public class MainActivity extends AppCompatActivity {
         snackbar.show();
     }
 
+    @Override
+    public void onBackPressed() {
+        if(isInSelectionMode) {
+            remindersFragment.getAdapter().clearSelections();
+            clearSelectionMode();
+        }
+        else
+            super.onBackPressed();
+    }
 
     public static float dpToPixel(float dp, Context context){
         return dp * ((float) context.getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
