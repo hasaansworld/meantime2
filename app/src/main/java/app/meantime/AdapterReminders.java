@@ -1,5 +1,7 @@
 package app.meantime;
 
+import android.animation.ObjectAnimator;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -11,6 +13,8 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -20,10 +24,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.github.florent37.viewtooltip.ViewTooltip;
 import com.google.android.gms.ads.AdLoader;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.RequestConfiguration;
@@ -42,6 +48,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.logging.Handler;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -65,6 +72,10 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
     int mode = 0;
     int filter = -1;
     boolean isSearching = false;
+    List<Boolean> selectedItems = new ArrayList<>();
+    int selectCount = 0;
+    int selectableItemBackground;
+    OnItemSelectedListener listener;
     //UnifiedNativeAd ad;
     //int adPostion = -1;
 
@@ -96,6 +107,9 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
         filterAndArrange(filter);
 
         colorAccent = context.getResources().getColor(R.color.colorAccent);
+        TypedArray typedArray = context.obtainStyledAttributes(new int[]{R.attr.selectableItemBackground});
+        selectableItemBackground = typedArray.getResourceId(0, 0);
+        typedArray.recycle();
     }
 
     private void filterAndArrange(int filter){
@@ -139,6 +153,9 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
             allItems.add(null);
             titles.add("Today");
         }
+        selectedItems.clear();
+        for(int i = 0; i < allItems.size(); i++)
+            selectedItems.add(false);
     }
 
     public class ViewHolderHeader extends RecyclerView.ViewHolder {
@@ -154,7 +171,7 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     }
 
-    public class ViewHolderReminder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class ViewHolderReminder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
         LinearLayout layout;
         TextView title, people, description, time, repeat;
         ImageView image;
@@ -170,17 +187,45 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
             image = v.findViewById(R.id.image);
             repeat = v.findViewById(R.id.repeat);
             v.setOnClickListener(this);
+            v.setOnLongClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
-            Intent i = new Intent(context, ReminderActivity.class);
-            i.putExtra("id", ((DataReminder) allItems.get(getAdapterPosition())).getReminderId());
-            if (mode == 1)
-                i.putExtra("isHistory", true);
-            else if (mode == 2)
-                i.putExtra("isDeleted", true);
-            context.startActivity(i);
+            if(selectCount == 0) {
+                Intent i = new Intent(context, ReminderActivity.class);
+                i.putExtra("id", ((DataReminder) allItems.get(getAdapterPosition())).getReminderId());
+                if (mode == 1)
+                    i.putExtra("isHistory", true);
+                else if (mode == 2)
+                    i.putExtra("isDeleted", true);
+                context.startActivity(i);
+            }
+            else{
+                selectDeselect();
+            }
+        }
+
+        @Override
+        public boolean onLongClick(View v) {
+            selectDeselect();
+            return !isSearching;
+        }
+
+        private void selectDeselect(){
+            int position = getAdapterPosition();
+            Boolean selected = selectedItems.get(position);
+            selectedItems.set(position, !selected);
+            notifyItemChanged(position);
+            int prevSelectCount = selectCount;
+            selectCount = selected ? selectCount-1 : selectCount+1;
+            if(listener != null) {
+                listener.onUpdate(selectCount);
+                if (selectCount == 0 && prevSelectCount == 1)
+                    listener.onEnd();
+                else if (selectCount == 1 && prevSelectCount == 0)
+                    listener.onStart();
+            }
         }
 
     }
@@ -300,6 +345,13 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
             holderReminder.repeat.setVisibility(reminder.getRepeat().equals("No repeat") ? View.GONE : View.VISIBLE);
             if(!reminder.getRepeat().equals("No repeat"))
                 holderReminder.repeat.setText(getRepeatTitle(reminder.getRepeat()));
+
+            if(selectCount > 0 && selectedItems.get(position)){
+                holderReminder.layout.setBackgroundColor(Color.parseColor("#E6FFE7"));
+            }
+            else{
+                holderReminder.layout.setBackgroundResource(selectableItemBackground);
+            }
         }
         /*else if(holder instanceof ViewHolderAds){
             ViewHolderAds holderAds = (ViewHolderAds)holder;
@@ -540,23 +592,85 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
         return updatedDate;
     }
 
-    public void removeItem(int position){
+//    public void removeItem(int position){
+//        allItems.remove(position);
+//        titles.remove(position);
+//        notifyItemRemoved(position);
+//        Object prevItem = allItems.get(position-1);
+//        Object nextItem = null;
+//        if(position != allItems.size())
+//            nextItem = allItems.get(position);
+//        if(mode == 0 && position == 1 && ((DataReminderDate)prevItem).getDate().equals(today)){
+//            allItems.add(1, null);
+//            titles.add("Today");
+//            notifyItemInserted(1);
+//        }
+//        else if(position == 1 || position == getItemCount() && prevItem instanceof DataReminderDate || prevItem instanceof DataReminderDate && nextItem instanceof DataReminderDate) {
+//            allItems.remove(position-1);
+//            titles.remove(position-1);
+//            notifyItemRemoved(position-1);
+//        }
+//    }
+
+    public void clearSelections(){
+        for(int i = 0; i < allItems.size(); i++){
+            if(selectedItems.get(i)){
+                selectedItems.set(i, false);
+                notifyItemChanged(i);
+            }
+        }
+        selectCount = 0;
+    }
+
+    public void deleteSelections(int mode){
+        for(int i = allItems.size()-1; i >= 0; i--){
+            if(selectedItems.get(i)){
+                DataReminder reminder = (DataReminder)allItems.get(i);
+                realm.beginTransaction();
+                if(mode == 0)
+                    reminder.setDeleted(true);
+                realm.commitTransaction();
+                removeItem(i);
+                cancelScheduling(reminder);
+            }
+        }
+        for (int i = allItems.size()-1; i >= 0; i--){
+            if(i == allItems.size()-1 && allItems.get(i) instanceof DataReminderDate || i == 0 && allItems.get(1) instanceof DataReminderDate){
+                if(mode == 0 && i == 0){
+                    allItems.add(i+1, null);
+                    titles.add(i+1, "Today");
+                    selectedItems.add(false);
+                    notifyItemInserted(1);
+                }
+                else{
+                    removeItem(i);
+                }
+            }
+            else if(allItems.get(i) instanceof DataReminderDate && allItems.get(i+1) instanceof DataReminderDate){
+                removeItem(i);
+            }
+        }
+        selectCount = 0;
+    }
+
+    private void removeItem(int position){
         allItems.remove(position);
         titles.remove(position);
+        selectedItems.remove(position);
         notifyItemRemoved(position);
-        Object prevItem = allItems.get(position-1);
-        Object nextItem = null;
-        if(position != allItems.size())
-            nextItem = allItems.get(position);
-        if(mode == 0 && position == 1 && ((DataReminderDate)prevItem).getDate().equals(today)){
-            allItems.add(1, null);
-            titles.add("Today");
-            notifyItemInserted(1);
-        }
-        else if(position == 1 || position == getItemCount() && prevItem instanceof DataReminderDate || prevItem instanceof DataReminderDate && nextItem instanceof DataReminderDate) {
-            allItems.remove(position-1);
-            titles.remove(position-1);
-            notifyItemRemoved(position-1);
-        }
+    }
+
+    private void cancelScheduling(DataReminder reminder){
+
+    }
+
+    public void setOnItemSelectedListener(OnItemSelectedListener listener){
+        this.listener = listener;
+    }
+
+    public interface OnItemSelectedListener{
+        public void onStart();
+        public void onEnd();
+        public void onUpdate(int count);
     }
 }

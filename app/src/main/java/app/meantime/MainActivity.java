@@ -36,6 +36,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -103,9 +104,8 @@ public class MainActivity extends AppCompatActivity {
     BackgroundService backgroundService;
     Intent mServiceIntent;
     String[] months = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
-    boolean isPermissionGranted = false;
+    boolean isPermissionGranted = false, isInSelectionMode = false;
     RemindersFragment remindersFragment;
-    ActionMode actionMode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -362,9 +362,13 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == android.R.id.home)
-            //startActivity(new Intent(this, ProfileActivity.class));
-            startActivity(new Intent(this, TestActivity.class));
+        if(item.getItemId() == android.R.id.home && isInSelectionMode) {
+            remindersFragment.getAdapter().clearSelections();
+            menu.clear();
+            getMenuInflater().inflate(R.menu.options_main_reminder, menu);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+            toolbarTitle.setText(getResources().getString(R.string.app_name));
+        }
         else if(item.getItemId() == R.id.filter){
             PopupMenu popup = new PopupMenu(this, toolbar);
             popup.setGravity(Gravity.END);
@@ -400,6 +404,15 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(this, ContactsActivity.class));
         else if(item.getItemId() == R.id.more)
             startActivity(new Intent(this, SettingsActivity.class));
+        else if(item.getItemId() == R.id.selection_delete){
+            isInSelectionMode = false;
+            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+            menu.clear();
+            getMenuInflater().inflate(R.menu.options_main_reminder, menu);
+            remindersFragment.getAdapter().deleteSelections(0);
+            showSnackbar(toolbarTitle.getText().toString().substring(0, 1)+" reminders deleted!");
+            toolbarTitle.setText(getResources().getString(R.string.app_name));
+        }
         return true;
     }
 
@@ -423,6 +436,30 @@ public class MainActivity extends AppCompatActivity {
             editor.putString("message", "");
             editor.apply();
         }
+
+        remindersFragment.getAdapter().setOnItemSelectedListener(new AdapterReminders.OnItemSelectedListener() {
+            @Override
+            public void onStart() {
+                isInSelectionMode = true;
+                menu.clear();
+                toolbarTitle.setText("1 selected");
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_black_24dp);
+                getMenuInflater().inflate(R.menu.options_reminder_selected, menu);
+            }
+            @Override
+            public void onEnd() {
+                isInSelectionMode = false;
+                toolbarTitle.setText(getResources().getString(R.string.app_name));
+                getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+                menu.clear();
+                getMenuInflater().inflate(R.menu.options_main_reminder, menu);
+            }
+            @Override
+            public void onUpdate(int count) {
+                toolbarTitle.setText(count+" selected");
+            }
+        });
     }
 
     private void showSnackbar(String message){

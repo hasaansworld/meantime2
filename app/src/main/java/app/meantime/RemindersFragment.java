@@ -1,5 +1,6 @@
 package app.meantime;
 
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -12,9 +13,11 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -51,27 +54,45 @@ public class RemindersFragment extends Fragment {
         adapterReminders = new AdapterReminders(getContext(), 0);
         recyclerView.setAdapter(adapterReminders);
 
-        SwipeToDeleteCallback swipeToDeleteCallback = new SwipeToDeleteCallback(getContext()) {
-            @Override
-            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                adapterReminders.removeItem(viewHolder.getAdapterPosition());
-                snackBar = Snackbar.make(getActivity().findViewById(R.id.coordinator_layout),
-                        "Reminder deleted!", 4000);
-                TextView textView = snackBar.getView().findViewById(com.google.android.material.R.id.snackbar_text);
-                textView.setTextColor(Color.WHITE);
-                TextView textViewAction = snackBar.getView().findViewById(com.google.android.material.R.id.snackbar_action);
-                textViewAction.setTypeface(textView.getTypeface(), Typeface.BOLD);
-                snackBar.setAction("Undo", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Toast.makeText(mContext, "can't undo :(", Toast.LENGTH_SHORT).show();
-                    }
-                });
-                snackBar.show();
-            }
-        };
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(swipeToDeleteCallback);
-        itemTouchHelper.attachToRecyclerView(recyclerView);
+//        new Handler().postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                if(adapterReminders.getItemViewType(1) == 1){
+//                    RecyclerView.ViewHolder vh = recyclerView.findViewHolderForAdapterPosition(1);
+//                    if(vh != null) {
+//                        View itemView = vh.itemView;
+//                        int distance = Math.round(MainActivity.dpToPixel(80, getContext()));
+//                        ObjectAnimator anim = ObjectAnimator.ofFloat(v, "translationX", 0, 0-distance, 0, 0-distance, 0);
+//                        anim.setDuration(800);
+//                        anim.setInterpolator(new AccelerateDecelerateInterpolator());
+//                        anim.start();
+//                    }
+//                }
+//            }
+//        }, 1000);
+
+
+//        SwipeToDeleteCallback swipeToDeleteCallback = new SwipeToDeleteCallback(getContext()) {
+//            @Override
+//            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+//                adapterReminders.removeItem(viewHolder.getAdapterPosition());
+//                snackBar = Snackbar.make(getActivity().findViewById(R.id.coordinator_layout),
+//                        "Reminder deleted!", 4000);
+//                TextView textView = snackBar.getView().findViewById(com.google.android.material.R.id.snackbar_text);
+//                textView.setTextColor(Color.WHITE);
+//                TextView textViewAction = snackBar.getView().findViewById(com.google.android.material.R.id.snackbar_action);
+//                textViewAction.setTypeface(textView.getTypeface(), Typeface.BOLD);
+//                snackBar.setAction("Undo", new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        Toast.makeText(mContext, "can't undo :(", Toast.LENGTH_SHORT).show();
+//                    }
+//                });
+//                snackBar.show();
+//            }
+//        };
+//        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(swipeToDeleteCallback);
+//        itemTouchHelper.attachToRecyclerView(recyclerView);
 
         searchNoResults = v.findViewById(R.id.search_no_results);
 
