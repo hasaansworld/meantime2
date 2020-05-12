@@ -275,6 +275,7 @@ public class MainActivity extends AppCompatActivity {
         search.requestFocus();
         showKeyboard();
         new Handler().postDelayed(() -> appbar.setVisibility(View.GONE), 400);
+        remindersFragment.getAdapter().isSearching = true;
     }
 
     private void hideSearch(){
@@ -410,8 +411,13 @@ public class MainActivity extends AppCompatActivity {
             menu.clear();
             getMenuInflater().inflate(R.menu.options_main_reminder, menu);
             remindersFragment.getAdapter().deleteSelections(0);
-            showSnackbar(toolbarTitle.getText().toString().substring(0, 1)+" reminders deleted!");
+            int count = Integer.parseInt(toolbarTitle.getText().toString().substring(0, 1));
+            String half = count+" reminders ";
+            if(count == 1)
+                half = "1 reminder ";
+            showSnackbar(half + "deleted!");
             toolbarTitle.setText(getResources().getString(R.string.app_name));
+            ScheduleWidgetReceiver.refreshList(MainActivity.this);
         }
         return true;
     }
@@ -446,6 +452,7 @@ public class MainActivity extends AppCompatActivity {
                 getSupportActionBar().setDisplayHomeAsUpEnabled(true);
                 getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_black_24dp);
                 getMenuInflater().inflate(R.menu.options_reminder_selected, menu);
+
             }
             @Override
             public void onEnd() {

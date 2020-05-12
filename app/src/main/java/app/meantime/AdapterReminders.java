@@ -2,6 +2,8 @@ package app.meantime;
 
 import android.animation.ObjectAnimator;
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -192,7 +194,7 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
 
         @Override
         public void onClick(View v) {
-            if(selectCount == 0) {
+            if(selectCount == 0 || isSearching) {
                 Intent i = new Intent(context, ReminderActivity.class);
                 i.putExtra("id", ((DataReminder) allItems.get(getAdapterPosition())).getReminderId());
                 if (mode == 1)
@@ -208,7 +210,8 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
 
         @Override
         public boolean onLongClick(View v) {
-            selectDeselect();
+            if(!isSearching)
+                selectDeselect();
             return !isSearching;
         }
 
@@ -661,7 +664,14 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     private void cancelScheduling(DataReminder reminder){
+        Intent intent1 = new Intent(context.getApplicationContext(), NotificationReceiver.class);
+        intent1.setAction(NotificationReceiver.ACTION_NOTIFICATION);
+        intent1.putExtra("id", reminder.getReminderId());
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context.getApplicationContext(), reminder.getReminderNumber(), intent1,
+                0);
 
+        AlarmManager alarmManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+        alarmManager.cancel(pendingIntent);
     }
 
     public void setOnItemSelectedListener(OnItemSelectedListener listener){
