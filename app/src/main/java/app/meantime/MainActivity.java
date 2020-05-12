@@ -369,6 +369,7 @@ public class MainActivity extends AppCompatActivity {
             getMenuInflater().inflate(R.menu.options_main_reminder, menu);
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
             toolbarTitle.setText(getResources().getString(R.string.app_name));
+            enableToolbarScroll();
         }
         else if(item.getItemId() == R.id.filter){
             PopupMenu popup = new PopupMenu(this, toolbar);
@@ -452,7 +453,7 @@ public class MainActivity extends AppCompatActivity {
                 getSupportActionBar().setDisplayHomeAsUpEnabled(true);
                 getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_black_24dp);
                 getMenuInflater().inflate(R.menu.options_reminder_selected, menu);
-
+                disableToolbarScroll();
             }
             @Override
             public void onEnd() {
@@ -461,12 +462,25 @@ public class MainActivity extends AppCompatActivity {
                 getSupportActionBar().setDisplayHomeAsUpEnabled(false);
                 menu.clear();
                 getMenuInflater().inflate(R.menu.options_main_reminder, menu);
+                enableToolbarScroll();
             }
             @Override
             public void onUpdate(int count) {
                 toolbarTitle.setText(count+" selected");
             }
         });
+    }
+
+    private void disableToolbarScroll(){
+        appbar.setExpanded(true);
+        AppBarLayout.LayoutParams p = (AppBarLayout.LayoutParams)toolbar.getLayoutParams();
+        p.setScrollFlags(0);
+    }
+
+    private void enableToolbarScroll(){
+        AppBarLayout.LayoutParams p = (AppBarLayout.LayoutParams)toolbar.getLayoutParams();
+        p.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL | AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP);
+        toolbar.setLayoutParams(p);
     }
 
     private void showSnackbar(String message){
