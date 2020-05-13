@@ -363,4 +363,13 @@ public class DeletedActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    public void onBackPressed() {
+        if(isInSelectionMode) {
+            adapterReminders.clearSelections();
+            clearSelectionMode();
+        }
+        else
+            super.onBackPressed();
+    }
 }

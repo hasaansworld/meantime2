@@ -16,12 +16,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -56,14 +58,17 @@ public class CreateActivity extends AppCompatActivity {
     CoordinatorLayout root;
     Toolbar toolbar;
     TextView toolbarTitle;
-    ImageView emojiTitle, emojiDescription;
+    ImageView emojiTitle, emojiDescription, circleImportance;
     LinearLayout alarmTime, layoutRepeat;
-    TextView textAlarmTime, textRepeat;
+    EmojiEditText title, description;
+    TextView textImportance, textAlarmTime, textRepeat;
     LinearLayout lowImportance, mediumImportance, highImportance, importanceLayout, alarmToneLayout;
     TextView textDate, textTime, textError, hintAlarmTone, textAlarmTone;
-    EmojiEditText title, description;
+    View dividerTone;
     MaterialButton saveButton;
     int importance=1;
+    String[] importances = {"Low", "Medium", "High"};
+    int[] circles = {R.drawable.circle_yellow, R.drawable.circle_orange, R.drawable.circle_red};
     String[] months = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
     String[] days = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
     String[] titles = {"New Message (Default)", "Alarm Sound", "Awesome Tune", "Business Tone", "Cute Melody",
@@ -108,12 +113,15 @@ public class CreateActivity extends AppCompatActivity {
         lowImportance = findViewById(R.id.layout_low_importance);
         mediumImportance = findViewById(R.id.layout_medium_importance);
         highImportance = findViewById(R.id.layout_high_importance);
-        importanceLayout = mediumImportance;
+        importanceLayout = findViewById(R.id.layout_importance);
         textDate = findViewById(R.id.text_date);
         textTime = findViewById(R.id.text_time);
+        circleImportance = findViewById(R.id.circle_importance);
+        textImportance = findViewById(R.id.text_importance);
         alarmToneLayout = findViewById(R.id.layout_alarm_tone);
         hintAlarmTone = findViewById(R.id.hint_alarm_tone);
         textAlarmTone = findViewById(R.id.text_alarm_tone);
+        dividerTone = findViewById(R.id.divider_tone);
         layoutRepeat = findViewById(R.id.layout_repeat);
         textRepeat = findViewById(R.id.text_repeat);
         textError = findViewById(R.id.textError);
@@ -182,27 +190,36 @@ public class CreateActivity extends AppCompatActivity {
         });
 
         View.OnClickListener importanceListener = v -> {
-            importanceLayout.setBackgroundResource(R.drawable.button_date);
-            v.setBackgroundResource(R.drawable.button_importance_selected);
-            if(v.equals(lowImportance))
-                importance = 0;
-            else if(v.equals(mediumImportance))
-                importance = 1;
-            else
-                importance = 2;
-            importanceLayout = (LinearLayout) v;
-            if(importance == 2){
-                alarmToneLayout.setVisibility(View.VISIBLE);
-                hintAlarmTone.setVisibility(View.VISIBLE);
-            }
-            else{
-                alarmToneLayout.setVisibility(View.GONE);
-                hintAlarmTone.setVisibility(View.GONE);
-            }
+//            importanceLayout.setBackgroundResource(R.drawable.button_date);
+//            v.setBackgroundResource(R.drawable.button_importance_selected);
+            PopupMenu popup = new PopupMenu(CreateActivity.this, v);
+            popup.setOnMenuItemClickListener(item -> {
+                String importanceS = item.getTitle().toString();
+                textImportance.setText(importanceS);
+                if(importanceS.equals("Low"))
+                    importance = 0;
+                else if(importanceS.equals("Medium"))
+                    importance = 1;
+                else
+                    importance = 2;
+                circleImportance.setImageResource(circles[importance]);
+                if(importance == 2){
+                    alarmToneLayout.setVisibility(View.VISIBLE);
+                    dividerTone.setVisibility(View.VISIBLE);
+                }
+                else{
+                    alarmToneLayout.setVisibility(View.GONE);
+                    dividerTone.setVisibility(View.GONE);
+                }
+                return true;
+            });
+            popup.inflate(R.menu.options_importance);
+            popup.show();
+
         };
-        lowImportance.setOnClickListener(importanceListener);
-        mediumImportance.setOnClickListener(importanceListener);
-        highImportance.setOnClickListener(importanceListener);
+        importanceLayout.setOnClickListener(importanceListener);
+//        mediumImportance.setOnClickListener(importanceListener);
+//        highImportance.setOnClickListener(importanceListener);
 
         alarmToneLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -344,6 +361,8 @@ public class CreateActivity extends AppCompatActivity {
 
         if(isHistory = getIntent().getBooleanExtra("isHistory", false)){
             title.setEnabled(false);
+            emojiTitle.setClickable(false);
+            emojiTitle.setColorFilter(Color.parseColor("#999999"), PorterDuff.Mode.SRC_ATOP);
             title.setTextColor(Color.parseColor("#999999"));
             lowImportance.setClickable(false);
             mediumImportance.setClickable(false);
@@ -362,17 +381,20 @@ public class CreateActivity extends AppCompatActivity {
             textAlarmTime.setText(reminder.getAlarmtime());
             textRepeat.setText(reminder.getRepeat());
             importance = reminder.getImportance();
-            if(reminder.getImportance() == 0){
-                mediumImportance.setBackgroundResource(R.drawable.button_date);
-                lowImportance.setBackgroundResource(R.drawable.button_importance_selected);
-                importanceLayout = lowImportance;
-            }
-            else if(reminder.getImportance() == 2){
-                mediumImportance.setBackgroundResource(R.drawable.button_date);
-                highImportance.setBackgroundResource(R.drawable.button_importance_selected);
-                importanceLayout = highImportance;
-                hintAlarmTone.setVisibility(View.VISIBLE);
+//            if(reminder.getImportance() == 0){
+//                mediumImportance.setBackgroundResource(R.drawable.button_date);
+//                lowImportance.setBackgroundResource(R.drawable.button_importance_selected);
+//                importanceLayout = lowImportance;
+//            }
+            textImportance.setText(importances[reminder.getImportance()]);
+            circleImportance.setImageResource(circles[reminder.getImportance()]);
+            if(reminder.getImportance() == 2){
+//                mediumImportance.setBackgroundResource(R.drawable.button_date);
+//                highImportance.setBackgroundResource(R.drawable.button_importance_selected);
+//                importanceLayout = highImportance;
+//                hintAlarmTone.setVisibility(View.VISIBLE);
                 alarmToneLayout.setVisibility(View.VISIBLE);
+                dividerTone.setVisibility(View.VISIBLE);
                 alarmTone = reminder.getAlarmTone();
                 alarmRadio = reminder.getAlarmTone();
                 textAlarmTone.setText(titles[alarmTone]);
