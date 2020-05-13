@@ -69,13 +69,11 @@ public class ReminderActivity extends AppCompatActivity {
     AppBarLayout appBarLayout;
     SharedPreferences sharedPreferences;
     TextView title, people, time, day, date, alarmTime, description, repeat;
-    ImageView image, removeImage, changeImage;
-    View circle;
-    List<String> titles = new ArrayList<>();
+    ImageView image, circle;
+    String today = "", tomorrow = "";
     int elevation;
     ScrollView scrollView;
-    LinearLayout addImage, addDescription, repeatLayout;
-    FrameLayout imageLayout;
+    LinearLayout addImage, addDescription, repeatLayout, descriptionLayout, imageLayout;
     String id, descriptionS = "";
     Realm realm;
     HashMap<String, String> alarmTimesShort = new HashMap<>();
@@ -111,11 +109,10 @@ public class ReminderActivity extends AppCompatActivity {
         scrollView = findViewById(R.id.scrollView);
         addImage = findViewById(R.id.layout_add_image);
         image = findViewById(R.id.image);
-        removeImage = findViewById(R.id.remove_image);
-        changeImage = findViewById(R.id.change_image);
         imageLayout = findViewById(R.id.layout_image);
         addDescription = findViewById(R.id.layout_add_description);
         description = findViewById(R.id.description);
+        descriptionLayout = findViewById(R.id.layout_description);
         repeat = findViewById(R.id.text_repeat);
         repeatLayout = findViewById(R.id.layout_repeat);
 
@@ -146,48 +143,48 @@ public class ReminderActivity extends AppCompatActivity {
             updateLists("");
         });
 
-        if(!isHistory && !isDeleted) {
-            description.setOnClickListener(v -> {
-                PopupMenu popup = new PopupMenu(ReminderActivity.this, v);
-                popup.setOnMenuItemClickListener(item -> {
-                    if (item.getItemId() == R.id.edit) {
-                        editDescription();
-                    } else {
-                        realm.beginTransaction();
-                        DataReminder reminder = realm.where(DataReminder.class).equalTo("reminderId", id).findFirst();
-                        reminder.setDescription("");
-                        realm.commitTransaction();
-                        addDescription.setVisibility(View.VISIBLE);
-                        description.setVisibility(View.GONE);
-                        ScheduleWidgetReceiver.refreshList(ReminderActivity.this);
-                    }
-                    updateLists("");
-                    return true;
-                });
-                popup.inflate(R.menu.options_description);
-                popup.show();
-            });
+//        if(!isHistory && !isDeleted) {
+//            description.setOnClickListener(v -> {
+//                PopupMenu popup = new PopupMenu(ReminderActivity.this, v);
+//                popup.setOnMenuItemClickListener(item -> {
+//                    if (item.getItemId() == R.id.edit) {
+//                        editDescription();
+//                    } else {
+//                        realm.beginTransaction();
+//                        DataReminder reminder = realm.where(DataReminder.class).equalTo("reminderId", id).findFirst();
+//                        reminder.setDescription("");
+//                        realm.commitTransaction();
+//                        addDescription.setVisibility(View.VISIBLE);
+//                        descriptionLayout.setVisibility(View.GONE);
+//                        ScheduleWidgetReceiver.refreshList(ReminderActivity.this);
+//                    }
+//                    updateLists("");
+//                    return true;
+//                });
+//                popup.inflate(R.menu.options_description);
+//                popup.show();
+//            });
 
-            imageLayout.setOnClickListener(v -> {
-                PopupMenu popup = new PopupMenu(ReminderActivity.this, v);
-                popup.setOnMenuItemClickListener(item -> {
-                    if(item.getItemId() == R.id.change)
-                        pickPhoto();
-                    else{
-                        realm.beginTransaction();
-                        DataReminder reminder = realm.where(DataReminder.class).equalTo("reminderId", id).findFirst();
-                        reminder.setImage("");
-                        realm.commitTransaction();
-                        addImage.setVisibility(View.VISIBLE);
-                        imageLayout.setVisibility(View.GONE);
-                    }
-                    updateLists("");
-                    return true;
-                });
-                popup.inflate(R.menu.options_image);
-                popup.show();
-            });
-        }
+//            imageLayout.setOnClickListener(v -> {
+//                PopupMenu popup = new PopupMenu(ReminderActivity.this, v);
+//                popup.setOnMenuItemClickListener(item -> {
+//                    if(item.getItemId() == R.id.change)
+//                        pickPhoto();
+//                    else{
+//                        realm.beginTransaction();
+//                        DataReminder reminder = realm.where(DataReminder.class).equalTo("reminderId", id).findFirst();
+//                        reminder.setImage("");
+//                        realm.commitTransaction();
+//                        addImage.setVisibility(View.VISIBLE);
+//                        imageLayout.setVisibility(View.GONE);
+//                    }
+//                    updateLists("");
+//                    return true;
+//                });
+//                popup.inflate(R.menu.options_image);
+//                popup.show();
+//            });
+//        }
 
         if(!sharedPreferences.getBoolean("noAds", false))
             showAd();
@@ -277,11 +274,18 @@ public class ReminderActivity extends AppCompatActivity {
         isDeleted = getIntent().getBooleanExtra("isDeleted", false);
         DataReminder reminder = realm.where(DataReminder.class).equalTo("reminderId", id).findFirst();
         title.setText(reminder.getTitle());
-        day.setText(reminder.getDay());
-        date.setText(reminder.getDate());
+        //day.setText(reminder.getDay());
+        getTodayAndTomorrow();
+        String dateS = reminder.getDate();
+        String dateAndDay = reminder.getDay().substring(0, 3) + ", " + dateS;
+        if(dateS.equals(today))
+            dateAndDay = "Today";
+        else if(dateS.equals(tomorrow))
+            dateAndDay = "Tomorrow";
+        date.setText(dateAndDay);
         time.setText(reminder.getTime());
         people.setText(reminder.getOwner());
-        alarmTime.setText(alarmTimesShort.get(reminder.getAlarmtime()));
+        alarmTime.setText(reminder.getAlarmtime());
         if(!reminder.getRepeat().equals("No repeat")){
             repeatLayout.setVisibility(View.VISIBLE);
             repeat.setText(reminder.getRepeat());
@@ -289,28 +293,41 @@ public class ReminderActivity extends AppCompatActivity {
         else{
             repeatLayout.setVisibility(View.GONE);
         }
-        Drawable d = getResources().getDrawable(R.drawable.circle_white);
-        d.setColorFilter(Color.parseColor(colors[reminder.getImportance()]), PorterDuff.Mode.SRC_ATOP);
-        circle.setBackground(d);
+        int[] circles = {R.drawable.circle_yellow, R.drawable.circle_orange, R.drawable.circle_red};
+        circle.setImageResource(circles[reminder.getImportance()]);
         String path = reminder.getImage();
         if(path != null && !path.equals("")){
             addImage.setVisibility(View.GONE);
             imageLayout.setVisibility(View.VISIBLE);
             Glide.with(this).asBitmap().load(path).placeholder(R.drawable.broken_image).into(image);
         }
+        else{
+            imageLayout.setVisibility(View.GONE);
+        }
         if(reminder.getDescription() != null && !reminder.getDescription().equals("")){
             addDescription.setVisibility(View.GONE);
-            description.setVisibility(View.VISIBLE);
+            descriptionLayout.setVisibility(View.VISIBLE);
             description.setText(reminder.getDescription());
         }
-        if(isHistory || isDeleted){
-            addDescription.setVisibility(View.GONE);
-            addImage.setVisibility(View.GONE);
-            description.setVisibility(View.VISIBLE);
-            findViewById(R.id.description_gap).setVisibility(View.VISIBLE);
-            if(reminder.getDescription() == null || reminder.getDescription().equals(""))
-                description.setText("No description.");
+        else{
+            descriptionLayout.setVisibility(View.GONE);
         }
+//        if(isHistory || isDeleted){
+//            addDescription.setVisibility(View.GONE);
+//            addImage.setVisibility(View.GONE);
+//            descriptionLayout.setVisibility(View.VISIBLE);
+//            findViewById(R.id.description_gap).setVisibility(View.VISIBLE);
+//            if(reminder.getDescription() == null || reminder.getDescription().equals(""))
+//                description.setText("No description.");
+//        }
+    }
+
+    private void getTodayAndTomorrow(){
+        Calendar now = Calendar.getInstance();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd MMM yyyy", Locale.ENGLISH);
+        today = simpleDateFormat.format(now.getTime());
+        now.add(Calendar.DATE, 1);
+        tomorrow = simpleDateFormat.format(now.getTime());
     }
 
     @Override

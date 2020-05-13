@@ -474,7 +474,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginLeft="25dp"
-                    android:hint="Description"
+                    android:hint="No description."
                     android:background="@android:color/transparent"
                     android:textColorHint="#666666"
                     android:textColor="@android:color/black"

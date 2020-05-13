@@ -1,5 +1,6 @@
 package app.meantime;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
@@ -7,6 +8,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.ContextCompat;
 
 import android.app.AlarmManager;
 import android.app.NotificationChannel;
@@ -22,6 +24,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.text.InputType;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
@@ -39,17 +42,24 @@ import android.widget.Toast;
 
 import com.balsikandar.crashreporter.CrashReporter;
 import com.bumptech.glide.Glide;
+import com.github.florent37.viewtooltip.ViewTooltip;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.nguyenhoanglam.imagepicker.model.Config;
+import com.nguyenhoanglam.imagepicker.model.Image;
+import com.nguyenhoanglam.imagepicker.ui.imagepicker.ImagePicker;
 import com.vanniktech.emoji.EmojiEditText;
 import com.vanniktech.emoji.EmojiPopup;
 import com.vanniktech.emoji.listeners.OnEmojiPopupDismissListener;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -62,7 +72,7 @@ public class CreateActivity extends AppCompatActivity {
     Toolbar toolbar;
     TextView toolbarTitle;
     ImageView emojiTitle, emojiDescription, circleImportance, image;
-    LinearLayout alarmTime, layoutRepeat;
+    LinearLayout alarmTime, layoutRepeat, imageLayout;
     EmojiEditText title, description;
     TextView textImportance, textAlarmTime, textRepeat, textImage;
     LinearLayout lowImportance, mediumImportance, highImportance, importanceLayout, alarmToneLayout;
@@ -86,7 +96,7 @@ public class CreateActivity extends AppCompatActivity {
     long timeInMillis = -1;
     Realm realm;
     boolean isEditing = false, isHistory = false;
-    String reminderId;
+    String reminderId, path = "";
     DataReminder oldReminder;
     SharedPreferences sharedPreferences;
     int alarmTone = 0;
@@ -131,6 +141,7 @@ public class CreateActivity extends AppCompatActivity {
         emojiDescription = findViewById(R.id.emojiDescription);
         textImage = findViewById(R.id.text_image);
         image = findViewById(R.id.image);
+        imageLayout = findViewById(R.id.layout_image);
         textError = findViewById(R.id.textError);
         saveButton = findViewById(R.id.saveButton);
         initializeEmoji(emojiTitle, title);
@@ -298,6 +309,30 @@ public class CreateActivity extends AppCompatActivity {
             }
         });
 
+        imageLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(path.equals("")){
+                    pickPhoto();
+                }
+                else{
+                    PopupMenu popup = new PopupMenu(CreateActivity.this, image);
+                    popup.setOnMenuItemClickListener(item -> {
+                        if(item.getItemId() == R.id.change)
+                            pickPhoto();
+                        else{
+                            path = "";
+                            image.setVisibility(View.GONE);
+                            textImage.setText("Tap to add an image.");
+                        }
+                        return true;
+                    });
+                    popup.inflate(R.menu.options_image);
+                    popup.show();
+                }
+            }
+        });
+
         saveButton.setOnClickListener(v -> {
             textError.setVisibility(View.GONE);
             if(title.getText().toString().equals("")){
@@ -321,6 +356,7 @@ public class CreateActivity extends AppCompatActivity {
                     "You"
                 );
                 dataReminder.setDescription(description.getText().toString());
+                dataReminder.setImage(path);
                 boolean isTimeDifferent = false;
                 if(isEditing){
                     isTimeDifferent = !textDate.getText().toString().equals(oldReminder.getDate())
@@ -328,8 +364,6 @@ public class CreateActivity extends AppCompatActivity {
                             || !textAlarmTime.getText().toString().equals(oldReminder.getAlarmtime());
                     if(isTimeDifferent)
                         dataReminder.setStatus(DataReminder.STATUS_CREATED);
-                    dataReminder.setDescription(oldReminder.getDescription());
-                    dataReminder.setImage(oldReminder.getImage());
                     Intent intent1 = new Intent(getApplicationContext(), NotificationReceiver.class);
                     intent1.setAction(NotificationReceiver.ACTION_NOTIFICATION);
                     intent1.putExtra("id", oldReminder.getReminderId());
@@ -367,6 +401,7 @@ public class CreateActivity extends AppCompatActivity {
                 finish();
             }
         });
+
 
         if(isHistory = getIntent().getBooleanExtra("isHistory", false)){
             title.setEnabled(false);
@@ -412,7 +447,8 @@ public class CreateActivity extends AppCompatActivity {
             if(reminder.getImage() != null && !reminder.getImage().equals("")) {
                 image.setVisibility(View.VISIBLE);
                 textImage.setText("Tap to change or remove.");
-                Glide.with(this).asBitmap().load(reminder.getImage()).placeholder(R.drawable.broken_image).into(image);
+                path = reminder.getImage();
+                Glide.with(this).asBitmap().load(path).placeholder(R.drawable.broken_image).into(image);
             }
             oldReminder = reminder;
 
@@ -560,6 +596,58 @@ public class CreateActivity extends AppCompatActivity {
             channel.setDescription(description);
             NotificationManager notificationManager = this.getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
+        }
+    }
+
+    private void pickPhoto() {
+        ImagePicker.Builder builder = ImagePicker.with(this);                         //  Initialize ImagePicker with activity or fragment context
+        if(Build.VERSION.SDK_INT >= 23) builder.setStatusBarColor("#FFFFFF"); //  StatusBar color
+        builder.setToolbarColor("#FFFFFF")
+                .setToolbarTextColor("#000000")     //  Toolbar text color (Title and Done button)
+                .setToolbarIconColor("#000000")     //  Toolbar icon color (Back and Camera button)
+                .setProgressBarColor("#5C6BC0")     //  ProgressBar color
+                .setBackgroundColor("#FFFFFF")      //  Background color
+                .setCameraOnly(false)               //  Camera mode
+                .setMultipleMode(false)              //  Select multiple images or single image
+                .setFolderMode(true)                //  Folder mode
+                .setShowCamera(true)                //  Show camera button
+                .setFolderTitle("Pick a Photo")           //  Folder title (works with FolderMode = true)
+                .setImageTitle("Photos")            //  Image title (works with FolderMode = false)
+                .setDoneTitle("Done")               //  Done button title
+                .setLimitMessage("You have reached selection limit")    // Selection limit message
+                .setMaxSize(1)                     //  Max images can be selected
+                .setAlwaysShowDoneButton(true)      //  Set always show done button in multiple mode
+                .setRequestCode(100)                //  Set request code, default Config.RC_PICK_IMAGES
+                .setKeepScreenOn(true)              //  Keep screen on when selecting images
+                .start();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == Config.RC_PICK_IMAGES && resultCode == RESULT_OK && data != null) {
+            ArrayList<Image> images = data.getParcelableArrayListExtra(Config.EXTRA_IMAGES);
+//            String appName = getApplicationInfo().loadLabel(getPackageManager()).toString();
+//            File dirFile = new File(Environment.getExternalStorageDirectory()+"/"+appName+"/Pictures");
+//            if (!dirFile.exists()){
+//                dirFile.mkdirs();
+//            }
+
+            path = images.get(0).getPath();
+            //path = Environment.getExternalStorageDirectory() + "/"+appName+"/Pictures/"+imagePath.substring(imagePath.lastIndexOf("/"));
+//            try{
+//                //copy(new File(imagePath), new File(path));
+//                realm.beginTransaction();
+//                DataReminder reminder = realm.where(DataReminder.class).equalTo("reminderId", id).findFirst();
+//                reminder.setImage(path);
+//                realm.commitTransaction();
+            image.setVisibility(View.VISIBLE);
+            Glide.with(this).asBitmap().load(path).placeholder(R.drawable.broken_image).into(image);
+            textImage.setText("Tap to change or remove.");
+//            }
+//            catch (IOException e){
+//                Toast.makeText(this, "Could not copy image :(", Toast.LENGTH_SHORT).show();
+//            }
         }
     }
 

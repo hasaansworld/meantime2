@@ -19,6 +19,34 @@
             android:paddingTop="15dp"
             android:paddingBottom="15dp">
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingLeft="15dp"
+                android:paddingTop="10dp"
+                android:paddingRight="15dp"
+                android:paddingBottom="10dp">
+
+                <ImageView
+                    android:id="@+id/circle"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:padding="4dp"
+                    android:src="@drawable/circle_red"
+                    android:layout_marginTop="4dp"/>
+
+                <com.vanniktech.emoji.EmojiTextView
+                    android:id="@+id/title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@android:color/black"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:layout_marginLeft="25dp" />
+
+            </LinearLayout>
+
             <TextView
                 android:id="@+id/day"
                 android:layout_width="wrap_content"
@@ -26,72 +54,80 @@
                 android:text="Wednesday"
                 android:textColor="#999999"
                 android:textSize="14sp"
-                android:layout_marginLeft="15dp"
-                android:layout_marginRight="15dp"/>
+                android:layout_marginLeft="64dp"
+                android:layout_marginRight="15dp"
+                android:visibility="gone"/>
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:layout_marginLeft="15dp"
-                android:layout_marginRight="15dp">
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/outline_schedule_black_24"
+                    android:padding="1dp"/>
 
                 <TextView
                     android:id="@+id/date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="08 Jan 2020"
-                    android:textColor="#444444"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
+                    android:layout_marginLeft="10dp"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="15dp"
+                    android:text="19 Jan 2020"
+                    android:textColor="@android:color/black"
+                    android:textSize="16sp" />
 
-                <View
-                    android:id="@+id/circle"
-                    android:layout_width="10dp"
-                    android:layout_height="10dp"
-                    android:layout_marginLeft="30dp"
-                    android:background="@drawable/circle_red" />
+                <ImageView
+                    android:layout_width="4dp"
+                    android:layout_height="4dp"
+                    android:src="@drawable/circle_white"
+                    android:tint="#666666"
+                    android:layout_marginLeft="2dp"/>
 
                 <TextView
                     android:id="@+id/time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:text="06:00 AM"
-                    android:textAllCaps="true"
-                    android:textColor="@color/colorAccent"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
+                    android:layout_marginLeft="2dp"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="15dp"
+                    android:text="12:00 AM"
+                    android:textColor="@android:color/black"
+                    android:textSize="16sp" />
 
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="1dp"
-                    android:layout_weight="1" />
+            </LinearLayout>
 
-                <LinearLayout
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_notifications_black_24dp" />
+
+                <TextView
+                    android:id="@+id/text_alarm_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="5dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
-                        android:src="@drawable/ic_notifications_black_18dp" />
-
-                    <TextView
-                        android:id="@+id/text_alarm_time"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="5dp"
-                        android:text="10 min"
-                        android:textColor="@color/colorAccent"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-
-                </LinearLayout>
+                    android:layout_marginLeft="25dp"
+                    android:text="Exact time"
+                    android:textColor="@android:color/black"
+                    android:textSize="16sp" />
 
             </LinearLayout>
 
@@ -101,39 +137,27 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:layout_marginTop="4dp"
-                android:layout_marginBottom="10dp"
-                android:layout_marginLeft="15dp"
-                android:layout_marginRight="15dp"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
                 android:visibility="gone">
 
                 <ImageView
-                    android:layout_width="18dp"
-                    android:layout_height="18dp"
-                    android:src="@drawable/outline_replay_black_18"
-                    android:tint="#666666"/>
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/outline_replay_black_24"/>
 
                 <TextView
                     android:id="@+id/text_repeat"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
+                    android:layout_marginLeft="25dp"
                     android:text="Repeat every day"
-                    android:textColor="#666666"
-                    android:textSize="16sp" />
+                    android:textColor="@android:color/black"
+                    android:textSize="16sp"/>
 
             </LinearLayout>
-
-            <com.vanniktech.emoji.EmojiTextView
-                android:id="@+id/title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:textColor="@android:color/black"
-                android:textSize="22sp"
-                android:textStyle="bold"
-                android:layout_marginLeft="15dp"
-                android:layout_marginRight="15dp" />
 
             <TextView
                 android:id="@+id/people"
@@ -198,7 +222,8 @@
                 android:paddingLeft="15dp"
                 android:paddingTop="8dp"
                 android:paddingRight="15dp"
-                android:paddingBottom="8dp">
+                android:paddingBottom="8dp"
+                android:visibility="gone">
 
                 <ImageView
                     android:layout_width="24dp"
@@ -217,60 +242,61 @@
 
             </LinearLayout>
 
-            <FrameLayout
+            <LinearLayout
+                android:id="@+id/layout_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingLeft="15dp"
+                android:paddingTop="10dp"
+                android:paddingRight="15dp"
+                android:paddingBottom="10dp"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_subject_black_24dp" />
+
+                <com.vanniktech.emoji.EmojiTextView
+                    android:id="@+id/description"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="No description."
+                    android:textColor="@android:color/black"
+                    android:textSize="16sp"
+                    android:layout_marginLeft="25dp" />
+
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/layout_image"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="25dp"
-                android:layout_marginLeft="15dp"
-                android:layout_marginRight="15dp"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
                 android:visibility="gone"
-                android:background="@drawable/button_date"
-                android:clickable="true">
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/outline_camera_alt_black_24" />
 
                 <com.github.siyamed.shapeimageview.RoundedImageView
                     android:id="@+id/image"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="25dp"
                     android:src="@drawable/sample"
                     android:adjustViewBounds="true"
                     app:siBorderColor="#dddddd"
                     app:siBorderWidth="1dp"
                     app:siRadius="6dp" />
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginRight="10dp"
-                    android:layout_gravity="right"
-                    android:orientation="horizontal"
-                    android:visibility="gone">
-
-                    <ImageView
-                        android:id="@+id/remove_image"
-                        android:layout_width="36dp"
-                        android:layout_height="36dp"
-                        android:src="@drawable/outline_delete_black_24"
-                        android:padding="6dp"
-                        android:tint="@android:color/white"
-                        android:background="@drawable/image_options_background"
-                        android:clickable="true"/>
-
-                    <ImageView
-                        android:id="@+id/change_image"
-                        android:layout_width="36dp"
-                        android:layout_height="36dp"
-                        android:layout_marginLeft="8dp"
-                        android:src="@drawable/outline_camera_alt_black_24"
-                        android:padding="6dp"
-                        android:tint="@android:color/white"
-                        android:background="@drawable/image_options_background"
-                        android:clickable="true"/>
-
-                </LinearLayout>
-
-            </FrameLayout>
+            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/layout_add_description"
@@ -286,7 +312,8 @@
                 android:paddingRight="15dp"
                 android:paddingBottom="8dp"
                 android:layout_marginLeft="15dp"
-                android:layout_marginRight="15dp">
+                android:layout_marginRight="15dp"
+                android:visibility="gone">
 
                 <ImageView
                     android:layout_width="24dp"
@@ -303,20 +330,6 @@
                     android:textSize="16sp" />
 
             </LinearLayout>
-
-            <com.vanniktech.emoji.EmojiTextView
-                android:id="@+id/description"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/button_date"
-                android:padding="10dp"
-                android:text="No description."
-                android:textColor="@android:color/black"
-                android:textSize="16sp"
-                android:visibility="gone"
-                android:layout_marginLeft="15dp"
-                android:layout_marginRight="15dp" />
 
             <View
                 android:layout_width="match_parent"
