@@ -22,12 +22,14 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
@@ -36,6 +38,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.balsikandar.crashreporter.CrashReporter;
+import com.bumptech.glide.Glide;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -58,10 +61,10 @@ public class CreateActivity extends AppCompatActivity {
     CoordinatorLayout root;
     Toolbar toolbar;
     TextView toolbarTitle;
-    ImageView emojiTitle, emojiDescription, circleImportance;
+    ImageView emojiTitle, emojiDescription, circleImportance, image;
     LinearLayout alarmTime, layoutRepeat;
     EmojiEditText title, description;
-    TextView textImportance, textAlarmTime, textRepeat;
+    TextView textImportance, textAlarmTime, textRepeat, textImage;
     LinearLayout lowImportance, mediumImportance, highImportance, importanceLayout, alarmToneLayout;
     TextView textDate, textTime, textError, hintAlarmTone, textAlarmTone;
     View dividerTone;
@@ -124,12 +127,17 @@ public class CreateActivity extends AppCompatActivity {
         dividerTone = findViewById(R.id.divider_tone);
         layoutRepeat = findViewById(R.id.layout_repeat);
         textRepeat = findViewById(R.id.text_repeat);
+        description = findViewById(R.id.description);
+        emojiDescription = findViewById(R.id.emojiDescription);
+        textImage = findViewById(R.id.text_image);
+        image = findViewById(R.id.image);
         textError = findViewById(R.id.textError);
         saveButton = findViewById(R.id.saveButton);
-        emojiDescription = findViewById(R.id.emojiDescription);
         initializeEmoji(emojiTitle, title);
         initializeEmoji(emojiDescription, description);
-
+        title.setHorizontallyScrolling(false);
+        title.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        title.setRawInputType(InputType.TYPE_TEXT_FLAG_CAP_WORDS);
 
         String dateS = getCurrentDate();
         textDate.setText(dateS);
@@ -312,6 +320,7 @@ public class CreateActivity extends AppCompatActivity {
                     textRepeat.getText().toString(),
                     "You"
                 );
+                dataReminder.setDescription(description.getText().toString());
                 boolean isTimeDifferent = false;
                 if(isEditing){
                     isTimeDifferent = !textDate.getText().toString().equals(oldReminder.getDate())
@@ -380,6 +389,7 @@ public class CreateActivity extends AppCompatActivity {
             textTime.setText(reminder.getTime());
             textAlarmTime.setText(reminder.getAlarmtime());
             textRepeat.setText(reminder.getRepeat());
+            description.setText(reminder.getDescription());
             importance = reminder.getImportance();
 //            if(reminder.getImportance() == 0){
 //                mediumImportance.setBackgroundResource(R.drawable.button_date);
@@ -398,6 +408,11 @@ public class CreateActivity extends AppCompatActivity {
                 alarmTone = reminder.getAlarmTone();
                 alarmRadio = reminder.getAlarmTone();
                 textAlarmTone.setText(titles[alarmTone]);
+            }
+            if(reminder.getImage() != null && !reminder.getImage().equals("")) {
+                image.setVisibility(View.VISIBLE);
+                textImage.setText("Tap to change or remove.");
+                Glide.with(this).asBitmap().load(reminder.getImage()).placeholder(R.drawable.broken_image).into(image);
             }
             oldReminder = reminder;
 

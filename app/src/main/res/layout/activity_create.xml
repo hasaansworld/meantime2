@@ -17,22 +17,13 @@
             android:layout_height="wrap_content"
             app:contentInsetStartWithNavigation="10dp">
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/toolbarTitle"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
-
-                <TextView
-                    android:id="@+id/toolbarTitle"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="New Reminder"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
-            </LinearLayout>
+                android:text="New Reminder"
+                android:textSize="18sp"
+                android:textStyle="bold" />
 
         </androidx.appcompat.widget.Toolbar>
 
@@ -41,16 +32,15 @@
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:clipToPadding="false"
-        android:fillViewport="true"
         android:paddingTop="15dp"
-        android:paddingBottom="15dp"
+        android:paddingBottom="150dp"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
             android:animateLayoutChanges="true">
 
@@ -74,14 +64,14 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:background="@android:color/white"
+                        android:background="@android:color/transparent"
                         android:hint="Reminder Title"
-                        android:inputType="textCapWords"
+                        android:inputType="textMultiLine|textCapWords"
                         android:textColor="@android:color/black"
                         android:textColorHint="#666666"
                         android:textSize="20sp"
                         android:textStyle="bold"
-                        android:maxLength="100"
+                        android:maxLength="80"
                         android:imeOptions="actionDone"/>
 
 <!--                </com.google.android.material.textfield.TextInputLayout>-->
@@ -92,7 +82,6 @@
                     android:layout_height="28dp"
                     android:layout_gravity="bottom"
                     android:layout_marginLeft="5dp"
-                    android:layout_marginBottom="5dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:clickable="true"
                     android:padding="2dp"
@@ -102,7 +91,7 @@
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
+                android:layout_height="1px"
                 android:background="#dddddd" />
 
             <TextView
@@ -173,7 +162,7 @@
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
+                android:layout_height="1px"
                 android:background="#dddddd" />
 
             <LinearLayout
@@ -209,7 +198,7 @@
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
+                android:layout_height="1px"
                 android:background="#dddddd" />
 
             <TextView
@@ -363,7 +352,7 @@
             
             <View
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
+                android:layout_height="1px"
                 android:background="#dddddd" />
 
             <TextView
@@ -413,49 +402,9 @@
             <View
                 android:id="@+id/divider_tone"
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
+                android:layout_height="1px"
                 android:background="#dddddd"
                 android:visibility="gone"/>
-
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="gone">
-
-                <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
-                    android:hint="Description"
-                    android:textColorHint="@color/colorAccent"
-                    app:boxStrokeColor="@color/text_input_layout_stroke">
-
-                    <com.vanniktech.emoji.EmojiEditText
-                        android:id="@+id/description"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:drawableRight="@drawable/ic_add_white_24dp"
-                        android:paddingRight="40dp"
-                        android:text="No description."
-                        android:textColor="@android:color/black"
-                        android:textSize="16sp" />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <ImageView
-                    android:id="@+id/emojiDescription"
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
-                    android:layout_gravity="bottom|right"
-                    android:layout_marginRight="3dp"
-                    android:layout_marginBottom="5dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:clickable="true"
-                    android:padding="2dp"
-                    android:src="@drawable/outline_sentiment_satisfied_black_24" />
-
-            </FrameLayout>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -501,8 +450,110 @@
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
+                android:layout_height="1px"
                 android:background="#dddddd" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingLeft="15dp"
+                android:paddingTop="10dp"
+                android:paddingRight="15dp"
+                android:paddingBottom="10dp">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginTop="8dp"
+                    android:src="@drawable/ic_subject_black_24dp" />
+
+                <com.vanniktech.emoji.EmojiEditText
+                    android:id="@+id/description"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="25dp"
+                    android:hint="Description"
+                    android:background="@android:color/transparent"
+                    android:textColorHint="#666666"
+                    android:textColor="@android:color/black"
+                    android:textSize="16sp"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp"/>
+
+                <ImageView
+                    android:id="@+id/emojiDescription"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_gravity="bottom|right"
+                    android:layout_marginLeft="5dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:padding="2dp"
+                    android:src="@drawable/outline_sentiment_satisfied_black_24" />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="#dddddd"/>
+
+            <LinearLayout
+                android:id="@+id/layout_image"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:orientation="horizontal"
+                android:paddingLeft="15dp"
+                android:paddingTop="10dp"
+                android:paddingRight="15dp"
+                android:paddingBottom="10dp">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/outline_camera_alt_black_24"
+                    android:layout_marginTop="8dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginLeft="25dp">
+
+                    <TextView
+                        android:id="@+id/text_image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Tap to add an image."
+                        android:textColor="#666666"
+                        android:textSize="16sp"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp" />
+
+                    <com.github.siyamed.shapeimageview.RoundedImageView
+                        android:id="@+id/image"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginBottom="5dp"
+                        android:adjustViewBounds="true"
+                        app:siBorderColor="#dddddd"
+                        app:siBorderWidth="1dp"
+                        app:siRadius="6dp"
+                        android:visibility="gone"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="#dddddd"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -545,21 +596,6 @@
 
             </LinearLayout>
 
-            <View
-                android:layout_width="1dp"
-                android:layout_height="0dp"
-                android:layout_weight="1" />
-
-            <TextView
-                android:id="@+id/textError"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="5dp"
-                android:textColor="#E53935"
-                android:textSize="14sp"
-                android:visibility="gone" />
-
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
@@ -567,12 +603,24 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:layout_gravity="bottom"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
         android:paddingBottom="10dp"
-        android:clipToPadding="false">
+        android:clipToPadding="false"
+        android:background="@android:color/white">
+
+        <TextView
+            android:id="@+id/textError"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:textColor="#E53935"
+            android:textSize="14sp"
+            android:visibility="gone" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/saveButton"
