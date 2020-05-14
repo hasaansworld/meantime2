@@ -69,7 +69,7 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
     List<DataReminder> allReminders = new ArrayList<>();
     List<DataReminder> displayReminders = new ArrayList<>();
     ArrayList<Object> allItems = new ArrayList<>();
-    String[] colors = {"#FFEE58", "#FF9700", "#F44336"};
+    int[] circles = {R.drawable.circle_yellow, R.drawable.circle_orange, R.drawable.circle_red};
     String[] days = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
     Resources resources;
     String day, today, tomorrow, yesterday;
@@ -179,8 +179,8 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
     public class ViewHolderReminder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
         LinearLayout layout;
         TextView title, people, description, time, repeat;
-        ImageView image;
-        View circle;
+        ImageView image, circle;
+
         public ViewHolderReminder(View v){
             super(v);
             layout = v.findViewById(R.id.layout);
@@ -334,9 +334,7 @@ public class AdapterReminders extends RecyclerView.Adapter<RecyclerView.ViewHold
                 holderReminder.title.setTextColor(reminder.getStatus() != DataReminder.STATUS_COMPLETED ? Color.BLACK : Color.parseColor("#666666"));
             holderReminder.time.setText(reminder.getTime());
             holderReminder.people.setText(reminder.getOwner());
-            Drawable drawable = resources.getDrawable(R.drawable.circle_white);
-            drawable.setColorFilter(Color.parseColor(colors[reminder.getImportance()]), PorterDuff.Mode.SRC_ATOP);
-            holderReminder.circle.setBackground(drawable);
+            holderReminder.circle.setImageResource(circles[reminder.getImportance()]);
             String descriptionS = reminder.getDescription();
             if(descriptionS == null || descriptionS.equals(""))
                 holderReminder.description.setText("No description.");

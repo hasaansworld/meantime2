@@ -28,9 +28,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.RequestConfiguration;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -45,12 +50,12 @@ public class FullScreenReminderActivity extends AppCompatActivity {
     DataReminder reminder;
     Toolbar toolbar;
     TextView title, description;
-    TextView time, day, date, alarmTime, repeat;
+    TextView time, date, alarmTime, repeat;
     LinearLayout snooze;
-    LinearLayout repeatLayout;
-    ImageView image, alarmIcon;
-    View circle;
+    LinearLayout repeatLayout, descriptionLayout, imageLayout, alarmLayout, dateTimeLayout;
+    ImageView circle, image;
     MediaPlayer mediaPlayer;
+    AdView adView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,37 +85,38 @@ public class FullScreenReminderActivity extends AppCompatActivity {
         image = findViewById(R.id.image);
 
         time = findViewById(R.id.time);
-        day = findViewById(R.id.day);
         date = findViewById(R.id.date);
         circle = findViewById(R.id.circle);
         alarmTime = findViewById(R.id.text_alarm_time);
-        alarmIcon = findViewById(R.id.alarm_icon);
         repeat = findViewById(R.id.text_repeat);
+        dateTimeLayout = findViewById(R.id.layout_date_time);
+        alarmLayout = findViewById(R.id.layout_alarm_time);
         repeatLayout = findViewById(R.id.layout_repeat);
+        descriptionLayout = findViewById(R.id.layout_description);
+        imageLayout = findViewById(R.id.layout_image);
         snooze = findViewById(R.id.snooze);
 
         if(reminder != null) {
             title.setText(reminder.getTitle());
-            day.setText(reminder.getDay());
-            date.setText(reminder.getDate());
+            String dateAndDay = reminder.getDay().substring(0, 3)+", "+reminder.getDate();
+            date.setText(dateAndDay);
             time.setText(reminder.getTime());
-            Drawable d = getResources().getDrawable(R.drawable.circle_white);
-            String[] colors = {"#FFEE58", "#FF9700", "#F44336"};
-            d.setColorFilter(Color.parseColor(colors[reminder.getImportance()]), PorterDuff.Mode.SRC_ATOP);
-            circle.setBackground(d);
+            int[] circles = {R.drawable.circle_yellow, R.drawable.circle_orange, R.drawable.circle_red};
+            circle.setImageResource(circles[reminder.getImportance()]);
             alarmTime.setText(reminder.getAlarmtime());
             if (!reminder.getRepeat().equals("No repeat")) {
                 repeatLayout.setVisibility(View.VISIBLE);
                 repeat.setText(reminder.getRepeat());
             }
 
-            description = findViewById(R.id.description);
-            if (reminder.getDescription() != null && !reminder.getDescription().equals(""))
+            if (reminder.getDescription() != null && !reminder.getDescription().equals("")) {
                 description.setText(reminder.getDescription());
+                descriptionLayout.setVisibility(View.VISIBLE);
+            }
 
             String path = reminder.getImage();
             if (path != null && !path.equals("")) {
-                image.setVisibility(View.VISIBLE);
+                imageLayout.setVisibility(View.VISIBLE);
                 Glide.with(this).asBitmap().placeholder(R.drawable.broken_image).load(path).into(image);
             }
 
@@ -166,7 +172,9 @@ public class FullScreenReminderActivity extends AppCompatActivity {
                         String dateS = sdf.format(d2);
                         date.setText(dateS);
                         String[] days = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
-                        day.setText(days[now.get(Calendar.DAY_OF_WEEK)-1]);
+                        String dayS = days[now.get(Calendar.DAY_OF_WEEK)-1];
+                        dateAndDay = dayS.substring(0, 3) + ", " + reminder.getDate();
+                        date.setText(dateAndDay);
                     } catch (ParseException e) {
                         e.printStackTrace();
                     }
@@ -175,15 +183,12 @@ public class FullScreenReminderActivity extends AppCompatActivity {
         }
         else{
             title.setText("Reminder Not Found");
-            date.setVisibility(View.GONE);
-            day.setVisibility(View.GONE);
-            time.setVisibility(View.GONE);
+            dateTimeLayout.setVisibility(View.GONE);
             circle.setVisibility(View.GONE);
-            description.setVisibility(View.GONE);
-            alarmTime.setVisibility(View.GONE);
-            alarmIcon.setVisibility(View.GONE);
+            descriptionLayout.setVisibility(View.GONE);
+            alarmLayout.setVisibility(View.GONE);
             repeatLayout.setVisibility(View.GONE);
-            image.setVisibility(View.GONE);
+            imageLayout.setVisibility(View.GONE);
             snooze.setVisibility(View.GONE);
         }
 
@@ -218,6 +223,11 @@ public class FullScreenReminderActivity extends AppCompatActivity {
             popup.inflate(R.menu.options_snooze_time);
             popup.show();
         });
+
+
+        if(!sharedPreferences.getBoolean("noAds", false))
+            showAd();
+
     }
 
 
@@ -236,6 +246,45 @@ public class FullScreenReminderActivity extends AppCompatActivity {
             alarmManager.setExact(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent);
         else
             alarmManager.set(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent);
+    }
+
+    private void showAd(){
+        new Handler().postDelayed(() -> {
+            MobileAds.initialize(FullScreenReminderActivity.this, initializationStatus -> {
+            });
+            RequestConfiguration requestConfiguration = new RequestConfiguration.Builder().setTestDeviceIds(Arrays.asList("F68088F697A5D97E60C69783F1EBD9A4")).build();
+            MobileAds.setRequestConfiguration(requestConfiguration);
+
+            adView = findViewById(R.id.adView);
+            AdRequest adRequest = new AdRequest.Builder().build();
+            adView.loadAd(adRequest);
+//            adView.setAdListener(new AdListener(){
+//                @Override
+//                public void onAdLoaded() {
+//                    Toast.makeText(ReminderActivity.this, "Ad loaded!", Toast.LENGTH_SHORT).show();
+//                }
+//
+//                @Override
+//                public void onAdFailedToLoad(int i) {
+//                    String error = "Unknown error";
+//                    switch (i){
+//                        case AdRequest.ERROR_CODE_INTERNAL_ERROR:
+//                            error = "Internal error";
+//                            break;
+//                        case AdRequest.ERROR_CODE_INVALID_REQUEST:
+//                            error = "Invalid request";
+//                            break;
+//                        case AdRequest.ERROR_CODE_NETWORK_ERROR:
+//                            error = "Netwrok error";
+//                            break;
+//                        case AdRequest.ERROR_CODE_NO_FILL:
+//                            error = "No fill";
+//                            break;
+//                    }
+//                    Toast.makeText(ReminderActivity.this, "Ads Failed: "+error, Toast.LENGTH_SHORT).show();
+//                }
+//            });
+        }, 1000);
     }
 
     @Override

@@ -35,11 +35,11 @@
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
-            <View
+            <ImageView
                 android:id="@+id/circle"
                 android:layout_width="10dp"
                 android:layout_height="10dp"
-                android:background="@drawable/circle_red" />
+                android:src="@drawable/circle_red" />
 
             <TextView
                 android:id="@+id/time"

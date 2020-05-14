@@ -250,6 +250,8 @@ public class NotificationReceiver extends BroadcastReceiver {
                     reminder.getRepeat(),
                     "You"
             );
+            dataReminder.setDescription(reminder.getDescription());
+            dataReminder.setImage(reminder.getImage());
             realm.beginTransaction();
             realm.insertOrUpdate(dataReminder);
             realm.commitTransaction();

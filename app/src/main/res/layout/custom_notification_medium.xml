@@ -28,8 +28,7 @@
                 android:id="@+id/circle"
                 android:layout_width="10dp"
                 android:layout_height="10dp"
-                android:src="@drawable/circle_red"
-                android:tint="#FF9700"/>
+                android:src="@drawable/circle_orange" />
 
             <TextView
                 android:id="@+id/time"
