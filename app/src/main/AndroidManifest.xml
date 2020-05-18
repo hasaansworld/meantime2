@@ -79,6 +79,11 @@
                 <action android:name="app.meantime.ACTION_NOTIFICATION" />
             </intent-filter>
         </receiver>
+        <receiver android:name=".PeriodicReceiver">
+            <intent-filter>
+                <action android:name="app.meantime.ACTION_BACKGROUND_SCHEDULE" />
+            </intent-filter>
+        </receiver>
 
         <receiver android:name=".SnoozeReceiver">
             <intent-filter>

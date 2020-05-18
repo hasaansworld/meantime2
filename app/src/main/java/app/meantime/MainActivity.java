@@ -29,6 +29,8 @@ import android.Manifest;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -554,12 +556,42 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void backgroundWork() {
-        PeriodicWorkRequest backgroundRequest =
-                new PeriodicWorkRequest.Builder(BackgroundWorker.class, 30, TimeUnit.MINUTES)
-                        .build();
-
         WorkManager workManager = WorkManager.getInstance(this);
-        workManager.enqueueUniquePeriodicWork("backgroundWork", ExistingPeriodicWorkPolicy.KEEP, backgroundRequest);
+        workManager.cancelAllWork();
+//        PeriodicWorkRequest backgroundRequest =
+//                new PeriodicWorkRequest.Builder(BackgroundWorker.class, 30, TimeUnit.MINUTES)
+//                        .build();
+//
+//        WorkManager workManager = WorkManager.getInstance(this);
+//        workManager.enqueueUniquePeriodicWork("backgroundWork", ExistingPeriodicWorkPolicy.KEEP, backgroundRequest);
+        long timeInMillis = sharedPreferences.getLong("periodicUpdate", 0);
+        if(timeInMillis == 0)
+            periodicWork();
+        else {
+            long differenceMillis = System.currentTimeMillis()-timeInMillis;
+            int hoursDifference = (int)(TimeUnit.HOURS.convert(differenceMillis, TimeUnit.MILLISECONDS));
+            if(hoursDifference > 1) {
+                cancelPreviousBackgroundAlarm();
+                periodicWork();
+            }
+        }
+    }
+
+    private void periodicWork(){
+        Intent intent = new Intent(this, PeriodicReceiver.class);
+        intent.setAction(PeriodicReceiver.ACTION_BACKGROUND_SCHEDULE);
+        sendBroadcast(intent);
+    }
+
+    private void cancelPreviousBackgroundAlarm(){
+        AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+        Intent intent1 = new Intent(getApplicationContext(), PeriodicReceiver.class);
+        intent1.setAction(PeriodicReceiver.ACTION_BACKGROUND_SCHEDULE);
+
+        int requestCode = 12;
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), requestCode, intent1,
+                0);
+        alarmManager.cancel(pendingIntent);
     }
 
     public void updateContacts(){

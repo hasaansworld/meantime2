@@ -378,10 +378,11 @@ public class CreateActivity extends AppCompatActivity {
                 realm.copyToRealmOrUpdate(dataReminder);
                 realm.commitTransaction();
 
-                if (!isEditing && shouldSchedule() || isEditing && isTimeDifferent && shouldSchedule()) {
-                    scheduleReminder(dataReminder.getReminderId());
+                if (!isEditing || isTimeDifferent) {
+                    //scheduleReminder(dataReminder.getReminderId());
                     //DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
                     //ref.child("reminders").child(reminderId).setValue(dataReminder);
+                    ReminderUtils.schedule(CreateActivity.this, dataReminder);
                 }
                 //else if(!isEditing && !shouldSchedule() || isEditing && isTimeDifferent && !shouldSchedule()){
                     //sendNotification(1191, "Should schedule returns false!", "Should schedule returns false!");
@@ -546,6 +547,7 @@ public class CreateActivity extends AppCompatActivity {
         int requestCode = reminder.getReminderNumber();
         PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), requestCode, intent1,
                 0);
+
         if (Build.VERSION.SDK_INT >= 23)
             alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent);
         else if (Build.VERSION.SDK_INT >= 19)
@@ -560,6 +562,8 @@ public class CreateActivity extends AppCompatActivity {
             reminder.setStatus(DataReminder.STATUS_SCHEDULED);
         realm.copyToRealmOrUpdate(reminder);
         realm.commitTransaction();
+
+        Toast.makeText(this, "Alarm scheduled!", Toast.LENGTH_SHORT).show();
     }
 
     @Override

@@ -180,6 +180,13 @@ public class FullScreenReminderActivity extends AppCompatActivity {
                     }
                 }
             }
+
+            TextView reminderTime = findViewById(R.id.reminder_time);
+            TextView currentTime = findViewById(R.id.current_time);
+            reminderTime.setText("Reminder Time: "+reminder.getTime());
+            Calendar now = Calendar.getInstance();
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh:mm a", Locale.ENGLISH);
+            currentTime.setText("Display Time:  "+simpleDateFormat.format(now.getTime()));
         }
         else{
             title.setText("Reminder Not Found");
@@ -227,6 +234,7 @@ public class FullScreenReminderActivity extends AppCompatActivity {
 
         if(!sharedPreferences.getBoolean("noAds", false))
             showAd();
+
 
     }
 
