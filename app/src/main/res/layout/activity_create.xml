@@ -391,7 +391,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="25dp"
-                    android:text="New Message (Default)"
+                    android:text="Awesome Tune (Default)"
                     android:textColor="@android:color/black"
                     android:textSize="16sp"
                     android:paddingTop="8dp"

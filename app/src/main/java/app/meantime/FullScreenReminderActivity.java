@@ -68,7 +68,7 @@ public class FullScreenReminderActivity extends AppCompatActivity {
                             |WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
                             |WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        new Handler().postDelayed(() -> getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON), 6000);
+        new Handler().postDelayed(() -> getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON), 10000);
 
         realm = Realm.getDefaultInstance();
         reminderId = getIntent().getStringExtra("id");
@@ -125,11 +125,18 @@ public class FullScreenReminderActivity extends AppCompatActivity {
                         R.raw.business_tone, R.raw.cute_melody, R.raw.door_bell, R.raw.great_tone,
                         R.raw.office_phone, R.raw.positive_vibes, R.raw.relaxing, R.raw.ringtone_pro,
                         R.raw.romantic, R.raw.wake_up_sound, R.raw.white_noise};
-                int tone = R.raw.you_have_new_message;
+                int tone = R.raw.awesome_tune;
                 if(reminder.getAlarmTone() >= 0 && reminder.getAlarmTone() < tones.length)
                     tone = tones[reminder.getAlarmTone()];
                 mediaPlayer = MediaPlayer.create(this, tone);
+                mediaPlayer.setLooping(true);
                 mediaPlayer.start();
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mediaPlayer.setLooping(false);
+                    }
+                }, 20000);
 
                 Vibrator vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
                 if(vibrator != null && vibrator.hasVibrator()){

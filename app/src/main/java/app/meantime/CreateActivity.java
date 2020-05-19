@@ -84,7 +84,7 @@ public class CreateActivity extends AppCompatActivity {
     int[] circles = {R.drawable.circle_yellow, R.drawable.circle_orange, R.drawable.circle_red};
     String[] months = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
     String[] days = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
-    String[] titles = {"New Message (Default)", "Alarm Sound", "Awesome Tune", "Business Tone", "Cute Melody",
+    String[] titles = {"New Message", "Alarm Sound", "Awesome Tune (Default)", "Business Tone", "Cute Melody",
             "Door Bell", "Great Tone", "Office Phone", "Positive Vibes", "Relaxing", "Ringtone Pro", "Romantic",
             "Wake Up Sound", "White Noise"};
     int[] tones = {R.raw.you_have_new_message, R.raw.alarm_sound, R.raw.awesome_tune,
@@ -99,8 +99,8 @@ public class CreateActivity extends AppCompatActivity {
     String reminderId, path = "";
     DataReminder oldReminder;
     SharedPreferences sharedPreferences;
-    int alarmTone = 0;
-    int alarmRadio = 0;
+    int alarmTone = 2;
+    int alarmRadio = 2;
     MediaPlayer mediaPlayer;
 
     @Override

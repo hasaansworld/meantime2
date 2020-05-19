@@ -56,7 +56,7 @@ public class PeriodicReceiver extends BroadcastReceiver {
         // Don't schedule deleted reminders
         for(int i = reminders.size(); i > 0; i--) {
             DataReminder reminder = reminders.get(i-1);
-            if (reminder.isDeleted() || reminder.getStatus() != DataReminder.STATUS_CREATED)
+            if (reminder == null || reminder.isDeleted() || reminder.getStatus() != DataReminder.STATUS_CREATED)
                 reminders.remove(i-1);
         }
 
