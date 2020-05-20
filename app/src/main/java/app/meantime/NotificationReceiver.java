@@ -56,7 +56,7 @@ public class NotificationReceiver extends BroadcastReceiver {
                 reminder.setStatus(DataReminder.STATUS_COMPLETED);
                 realm.commitTransaction();
                 if (!reminder.getRepeat().equals("No repeat"))
-                    repeatReminder(reminder, realm);
+                    ReminderUtils.repeatReminder(context, reminder, realm);
             } else {
                 sendNotificationMessage(767, "You may have pending reminders", "Tap to see.");
             }
@@ -93,14 +93,14 @@ public class NotificationReceiver extends BroadcastReceiver {
         PendingIntent snoozePendingIntent = PendingIntent.getBroadcast(context, 119+reminder.getReminderNumber(), snoozeIntent, 0);
 
         if(importance == 2){
-            Intent i = new Intent(context, FullScreenReminderActivity.class);
-            i.putExtra("id", reminder.getReminderId());
-            i.setFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
-            if(Build.VERSION.SDK_INT >= 21)
-                i.setFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK | Intent.FLAG_ACTIVITY_NEW_DOCUMENT | Intent.FLAG_ACTIVITY_NEW_TASK);
-            else
-                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            context.startActivity(i);
+//            Intent i = new Intent(context, FullScreenReminderActivity.class);
+//            i.putExtra("id", reminder.getReminderId());
+//            i.setFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+//            if(Build.VERSION.SDK_INT >= 21)
+//                i.setFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK | Intent.FLAG_ACTIVITY_NEW_DOCUMENT | Intent.FLAG_ACTIVITY_NEW_TASK);
+//            else
+//                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//            context.startActivity(i);
         }
         else if(importance == 1 && Build.VERSION.SDK_INT < 23){
             //if() {

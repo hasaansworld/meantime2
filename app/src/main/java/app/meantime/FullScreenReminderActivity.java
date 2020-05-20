@@ -134,7 +134,12 @@ public class FullScreenReminderActivity extends AppCompatActivity {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        mediaPlayer.setLooping(false);
+                        try {
+                            mediaPlayer.setLooping(false);
+                        }
+                        catch (IllegalStateException e){
+                            e.printStackTrace();
+                        }
                     }
                 }, 20000);
 
@@ -148,42 +153,49 @@ public class FullScreenReminderActivity extends AppCompatActivity {
                     }
                     else{
                         // -1 : Play exactly once
-                        vibrator.vibrate(new long[]{0, 200, 400, 800, 0, 200, 400, 800}, -1);
+                        vibrator.vibrate(new long[]{0, 200, 400, 800, 0, 200, 400, 800}, 2);
                     }
                 }
+                realm.beginTransaction();
+                reminder.setStatus(DataReminder.STATUS_COMPLETED);
+                realm.commitTransaction();
             }
 
             if(!reminder.getRepeat().equals("No repeat")){
-                Calendar now = Calendar.getInstance();
-                Date d1 = now.getTime();
-                SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy", Locale.ENGLISH);
-                String today = sdf.format(d1);
-                if(!reminder.getDate().equals(today)) {
-                    try {
-                        Date d2 = sdf.parse(reminder.getDate());
-                        now.setTime(d2);
-                        if (reminder.getRepeat().equals("Repeat every day")) {
-                            now.add(Calendar.DATE, -1);
-                        } else if (reminder.getRepeat().equals("Repeat every week")) {
-                            now.add(Calendar.DATE, -7);
-                        } else if (reminder.getRepeat().equals("Repeat every weekday (Mon-Fri)")) {
-                            do
+                if(reminder.getImportance() == 2){
+                    ReminderUtils.repeatReminder(this, reminder, realm);
+                }
+                else {
+                    Calendar now = Calendar.getInstance();
+                    Date d1 = now.getTime();
+                    SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy", Locale.ENGLISH);
+                    String today = sdf.format(d1);
+                    if (!reminder.getDate().equals(today)) {
+                        try {
+                            Date d2 = sdf.parse(reminder.getDate());
+                            now.setTime(d2);
+                            if (reminder.getRepeat().equals("Repeat every day")) {
                                 now.add(Calendar.DATE, -1);
-                            while(now.get(Calendar.DAY_OF_WEEK) < Calendar.MONDAY || now.get(Calendar.DAY_OF_WEEK) > Calendar.FRIDAY);
-                        } else if (reminder.getRepeat().equals("Repeat every month")) {
-                            now.add(Calendar.MONTH, -1);
-                        } else if (reminder.getRepeat().equals("Repeat every year")) {
-                            now.add(Calendar.YEAR, -1);
+                            } else if (reminder.getRepeat().equals("Repeat every week")) {
+                                now.add(Calendar.DATE, -7);
+                            } else if (reminder.getRepeat().equals("Repeat every weekday (Mon-Fri)")) {
+                                do
+                                    now.add(Calendar.DATE, -1);
+                                while (now.get(Calendar.DAY_OF_WEEK) < Calendar.MONDAY || now.get(Calendar.DAY_OF_WEEK) > Calendar.FRIDAY);
+                            } else if (reminder.getRepeat().equals("Repeat every month")) {
+                                now.add(Calendar.MONTH, -1);
+                            } else if (reminder.getRepeat().equals("Repeat every year")) {
+                                now.add(Calendar.YEAR, -1);
+                            }
+                            d2 = now.getTime();
+                            String dateS = sdf.format(d2);
+                            String[] days = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
+                            String dayS = days[now.get(Calendar.DAY_OF_WEEK) - 1];
+                            dateAndDay = dayS.substring(0, 3) + ", " + dateS;
+                            date.setText(dateAndDay);
+                        } catch (ParseException e) {
+                            e.printStackTrace();
                         }
-                        d2 = now.getTime();
-                        String dateS = sdf.format(d2);
-                        date.setText(dateS);
-                        String[] days = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
-                        String dayS = days[now.get(Calendar.DAY_OF_WEEK)-1];
-                        dateAndDay = dayS.substring(0, 3) + ", " + reminder.getDate();
-                        date.setText(dateAndDay);
-                    } catch (ParseException e) {
-                        e.printStackTrace();
                     }
                 }
             }
@@ -248,13 +260,16 @@ public class FullScreenReminderActivity extends AppCompatActivity {
 
     public void snoozeReminder(String id, long timeInMillis){
         AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
-        Intent intent1 = new Intent(getApplicationContext(), NotificationReceiver.class);
-        intent1.setAction(NotificationReceiver.ACTION_NOTIFICATION);
-        intent1.putExtra("id", id);
-
+        Intent i = new Intent(this, FullScreenReminderActivity.class);
+        i.putExtra("id", id);
+        i.setFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+        if (Build.VERSION.SDK_INT >= 21)
+            i.setFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK | Intent.FLAG_ACTIVITY_NEW_DOCUMENT | Intent.FLAG_ACTIVITY_NEW_TASK);
+        else
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         int requestCode = reminder.getReminderNumber();
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), requestCode, intent1,
-                0);
+        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), requestCode, i, 0);
+
         if (Build.VERSION.SDK_INT >= 23)
             alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent);
         else if (Build.VERSION.SDK_INT >= 19)

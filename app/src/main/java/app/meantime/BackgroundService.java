@@ -10,6 +10,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
+import android.os.PowerManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -23,23 +24,17 @@ import com.google.firebase.database.FirebaseDatabase;
 
 public class BackgroundService extends Service {
     Context context;
+    //private PowerManager.WakeLock wakeLock;
 
     public BackgroundService(Context context){
         super();
         this.context = context;
-    }
+//
+//        PowerManager mgr=(PowerManager)getSystemService(POWER_SERVICE);
+//        wakeLock= mgr.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
+//                getClass().getSimpleName());
+//        wakeLock.acquire(10*60*1000L /*10 minutes*/);
 
-    public BackgroundService(){
-
-    }
-
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        super.onStartCommand(intent, flags, startId);
-        sendNotification("starting service");
-        addListener();
-
-        return START_STICKY;
     }
 
     private void addListener(){
@@ -120,7 +115,6 @@ public class BackgroundService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Intent broadcastIntent = new Intent("app.meantime.BackgroundServiceReceiver");
-        sendBroadcast(broadcastIntent);
+        //wakeLock.release();
     }
 }

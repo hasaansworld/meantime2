@@ -79,6 +79,11 @@
                 <action android:name="app.meantime.ACTION_NOTIFICATION" />
             </intent-filter>
         </receiver>
+<!--        <receiver android:name=".HighPriorityReceiver">-->
+<!--            <intent-filter>-->
+<!--                <action android:name="app.meantime.ACTION_FULLSCREEN" />-->
+<!--            </intent-filter>-->
+<!--        </receiver>-->
         <receiver android:name=".PeriodicReceiver">
             <intent-filter>
                 <action android:name="app.meantime.ACTION_BACKGROUND_SCHEDULE" />
