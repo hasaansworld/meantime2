@@ -570,11 +570,11 @@ public class MainActivity extends AppCompatActivity {
         else {
             long differenceMillis = System.currentTimeMillis()-timeInMillis;
             int hoursDifference = (int)(TimeUnit.HOURS.convert(differenceMillis, TimeUnit.MILLISECONDS));
-            Toast.makeText(this, "Last periodic update:\n"+hoursDifference+" hours ago."+"\n"+timeInMillis, Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "Last periodic update:\n"+hoursDifference+" hours ago."+"\n"+timeInMillis, Toast.LENGTH_SHORT).show();
             if(hoursDifference > 0) {
                 cancelPreviousBackgroundAlarm();
                 periodicWork();
-                Toast.makeText(this, "Started alarm again!", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(this, "Started alarm again!", Toast.LENGTH_SHORT).show();
             }
         }
     }

@@ -129,8 +129,8 @@ public class ReminderUtils {
         realm.copyToRealmOrUpdate(reminder);
         realm.commitTransaction();
 
-        if(context instanceof Activity)
-            Toast.makeText(context, "Alarm scheduled!", Toast.LENGTH_SHORT).show();
+        // if(context instanceof Activity)
+            // Toast.makeText(context, "Alarm scheduled!", Toast.LENGTH_SHORT).show();
         realm.close();
     }
 

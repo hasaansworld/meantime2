@@ -60,7 +60,7 @@ public class PeriodicReceiver extends BroadcastReceiver {
                 reminders.remove(i-1);
         }
 
-        log();
+        //log();
 
         for(DataReminder reminder: reminders){
             ReminderUtils.schedule(context, reminder);

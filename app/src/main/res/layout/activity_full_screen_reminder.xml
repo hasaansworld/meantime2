@@ -288,34 +288,35 @@
 
       </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp"
-            android:layout_marginTop="25dp"
-            android:background="@color/colorAccent"
-            android:padding="15dp">
+<!--        <LinearLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:orientation="vertical"-->
+<!--            android:layout_marginLeft="15dp"-->
+<!--            android:layout_marginRight="15dp"-->
+<!--            android:layout_marginTop="25dp"-->
+<!--            android:background="@color/colorAccent"-->
+<!--            android:padding="15dp"-->
+<!--            android:visibility="gone">-->
 
-            <TextView
-                android:id="@+id/reminder_time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="16sp"
-                android:textColor="@android:color/white"
-                android:textStyle="bold" />
+<!--            <TextView-->
+<!--                android:id="@+id/reminder_time"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:textSize="16sp"-->
+<!--                android:textColor="@android:color/white"-->
+<!--                android:textStyle="bold" />-->
 
-            <TextView
-                android:id="@+id/current_time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:textSize="16sp"
-                android:textColor="@android:color/white"
-                android:textStyle="bold" />
+<!--            <TextView-->
+<!--                android:id="@+id/current_time"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginTop="8dp"-->
+<!--                android:textSize="16sp"-->
+<!--                android:textColor="@android:color/white"-->
+<!--                android:textStyle="bold" />-->
 
-        </LinearLayout>
+<!--        </LinearLayout>-->
 
       <View
           android:layout_width="match_parent"
