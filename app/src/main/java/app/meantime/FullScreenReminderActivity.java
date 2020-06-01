@@ -55,6 +55,7 @@ public class FullScreenReminderActivity extends AppCompatActivity {
     LinearLayout repeatLayout, descriptionLayout, imageLayout, alarmLayout, dateTimeLayout;
     ImageView circle, image;
     MediaPlayer mediaPlayer;
+    Vibrator vibrator;
     AdView adView;
 
     @Override
@@ -143,7 +144,7 @@ public class FullScreenReminderActivity extends AppCompatActivity {
                     }
                 }, 20000);
 
-                Vibrator vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+                vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
                 if(vibrator != null && vibrator.hasVibrator()){
                     if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                         long[] mVibratePattern = new long[]{0, 200, 400, 800, 0, 200, 400, 800};
@@ -153,7 +154,7 @@ public class FullScreenReminderActivity extends AppCompatActivity {
                     }
                     else{
                         // -1 : Play exactly once
-                        vibrator.vibrate(new long[]{0, 200, 400, 800, 0, 200, 400, 800}, 2);
+                        vibrator.vibrate(new long[]{0, 200, 400, 800, 0, 200, 400, 800}, -1);
                     }
                 }
                 realm.beginTransaction();
@@ -329,6 +330,7 @@ public class FullScreenReminderActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         if(mediaPlayer != null) mediaPlayer.release();
+        if(vibrator != null) vibrator.cancel();
         realm.close();
     }
 }
